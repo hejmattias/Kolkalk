@@ -8,11 +8,19 @@ struct CreateFoodFromPlateView: View {
     @Environment(\.dismiss) var dismiss
 
     @State private var foodName: String = ""
-    @State private var totalWeight: Int = 0
-    @State private var containerWeight: Int = 0
+    @State private var totalWeightString: String = ""
+    @State private var containerWeightString: String = ""
     @State private var calculatedCarbsPer100g: Double?
     @State private var showingTotalWeightInput = false
     @State private var showingContainerWeightInput = false
+
+    var totalWeight: Double {
+        Double(totalWeightString.replacingOccurrences(of: ",", with: ".")) ?? 0
+    }
+
+    var containerWeight: Double {
+        Double(containerWeightString.replacingOccurrences(of: ",", with: ".")) ?? 0
+    }
 
     var body: some View {
         VStack {
@@ -21,7 +29,7 @@ struct CreateFoodFromPlateView: View {
                     TextField("Livsmedelsnamn", text: $foodName)
 
                     HStack {
-                        Text("Total vikt (g): \(totalWeight)")
+                        Text("Total vikt (g): \(totalWeightString)")
                         Spacer()
                         Button("Ange") {
                             showingTotalWeightInput = true
@@ -29,7 +37,7 @@ struct CreateFoodFromPlateView: View {
                     }
 
                     HStack {
-                        Text("Kärlets vikt (g): \(containerWeight)")
+                        Text("Kärlets vikt (g): \(containerWeightString)")
                         Spacer()
                         Button("Ange") {
                             showingContainerWeightInput = true
@@ -51,15 +59,15 @@ struct CreateFoodFromPlateView: View {
         }
         .navigationTitle("Skapa livsmedel")
         .sheet(isPresented: $showingTotalWeightInput) {
-            InputValueView(value: $totalWeight, title: "Ange total vikt")
+            InputValueDoubleView(value: $totalWeightString, title: "Ange total vikt")
         }
         .sheet(isPresented: $showingContainerWeightInput) {
-            InputValueView(value: $containerWeight, title: "Ange kärlets vikt")
+            InputValueDoubleView(value: $containerWeightString, title: "Ange kärlets vikt")
         }
     }
 
     func calculateAndSave() {
-        let netWeight = Double(totalWeight - containerWeight)
+        let netWeight = totalWeight - containerWeight
         guard netWeight > 0 else { return }
 
         let totalCarbs = plate.items.reduce(0) { $0 + $1.totalCarbs }

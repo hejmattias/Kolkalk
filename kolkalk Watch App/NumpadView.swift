@@ -60,6 +60,7 @@ struct NumpadView: View {
                         .lineLimit(1)
                         .truncationMode(.tail)
                         .frame(maxWidth: geometry.size.width * 0.45)
+                        .modifier(ScrollingTextModifier())
 
                     Spacer()
                 }
@@ -108,7 +109,12 @@ struct NumpadView: View {
                     }
                     HStack(spacing: 4) {
                         CustomNumpadButton(label: "⌫", width: buttonWidth, height: buttonHeight, action: { backspace() })
-                        CustomNumpadButton(label: "0", width: buttonWidth, height: buttonHeight, action: { appendNumber("0") })
+                        // Knapp med långtryck för kommatecken
+                        CustomNumpadButtonWithLongPress(label: "0\n,", width: buttonWidth, height: buttonHeight, shortPressAction: {
+                            appendNumber("0")
+                        }, longPressAction: {
+                            appendComma()
+                        })
                         CustomNumpadButton(label: "OK", width: buttonWidth, height: buttonHeight, action: { confirm() })
                     }
                 }
@@ -141,7 +147,7 @@ struct NumpadView: View {
     }
 
     func calculatedCarbs() -> Double {
-        let inputValue = Double(inputString) ?? 0
+        let inputValue = Double(inputString.replacingOccurrences(of: ",", with: ".")) ?? 0
 
         if unit == "g" {
             // Kolhydrater baserat på gram
@@ -166,6 +172,12 @@ struct NumpadView: View {
         }
     }
 
+    func appendComma() {
+        if !inputString.contains(",") && inputString.count < maxInputLength {
+            inputString += ","
+        }
+    }
+
     func backspace() {
         if !inputString.isEmpty {
             inputString.removeLast()
@@ -176,7 +188,8 @@ struct NumpadView: View {
     }
 
     func confirm() {
-        if let doubleValue = Double(inputString) {
+        let sanitizedInput = inputString.replacingOccurrences(of: ",", with: ".")
+        if let doubleValue = Double(sanitizedInput) {
             onConfirm(doubleValue, unit)
             self.presentationMode.wrappedValue.dismiss()
         }
@@ -197,5 +210,40 @@ struct CustomNumpadButton: View {
                 .frame(width: width, height: height)
         }
         .buttonStyle(CustomButtonStyle())
+    }
+}
+
+// Anpassad knapp med långtryck
+struct CustomNumpadButtonWithLongPress: View {
+    let label: String
+    let width: CGFloat
+    let height: CGFloat
+    let shortPressAction: () -> Void
+    let longPressAction: () -> Void
+
+    var body: some View {
+        Button(action: {
+            shortPressAction()
+        }) {
+            Text(label)
+                .font(.title3)
+                .multilineTextAlignment(.center)
+                .frame(width: width, height: height)
+        }
+        .simultaneousGesture(
+            LongPressGesture(minimumDuration: 0.5).onEnded { _ in
+                longPressAction()
+            }
+        )
+        .buttonStyle(CustomButtonStyle())
+    }
+}
+
+// Modifier för rullande text
+struct ScrollingTextModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            content
+        }
     }
 }

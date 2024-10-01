@@ -106,3 +106,4 @@ struct SimpleNumpadDoubleView: View {
         }
     }
 }
+
