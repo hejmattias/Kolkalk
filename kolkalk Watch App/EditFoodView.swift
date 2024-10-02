@@ -22,7 +22,6 @@ struct EditFoodView: View {
         ) { value, unit in
             var updatedItem = item
 
-            // Hantera olika enheter (g, dl, st)
             switch unit {
             case "g":
                 updatedItem.grams = value
@@ -38,16 +37,11 @@ struct EditFoodView: View {
                 break
             }
 
-            updatedItem.inputUnit = unit  // Lagra enheten som användes
+            updatedItem.inputUnit = unit  // Uppdatera enheten
 
-            // Uppdatera livsmedlet på tallriken
-            if let index = plate.items.firstIndex(where: { $0.id == item.id }) {
-                plate.items[index] = updatedItem
-            }
-            plate.saveToUserDefaults()
+            plate.updateItem(updatedItem)  // Uppdatera den specifika posten på tallriken
 
-            // Stäng vyn när ändringar är sparade
-            dismiss()
+            dismiss()  // Stäng vyn när ändringarna är sparade
         }
         .navigationBarBackButtonHidden(true)
     }

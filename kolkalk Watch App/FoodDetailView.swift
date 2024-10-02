@@ -21,28 +21,29 @@ struct FoodDetailView: View {
                     plate.emptyPlate()
                 }
 
-                var selectedFood = food
+                var newFood = food
+                newFood.id = UUID()  // Skapa ett nytt unikt id för varje ny instans
 
+                // Uppdatera mängden beroende på enheten
                 switch unit {
                 case "g":
-                    selectedFood.grams = value
+                    newFood.grams = value
                 case "dl":
                     if let gramsPerDl = food.gramsPerDl, gramsPerDl > 0 {
-                        selectedFood.grams = value * gramsPerDl
+                        newFood.grams = value * gramsPerDl
                     }
                 case "st":
                     if let styckPerGram = food.styckPerGram, styckPerGram > 0 {
-                        selectedFood.grams = value * styckPerGram
+                        newFood.grams = value * styckPerGram
                     }
                 default:
                     break
                 }
 
-                selectedFood.inputUnit = unit  // Lagra enheten som användes
+                newFood.inputUnit = unit
+                plate.addItem(newFood)  // Lägg till den nya posten på tallriken
 
-                plate.addItem(selectedFood)
-
-                navigationPath = NavigationPath([Route.plateView])
+                navigationPath = NavigationPath([Route.plateView])  // Gå tillbaka till tallriken
             }
             .navigationBarBackButtonHidden(true)
         }

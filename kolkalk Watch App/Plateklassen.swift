@@ -1,20 +1,21 @@
 import SwiftUI
 import Foundation
 
-// Plate-klassen som hanterar tallrikens innehåll
 class Plate: ObservableObject {
     @Published var items: [FoodItem] = []
 
     // Lägg till ett livsmedel på tallriken
     func addItem(_ item: FoodItem) {
-        if item.isDefault == true, let index = items.firstIndex(where: { $0.id == item.id }) {
-            // Ersätt endast om det är ett standardlivsmedel
-            items[index] = item
-        } else {
-            // Lägg till nya poster för användarskapade livsmedel
-            items.append(item)
-        }
+        items.append(item) // Lägg till varje livsmedel som en separat post
         saveToUserDefaults()
+    }
+
+    // Uppdatera ett befintligt livsmedel på tallriken
+    func updateItem(_ updatedItem: FoodItem) {
+        if let index = items.firstIndex(where: { $0.id == updatedItem.id }) {
+            items[index] = updatedItem
+            saveToUserDefaults()
+        }
     }
 
     // Töm tallriken
