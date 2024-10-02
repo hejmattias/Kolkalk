@@ -1,4 +1,3 @@
-
 import SwiftUI
 import Foundation
 
@@ -38,5 +37,59 @@ class FoodData: ObservableObject {
             FoodItem(name: "pinnfiskar", carbsPer100g: 10, grams: 0,  styckPerGram: 100, isDefault: true),
             FoodItem(name: "Banan", carbsPer100g: 22.8, grams: 0, gramsPerDl: 85, isDefault: true)
         ]
+    }
+
+    // Importera från CSV-fil
+    func importFromCSV(fileURL: URL) {
+        do {
+            let data = try String(contentsOf: fileURL, encoding: .utf8)
+            let rows = data.components(separatedBy: .newlines)
+            
+            for (index, row) in rows.enumerated() {
+                let columns = row.components(separatedBy: ",")
+                
+                // Hoppa över tomma rader
+                if columns.count == 1 && columns[0].trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    continue
+                }
+                
+                if columns.count >= 2 {
+                    let name = columns[0].trimmingCharacters(in: .whitespacesAndNewlines)
+                    let carbsString = columns[1].trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: ",", with: ".")
+                    
+                    if let carbsPer100g = Double(carbsString) {
+                        
+                        var gramsPerDl: Double? = nil
+                        if columns.count > 2 {
+                            let gramsPerDlString = columns[2].trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: ",", with: ".")
+                            if !gramsPerDlString.isEmpty, let gramsPerDlValue = Double(gramsPerDlString) {
+                                gramsPerDl = gramsPerDlValue
+                            }
+                        }
+                        
+                        var styckPerGram: Double? = nil
+                        if columns.count > 3 {
+                            let styckPerGramString = columns[3].trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: ",", with: ".")
+                            if !styckPerGramString.isEmpty, let styckPerGramValue = Double(styckPerGramString) {
+                                styckPerGram = styckPerGramValue
+                            }
+                        }
+                        
+                        let newFoodItem = FoodItem(name: name, carbsPer100g: carbsPer100g, grams: 0, gramsPerDl: gramsPerDl, styckPerGram: styckPerGram)
+                        self.foodList.append(newFoodItem)
+                        
+                    } else {
+                        print("Felaktigt värde för kolhydrater per 100g på rad \(index + 1)")
+                    }
+                } else {
+                    print("Felaktig formatering på rad \(index + 1)")
+                }
+            }
+            
+            self.saveToUserDefaults()
+            
+        } catch {
+            print("Fel vid inläsning av CSV-fil: \(error)")
+        }
     }
 }

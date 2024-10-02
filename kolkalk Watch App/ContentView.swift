@@ -1,19 +1,20 @@
 import SwiftUI
 
-// Enum for navigeringsvägar
+// Enum för navigeringsvägar
 enum Route: Hashable {
     case plateView
     case foodListView(isEmptyAndAdd: Bool)
     case createFoodFromPlateView
     case foodDetailView(FoodItem, shouldEmptyPlate: Bool)
     case createNewFoodItem
-    case editFoodItem(FoodItem)  // Redigera livsmedel
+    case editFoodItem(FoodItem)
+    case importInstructions // Lägg till detta case
 }
 
 // Huvudvyn som startar appen
 struct ContentView: View {
-    @StateObject private var plate = Plate()
-    @StateObject private var foodData = FoodData()
+    @ObservedObject var plate = Plate()
+    @ObservedObject var foodData = WatchViewModel.shared.foodData
     @State private var navigationPath = NavigationPath()
 
     var totalCarbs: Double {
@@ -38,6 +39,10 @@ struct ContentView: View {
                 NavigationLink(value: Route.createFoodFromPlateView) {
                     Text("Tallrik till livsmedel")
                 }
+
+                NavigationLink(value: Route.importInstructions) { // Använd det nya caset här
+                    Text("Importera livsmedel från CSV")
+                }
             }
             .onAppear {
                 plate.loadFromUserDefaults()
@@ -57,6 +62,8 @@ struct ContentView: View {
                     CreateNewFoodItemView(foodData: foodData, navigationPath: $navigationPath)
                 case .editFoodItem(let food):
                     EditFoodItemView(food: food, foodData: foodData, navigationPath: $navigationPath)
+                case .importInstructions:
+                    ImportInstructionsView()
                 }
             }
             .navigationTitle("Totalt: \(totalCarbs, specifier: "%.1f") gk")

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B97E03FF2CAC84D100450835 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B97E03FE2CAC84D100450835 /* WatchConnectivity.framework */; };
 		B98B3D8E2CAC176700EE7D92 /* kolkalk Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B98B3D6B2CAC176600EE7D92 /* kolkalk Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -63,6 +64,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B97E03FE2CAC84D100450835 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.0.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
 		B98B3D392CAC170200EE7D92 /* Kolkalk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kolkalk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B98B3D4A2CAC170300EE7D92 /* KolkalkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KolkalkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B98B3D542CAC170300EE7D92 /* KolkalkUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KolkalkUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -144,12 +146,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B97E03FF2CAC84D100450835 /* WatchConnectivity.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B97E03FD2CAC84D100450835 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B97E03FE2CAC84D100450835 /* WatchConnectivity.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		B98B3D302CAC170200EE7D92 = {
 			isa = PBXGroup;
 			children = (
@@ -159,6 +170,7 @@
 				B98B3D6C2CAC176600EE7D92 /* kolkalk Watch App */,
 				B98B3D7D2CAC176700EE7D92 /* kolkalk Watch AppTests */,
 				B98B3D872CAC176700EE7D92 /* kolkalk Watch AppUITests */,
+				B97E03FD2CAC84D100450835 /* Frameworks */,
 				B98B3D3A2CAC170200EE7D92 /* Products */,
 			);
 			sourceTree = "<group>";
