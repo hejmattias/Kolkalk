@@ -48,24 +48,31 @@ class FoodData: ObservableObject {
     // Importera från CSV-fil och sortera listan
     func importFromCSV(fileURL: URL) {
         do {
+            // Läs in filens innehåll som en sträng
             let data = try String(contentsOf: fileURL, encoding: .utf8)
+            // Dela upp innehållet i rader baserat på ny rad
             let rows = data.components(separatedBy: .newlines)
             
             for (index, row) in rows.enumerated() {
-                let columns = row.components(separatedBy: ",")
+                // Dela upp varje rad i kolumner baserat på semikolon
+                let columns = row.components(separatedBy: ";")
                 
                 // Hoppa över tomma rader
                 if columns.count == 1 && columns[0].trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     continue
                 }
                 
+                // Kontrollera att det finns minst två kolumner (namn och kolhydrater)
                 if columns.count >= 2 {
                     let name = columns[0].trimmingCharacters(in: .whitespacesAndNewlines)
+                    // Byt ut komma mot punkt för att hantera decimaltal
                     let carbsString = columns[1].trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: ",", with: ".")
                     
+                    // Försök konvertera kolhydrater per 100g till Double
                     if let carbsPer100g = Double(carbsString) {
                         
                         var gramsPerDl: Double? = nil
+                        // Om det finns en tredje kolumn, behandla den som gram per dl
                         if columns.count > 2 {
                             let gramsPerDlString = columns[2].trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: ",", with: ".")
                             if !gramsPerDlString.isEmpty, let gramsPerDlValue = Double(gramsPerDlString) {
@@ -74,6 +81,7 @@ class FoodData: ObservableObject {
                         }
                         
                         var styckPerGram: Double? = nil
+                        // Om det finns en fjärde kolumn, behandla den som gram per styck
                         if columns.count > 3 {
                             let styckPerGramString = columns[3].trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: ",", with: ".")
                             if !styckPerGramString.isEmpty, let styckPerGramValue = Double(styckPerGramString) {
@@ -81,7 +89,14 @@ class FoodData: ObservableObject {
                             }
                         }
                         
-                        let newFoodItem = FoodItem(name: name, carbsPer100g: carbsPer100g, grams: 0, gramsPerDl: gramsPerDl, styckPerGram: styckPerGram)
+                        // Skapa en ny FoodItem med de importerade värdena
+                        let newFoodItem = FoodItem(
+                            name: name,
+                            carbsPer100g: carbsPer100g,
+                            grams: 0,
+                            gramsPerDl: gramsPerDl,
+                            styckPerGram: styckPerGram
+                        )
                         self.foodList.append(newFoodItem)
                         
                     } else {

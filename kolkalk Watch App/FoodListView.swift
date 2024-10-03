@@ -8,6 +8,7 @@ struct FoodListView: View {
     var isEmptyAndAdd: Bool
 
     @State private var searchText: String = ""
+    @State private var showDeleteConfirmation = false
 
     var filteredFoodList: [FoodItem] {
         if searchText.isEmpty {
@@ -63,6 +64,28 @@ struct FoodListView: View {
                         Spacer()
                     }
                 }
+
+                // Lägger till en knapp för att ta bort alla livsmedel
+                Button(action: {
+                    showDeleteConfirmation = true
+                }) {
+                    HStack {
+                        Spacer()
+                        Text("Radera alla livsmedel")
+                            .foregroundColor(.red)
+                        Spacer()
+                    }
+                }
+                .alert(isPresented: $showDeleteConfirmation) {
+                    Alert(
+                        title: Text("Bekräfta radering"),
+                        message: Text("Är du säker på att du vill ta bort alla livsmedel?"),
+                        primaryButton: .destructive(Text("Ja")) {
+                            deleteAllFoodItems()
+                        },
+                        secondaryButton: .cancel(Text("Avbryt"))
+                    )
+                }
             }
         }
         .navigationTitle(isEmptyAndAdd ? "-+l Livsmedel" : "Livsmedel")
@@ -73,5 +96,10 @@ struct FoodListView: View {
             foodData.foodList.remove(at: index)
             foodData.saveToUserDefaults()
         }
+    }
+
+    private func deleteAllFoodItems() {
+        foodData.foodList.removeAll() // Rensar alla livsmedel
+        foodData.saveToUserDefaults() // Spara uppdateringarna
     }
 }
