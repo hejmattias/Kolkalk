@@ -8,10 +8,9 @@ enum Route: Hashable {
     case foodDetailView(FoodItem, shouldEmptyPlate: Bool)
     case createNewFoodItem
     case editFoodItem(FoodItem)
-    case importInstructions // Lägg till detta case
+    case importInstructions
 }
 
-// Huvudvyn som startar appen
 struct ContentView: View {
     @ObservedObject var plate = Plate()
     @ObservedObject var foodData = WatchViewModel.shared.foodData
@@ -40,8 +39,16 @@ struct ContentView: View {
                     Text("Tallrik till livsmedel")
                 }
 
-                NavigationLink(value: Route.importInstructions) { // Använd det nya caset här
+                NavigationLink(value: Route.importInstructions) {
                     Text("Importera livsmedel från CSV")
+                }
+
+                // Ny knapp för att exportera livsmedelslistan
+                Button(action: {
+                    WatchViewModel.shared.exportFoodList()
+                }) {
+                    Text("Exportera livsmedelslista")
+                        .foregroundColor(.blue)
                 }
             }
             .onAppear {

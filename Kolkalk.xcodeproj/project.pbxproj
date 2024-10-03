@@ -73,6 +73,16 @@
 		B98B3D842CAC176700EE7D92 /* kolkalk Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "kolkalk Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		B9A84FAA2CAEB70200DB4389 /* Exceptions for "Shared" folder in "kolkalk Watch App" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				FoodItem.swift,
+			);
+			target = B98B3D6A2CAC176600EE7D92 /* kolkalk Watch App */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		B98B3D3B2CAC170200EE7D92 /* Kolkalk */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -102,6 +112,14 @@
 		B98B3D872CAC176700EE7D92 /* kolkalk Watch AppUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "kolkalk Watch AppUITests";
+			sourceTree = "<group>";
+		};
+		B9A84FA92CAEB6FB00DB4389 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B9A84FAA2CAEB70200DB4389 /* Exceptions for "Shared" folder in "kolkalk Watch App" target */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -164,6 +182,7 @@
 		B98B3D302CAC170200EE7D92 = {
 			isa = PBXGroup;
 			children = (
+				B9A84FA92CAEB6FB00DB4389 /* Shared */,
 				B98B3D3B2CAC170200EE7D92 /* Kolkalk */,
 				B98B3D4D2CAC170300EE7D92 /* KolkalkTests */,
 				B98B3D572CAC170300EE7D92 /* KolkalkUITests */,
@@ -207,6 +226,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				B98B3D3B2CAC170200EE7D92 /* Kolkalk */,
+				B9A84FA92CAEB6FB00DB4389 /* Shared */,
 			);
 			name = Kolkalk;
 			packageProductDependencies = (
