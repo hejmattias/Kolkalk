@@ -37,7 +37,7 @@ struct NumpadView: View {
     var onConfirm: (Double, String) -> Void
 
     @State private var unit: String = "g"
-    let maxInputLength = 5 // Max antal siffror som tillåts
+    let maxInputLength = 6 // Max antal siffror som tillåts
 
     var body: some View {
         GeometryReader { geometry in
@@ -213,7 +213,6 @@ struct CustomNumpadButton: View {
     }
 }
 
-// Anpassad knapp med långtryck
 struct CustomNumpadButtonWithLongPress: View {
     let label: String
     let width: CGFloat
@@ -221,21 +220,29 @@ struct CustomNumpadButtonWithLongPress: View {
     let shortPressAction: () -> Void
     let longPressAction: () -> Void
 
+    @State private var didLongPress = false
+
     var body: some View {
         Button(action: {
-            shortPressAction()
+            if !didLongPress {
+                shortPressAction()
+            }
+            // Återställ för nästa interaktion
+            didLongPress = false
         }) {
             Text(label)
                 .font(.title3)
                 .multilineTextAlignment(.center)
                 .frame(width: width, height: height)
         }
-        .simultaneousGesture(
-            LongPressGesture(minimumDuration: 0.5).onEnded { _ in
-                longPressAction()
-            }
-        )
         .buttonStyle(CustomButtonStyle())
+        .simultaneousGesture(
+            LongPressGesture(minimumDuration: 0.5)
+                .onEnded { _ in
+                    didLongPress = true
+                    longPressAction()
+                }
+        )
     }
 }
 
