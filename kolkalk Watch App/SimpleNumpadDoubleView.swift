@@ -13,21 +13,15 @@ struct SimpleNumpadDoubleView: View {
                 Spacer() // Flytta ned back-knappen
 
                 HStack {
-                    Button(action: {
-                        self.presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Image(systemName: "arrow.left")
-                            .font(.title3)
-                    }
-                    .buttonStyle(MinimalButtonStyle())
-                    .frame(width: 30, height: 20)
+               
 
                     Text(title)
+                        .padding(.leading, 35)
                         .font(.headline)
                         .foregroundColor(.white)
                         .lineLimit(1)
                         .truncationMode(.tail)
-                        .frame(maxWidth: geometry.size.width * 0.45)
+                        .frame(maxWidth: geometry.size.width * 0.45, alignment: .leading)
 
                     Spacer()
                 }
