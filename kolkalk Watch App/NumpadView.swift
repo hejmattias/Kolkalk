@@ -37,7 +37,10 @@ struct NumpadView: View {
     var onConfirm: (Double, String) -> Void
 
     @State private var unit: String = "g"
-    let maxInputLength = 6 // Max antal siffror som tillåts
+    let maxInputLength = 5 // Max antal siffror som tillåts
+
+    @State private var titleOffset: CGFloat = 0
+    @State private var titleWidth: CGFloat = 0
 
     var body: some View {
         GeometryReader { geometry in
@@ -54,13 +57,30 @@ struct NumpadView: View {
                     .buttonStyle(MinimalButtonStyle())
                     .frame(width: 30, height: 20)
 
-                    Text(foodName)
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                        .frame(maxWidth: geometry.size.width * 0.45)
-                        .modifier(ScrollingTextModifier())
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 20) {  // Lägg till mellanrum mellan upprepningarna
+                            Text(foodName)
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .fixedSize(horizontal: true, vertical: false)
+                            Text(foodName)
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .fixedSize(horizontal: true, vertical: false)
+                        }
+                        .offset(x: titleOffset, y: 0)
+                        .frame(height: 20)
+                        .background(GeometryReader { geo in
+                            Color.clear.onAppear {
+                                titleWidth = geo.size.width / 2  // Dela med 2 eftersom vi har två kopior av texten
+                            }
+                        })
+                    }
+                    .frame(width: geometry.size.width * 0.45)
+                    .clipped()
+                    .onAppear {
+                        animateTitle(viewWidth: geometry.size.width * 0.45)
+                    }
 
                     Spacer()
                 }
@@ -126,6 +146,12 @@ struct NumpadView: View {
         }
         .background(Color.black)
         .navigationBarBackButtonHidden(true) // Tar bort standardnavigeringskrysset
+    }
+
+    func animateTitle(viewWidth: CGFloat) {
+        withAnimation(Animation.linear(duration: Double(titleWidth) * 0.05).repeatForever(autoreverses: false)) {
+            titleOffset = -titleWidth
+        }
     }
 
     func toggleUnit() {
@@ -213,6 +239,7 @@ struct CustomNumpadButton: View {
     }
 }
 
+// Anpassad knapp med långtryck
 struct CustomNumpadButtonWithLongPress: View {
     let label: String
     let width: CGFloat
@@ -220,37 +247,20 @@ struct CustomNumpadButtonWithLongPress: View {
     let shortPressAction: () -> Void
     let longPressAction: () -> Void
 
-    @State private var didLongPress = false
-
     var body: some View {
         Button(action: {
-            if !didLongPress {
-                shortPressAction()
-            }
-            // Återställ för nästa interaktion
-            didLongPress = false
+            shortPressAction()
         }) {
             Text(label)
                 .font(.title3)
                 .multilineTextAlignment(.center)
                 .frame(width: width, height: height)
         }
-        .buttonStyle(CustomButtonStyle())
         .simultaneousGesture(
-            LongPressGesture(minimumDuration: 0.5)
-                .onEnded { _ in
-                    didLongPress = true
-                    longPressAction()
-                }
+            LongPressGesture(minimumDuration: 0.5).onEnded { _ in
+                longPressAction()
+            }
         )
-    }
-}
-
-// Modifier för rullande text
-struct ScrollingTextModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            content
-        }
+        .buttonStyle(CustomButtonStyle())
     }
 }
