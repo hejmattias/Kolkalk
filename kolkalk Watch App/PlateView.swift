@@ -12,54 +12,43 @@ struct PlateView: View {
 
     var body: some View {
         List {
-            // Om du vill kan du lägga till en sektion med totalen högst upp
-            Section(header:
+            ForEach(plate.items) { item in
                 VStack(alignment: .leading) {
-                    Text("Totalt kolhydrater:")
-                        .font(.caption)
-                    Text("\(totalCarbs, specifier: "%.1f") gk")
-                        .font(.headline)
-                }
-                .padding(.vertical, 4)
-            ) {
-                ForEach(plate.items) { item in
-                    VStack(alignment: .leading) {
-                        HStack {
-                            NavigationLink(destination: EditFoodView(plate: plate, item: item)) {
-                                Text(item.name)
-                                    .font(.body)
-                                    .foregroundColor(.primary)
-                            }
-                            Spacer()
-                            Text("\(item.totalCarbs, specifier: "%.1f") gk")
+                    HStack {
+                        NavigationLink(destination: EditFoodView(plate: plate, item: item)) {
+                            Text(item.name)
+                                .font(.body)
+                                .foregroundColor(.primary)
                         }
-
-                        // Visa detaljer om användaren sveper
-                        if showDetailsForItemId == item.id {
-                            Text(itemDetailString(for: item))
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
+                        Spacer()
+                        Text("\(item.totalCarbs, specifier: "%.1f") gk")
                     }
-                    .contentShape(Rectangle())
-                    .gesture(
-                        DragGesture(minimumDistance: 50, coordinateSpace: .local)
-                            .onEnded { value in
-                                if value.translation.width > 0 {
-                                    // Svep från vänster till höger för att visa informationen
-                                    showDetailsForItemId = item.id
-                                } else if value.translation.width < 0 {
-                                    // Svep från höger till vänster för att dölja informationen
-                                    showDetailsForItemId = nil
-                                }
+
+                    // Visa detaljer om användaren sveper
+                    if showDetailsForItemId == item.id {
+                        Text(itemDetailString(for: item))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .contentShape(Rectangle())
+                .gesture(
+                    DragGesture(minimumDistance: 50, coordinateSpace: .local)
+                        .onEnded { value in
+                            if value.translation.width > 0 {
+                                // Svep från vänster till höger för att visa informationen
+                                showDetailsForItemId = item.id
+                            } else if value.translation.width < 0 {
+                                // Svep från höger till vänster för att dölja informationen
+                                showDetailsForItemId = nil
                             }
-                    )
-                    .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) {
-                            deleteItem(item: item)
-                        } label: {
-                            Label("Ta bort", systemImage: "trash")
                         }
+                )
+                .swipeActions(edge: .trailing) {
+                    Button(role: .destructive) {
+                        deleteItem(item: item)
+                    } label: {
+                        Label("Ta bort", systemImage: "trash")
                     }
                 }
             }
@@ -77,7 +66,7 @@ struct PlateView: View {
                 }
             }
         }
-        .navigationTitle("Tallriken")
+        .navigationTitle("Totalt: \(totalCarbs, specifier: "%.1f") Gk")
         .onDisappear {
             showDetailsForItemId = nil
         }
@@ -128,3 +117,4 @@ extension PlateView {
         return "\(String(format: "%.1f", inputValue))\(unitString) (\(gramsString))"
     }
 }
+
