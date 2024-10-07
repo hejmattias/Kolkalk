@@ -19,41 +19,50 @@ struct FoodListView: View {
     }
 
     var body: some View {
-        List {
-            Section(header:
+        ScrollViewReader { scrollProxy in
+            List {
+                // Sökfältet som första raden
                 TextField("Sök", text: $searchText)
                     .padding(5)
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(8)
-            ) {
-                ForEach(filteredFoodList) { food in
-                    HStack {
-                        Text(food.name)
-                        Spacer()
-                        Text("\(food.carbsPer100g ?? 0, specifier: "%.1f")/100g")
-                            .foregroundColor(.gray)
-                    }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        navigationPath.append(Route.foodDetailView(food, shouldEmptyPlate: isEmptyAndAdd))
-                    }
-                    .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) {
-                            deleteFood(food)
-                        } label: {
-                            Label("Ta bort", systemImage: "trash")
+                    .listRowInsets(EdgeInsets()) // Tar bort standardinsets
+                    .id("searchField") // Tilldela ID
+
+                // Första livsmedelsposten med ID för scrollning
+                if !filteredFoodList.isEmpty {
+                    ForEach(filteredFoodList.indices, id: \.self) { index in
+                        let food = filteredFoodList[index]
+                        HStack {
+                            Text(food.name)
+                            Spacer()
+                            Text("\(food.carbsPer100g ?? 0, specifier: "%.1f")/100g")
+                                .foregroundColor(.gray)
                         }
-                    }
-                    .swipeActions(edge: .leading) {
-                        Button {
-                            navigationPath.append(Route.editFoodItem(food))
-                        } label: {
-                            Label("Redigera", systemImage: "pencil")
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            navigationPath.append(Route.foodDetailView(food, shouldEmptyPlate: isEmptyAndAdd))
                         }
-                        .tint(.blue)
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) {
+                                deleteFood(food)
+                            } label: {
+                                Label("Ta bort", systemImage: "trash")
+                            }
+                        }
+                        .swipeActions(edge: .leading) {
+                            Button {
+                                navigationPath.append(Route.editFoodItem(food))
+                            } label: {
+                                Label("Redigera", systemImage: "pencil")
+                            }
+                            .tint(.blue)
+                        }
+                        .id(index == 0 ? "firstFood" : nil) // Tilldela ID till första posten
                     }
                 }
 
+                // Knappar för att lägga till eller radera livsmedel
                 Button(action: {
                     navigationPath.append(Route.createNewFoodItem)
                 }) {
@@ -65,7 +74,7 @@ struct FoodListView: View {
                     }
                 }
 
-                // Lägger till en knapp för att ta bort alla livsmedel
+                // Knapp för att radera alla livsmedel
                 Button(action: {
                     showDeleteConfirmation = true
                 }) {
@@ -85,6 +94,14 @@ struct FoodListView: View {
                         },
                         secondaryButton: .cancel(Text("Avbryt"))
                     )
+                }
+            }
+            .onAppear {
+                // Vänta tills listan har laddats, sedan scrolla till första livsmedelsposten
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    if !filteredFoodList.isEmpty {
+                        scrollProxy.scrollTo("firstFood", anchor: .top)
+                    }
                 }
             }
         }
