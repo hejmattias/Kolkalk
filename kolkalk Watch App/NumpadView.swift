@@ -48,17 +48,17 @@ struct NumpadView: View {
                 Spacer() // Flyttar ned back-knappen
 
                 HStack {
-                    Button(action: {
-                        self.presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Image(systemName: "arrow.left")
-                            .font(.title3)
-                    }
-                    .buttonStyle(MinimalButtonStyle())
-                    .frame(width: 30, height: 20)
-
+                    Spacer().frame(width: 40) // Flyttar ScrollView inåt med 40 punkter
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 20) {  // Lägg till mellanrum mellan upprepningarna
+                        HStack(spacing: 10) {  // Lägg till mellanrum mellan upprepningarna
+                            Text(foodName)
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .fixedSize(horizontal: true, vertical: false)
+                            Text(foodName)
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .fixedSize(horizontal: true, vertical: false)
                             Text(foodName)
                                 .font(.headline)
                                 .foregroundColor(.white)
@@ -72,20 +72,21 @@ struct NumpadView: View {
                         .frame(height: 20)
                         .background(GeometryReader { geo in
                             Color.clear.onAppear {
-                                titleWidth = geo.size.width / 2  // Dela med 2 eftersom vi har två kopior av texten
+                                titleWidth = geo.size.width / 4  // Dela med 2 eftersom vi har två kopior av texten
                             }
                         })
                     }
-                    .frame(width: geometry.size.width * 0.45)
+                    .frame(width: geometry.size.width * 0.40)
                     .clipped()
                     .onAppear {
-                        animateTitle(viewWidth: geometry.size.width * 0.45)
+                        animateTitle(viewWidth: geometry.size.width * 0.40)
                     }
-
+                    
                     Spacer()
                 }
                 .padding(.horizontal)
 
+                // Flytta ned inputfältet med extra padding
                 HStack {
                     Text("\(inputString)\(unit)")
                         .font(.system(size: 20))
@@ -107,9 +108,10 @@ struct NumpadView: View {
                         .minimumScaleFactor(0.5)
                 }
                 .padding(.horizontal)
+                .padding(.top, 20) // Justera padding efter behov
 
                 let buttonWidth = geometry.size.width / 5
-                let buttonHeight = geometry.size.height / 8
+                let buttonHeight = geometry.size.height / 10 // Minskat från /8 till /10
 
                 VStack(spacing: 4) {
                     HStack(spacing: 4) {
@@ -145,7 +147,7 @@ struct NumpadView: View {
             .edgesIgnoringSafeArea(.all)
         }
         .background(Color.black)
-        .navigationBarBackButtonHidden(true) // Tar bort standardnavigeringskrysset
+        // .navigationBarBackButtonHidden(true) // Tar bort standardnavigeringskrysset
     }
 
     func animateTitle(viewWidth: CGFloat) {
@@ -247,9 +249,15 @@ struct CustomNumpadButtonWithLongPress: View {
     let shortPressAction: () -> Void
     let longPressAction: () -> Void
 
+    @State private var isLongPressActive = false
+
     var body: some View {
         Button(action: {
-            shortPressAction()
+            if !isLongPressActive {
+                shortPressAction()
+            }
+            // Återställ långtrycksstatus här för att förhindra efterföljande korttryck.
+            isLongPressActive = false
         }) {
             Text(label)
                 .font(.title3)
@@ -257,10 +265,14 @@ struct CustomNumpadButtonWithLongPress: View {
                 .frame(width: width, height: height)
         }
         .simultaneousGesture(
-            LongPressGesture(minimumDuration: 0.5).onEnded { _ in
-                longPressAction()
-            }
+            LongPressGesture(minimumDuration: 0.5)
+                .onEnded { _ in
+                    longPressAction()
+                    // Sätt långtrycksstatus till true under själva långtryckshändelsen.
+                    isLongPressActive = true
+                }
         )
         .buttonStyle(CustomButtonStyle())
     }
 }
+

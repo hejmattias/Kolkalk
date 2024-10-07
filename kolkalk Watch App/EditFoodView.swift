@@ -43,6 +43,6 @@ struct EditFoodView: View {
 
             dismiss()  // Stäng vyn när ändringarna är sparade
         }
-        .navigationBarBackButtonHidden(true)
+       // .navigationBarBackButtonHidden(true)
     }
 }

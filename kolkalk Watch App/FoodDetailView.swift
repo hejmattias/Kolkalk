@@ -45,7 +45,7 @@ struct FoodDetailView: View {
 
                 navigationPath = NavigationPath([Route.plateView])  // Gå tillbaka till tallriken
             }
-            .navigationBarBackButtonHidden(true)
+           // .navigationBarBackButtonHidden(true)
         }
     }
 }
