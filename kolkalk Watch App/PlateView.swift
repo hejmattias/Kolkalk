@@ -114,7 +114,12 @@ extension PlateView {
             return gramsString
         }
 
-        return "\(String(format: "%.1f", inputValue))\(unitString) (\(gramsString))"
+        if unitString == "g" {
+            return "\(String(format: "%.1f", inputValue))\(unitString)"
+        } else {
+            return "\(String(format: "%.1f", inputValue))\(unitString) (\(gramsString))"
+        }
     }
+
 }
 
