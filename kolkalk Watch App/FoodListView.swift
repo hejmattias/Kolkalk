@@ -23,10 +23,6 @@ struct FoodListView: View {
             List {
                 // Sökfältet som första raden
                 TextField("Sök", text: $searchText)
-                    .padding(5)
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(8)
-                    .listRowInsets(EdgeInsets()) // Tar bort standardinsets
                     .id("searchField") // Tilldela ID
 
                 // Första livsmedelsposten med ID för scrollning
