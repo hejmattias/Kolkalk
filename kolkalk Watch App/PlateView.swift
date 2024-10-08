@@ -5,6 +5,9 @@ struct PlateView: View {
     @ObservedObject var plate: Plate
     @Binding var navigationPath: NavigationPath
     @State private var showDetailsForItemId: UUID?
+    
+    // Ny statlig variabel för bekräftelse-alert
+    @State private var showEmptyConfirmation = false
 
     var totalCarbs: Double {
         plate.items.reduce(0) { $0 + $1.totalCarbs }
@@ -55,7 +58,7 @@ struct PlateView: View {
 
             if !plate.items.isEmpty {
                 Button(action: {
-                    plate.emptyPlate()
+                    showEmptyConfirmation = true // Visa bekräftelse-alerten
                 }) {
                     HStack {
                         Spacer()
@@ -63,6 +66,15 @@ struct PlateView: View {
                             .foregroundColor(.red)
                         Spacer()
                     }
+                }
+                // Lägg till alert-modifieraren här
+                .alert("Bekräfta Töm Tallriken", isPresented: $showEmptyConfirmation) {
+                    Button("Ja", role: .destructive) {
+                        plate.emptyPlate()
+                    }
+                    Button("Avbryt", role: .cancel) { }
+                } message: {
+                    Text("Är du säker på att du vill tömma tallriken?")
                 }
             }
         }
@@ -120,6 +132,5 @@ extension PlateView {
             return "\(String(format: "%.1f", inputValue))\(unitString) (\(gramsString))"
         }
     }
-
 }
 
