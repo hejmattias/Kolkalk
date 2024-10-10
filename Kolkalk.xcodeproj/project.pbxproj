@@ -7,11 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B97C749D2CB7D26E0073AC17 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B97C749C2CB7D26E0073AC17 /* WidgetKit.framework */; };
+		B97C749F2CB7D26E0073AC17 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B97C749E2CB7D26E0073AC17 /* SwiftUI.framework */; };
+		B97C74AA2CB7D26F0073AC17 /* komplikationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B97C749B2CB7D26E0073AC17 /* komplikationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B97E03FF2CAC84D100450835 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B97E03FE2CAC84D100450835 /* WatchConnectivity.framework */; };
 		B98B3D8E2CAC176700EE7D92 /* kolkalk Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B98B3D6B2CAC176600EE7D92 /* kolkalk Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		B97C74A82CB7D26F0073AC17 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B98B3D312CAC170200EE7D92 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B97C749A2CB7D26E0073AC17;
+			remoteInfo = komplikationExtension;
+		};
 		B98B3D4B2CAC170300EE7D92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B98B3D312CAC170200EE7D92 /* Project object */;
@@ -50,6 +60,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		B97C74AF2CB7D26F0073AC17 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				B97C74AA2CB7D26F0073AC17 /* komplikationExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B98B3D922CAC176700EE7D92 /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -64,6 +85,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B97C749B2CB7D26E0073AC17 /* komplikationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = komplikationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		B97C749C2CB7D26E0073AC17 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		B97C749E2CB7D26E0073AC17 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		B97C74BD2CB7F2DB0073AC17 /* komplikationExtension.entitlements */ = {isa = PBXFileReference; explicitFileType = text; path = komplikationExtension.entitlements; sourceTree = "<group>"; };
 		B97E03FE2CAC84D100450835 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.0.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
 		B98B3D392CAC170200EE7D92 /* Kolkalk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kolkalk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B98B3D4A2CAC170300EE7D92 /* KolkalkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KolkalkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -74,6 +99,34 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		B97C74AE2CB7D26F0073AC17 /* Exceptions for "komplikation" folder in "komplikationExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = B97C749A2CB7D26E0073AC17 /* komplikationExtension */;
+		};
+		B97C74B52CB7D38A0073AC17 /* Exceptions for "kolkalk Watch App" folder in "komplikationExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Plateklassen.swift,
+			);
+			target = B97C749A2CB7D26E0073AC17 /* komplikationExtension */;
+		};
+		B97C74B92CB7EA850073AC17 /* Exceptions for "Shared" folder in "komplikationExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				FoodItem.swift,
+			);
+			target = B97C749A2CB7D26E0073AC17 /* komplikationExtension */;
+		};
+		B97C74BE2CB7F7410073AC17 /* Exceptions for "kolkalk Watch App" folder in "kolkalk Watch App" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"kolkalk Watch App.entitlements",
+			);
+			target = B98B3D6A2CAC176600EE7D92 /* kolkalk Watch App */;
+		};
 		B9A84FAA2CAEB70200DB4389 /* Exceptions for "Shared" folder in "kolkalk Watch App" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -84,6 +137,18 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		B97C74A02CB7D26E0073AC17 /* komplikation */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B97C74AE2CB7D26F0073AC17 /* Exceptions for "komplikation" folder in "komplikationExtension" target */,
+			);
+			explicitFileTypes = {
+				" komplikation.entitlements" = text;
+				Info.plist = text;
+			};
+			path = komplikation;
+			sourceTree = "<group>";
+		};
 		B98B3D3B2CAC170200EE7D92 /* Kolkalk */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Kolkalk;
@@ -101,6 +166,13 @@
 		};
 		B98B3D6C2CAC176600EE7D92 /* kolkalk Watch App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B97C74BE2CB7F7410073AC17 /* Exceptions for "kolkalk Watch App" folder in "kolkalk Watch App" target */,
+				B97C74B52CB7D38A0073AC17 /* Exceptions for "kolkalk Watch App" folder in "komplikationExtension" target */,
+			);
+			explicitFileTypes = {
+				"kolkalk Watch App.entitlements" = text;
+			};
 			path = "kolkalk Watch App";
 			sourceTree = "<group>";
 		};
@@ -118,6 +190,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				B9A84FAA2CAEB70200DB4389 /* Exceptions for "Shared" folder in "kolkalk Watch App" target */,
+				B97C74B92CB7EA850073AC17 /* Exceptions for "Shared" folder in "komplikationExtension" target */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -125,6 +198,15 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		B97C74982CB7D26E0073AC17 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B97C749F2CB7D26E0073AC17 /* SwiftUI.framework in Frameworks */,
+				B97C749D2CB7D26E0073AC17 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B98B3D362CAC170200EE7D92 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -175,6 +257,8 @@
 			isa = PBXGroup;
 			children = (
 				B97E03FE2CAC84D100450835 /* WatchConnectivity.framework */,
+				B97C749C2CB7D26E0073AC17 /* WidgetKit.framework */,
+				B97C749E2CB7D26E0073AC17 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -189,8 +273,10 @@
 				B98B3D6C2CAC176600EE7D92 /* kolkalk Watch App */,
 				B98B3D7D2CAC176700EE7D92 /* kolkalk Watch AppTests */,
 				B98B3D872CAC176700EE7D92 /* kolkalk Watch AppUITests */,
+				B97C74A02CB7D26E0073AC17 /* komplikation */,
 				B97E03FD2CAC84D100450835 /* Frameworks */,
 				B98B3D3A2CAC170200EE7D92 /* Products */,
+				B97C74BD2CB7F2DB0073AC17 /* komplikationExtension.entitlements */,
 			);
 			sourceTree = "<group>";
 		};
@@ -203,6 +289,7 @@
 				B98B3D6B2CAC176600EE7D92 /* kolkalk Watch App.app */,
 				B98B3D7A2CAC176700EE7D92 /* kolkalk Watch AppTests.xctest */,
 				B98B3D842CAC176700EE7D92 /* kolkalk Watch AppUITests.xctest */,
+				B97C749B2CB7D26E0073AC17 /* komplikationExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -210,6 +297,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		B97C749A2CB7D26E0073AC17 /* komplikationExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B97C74AB2CB7D26F0073AC17 /* Build configuration list for PBXNativeTarget "komplikationExtension" */;
+			buildPhases = (
+				B97C74972CB7D26E0073AC17 /* Sources */,
+				B97C74982CB7D26E0073AC17 /* Frameworks */,
+				B97C74992CB7D26E0073AC17 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				B97C74A02CB7D26E0073AC17 /* komplikation */,
+			);
+			name = komplikationExtension;
+			packageProductDependencies = (
+			);
+			productName = komplikationExtension;
+			productReference = B97C749B2CB7D26E0073AC17 /* komplikationExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		B98B3D382CAC170200EE7D92 /* Kolkalk */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B98B3D5E2CAC170300EE7D92 /* Build configuration list for PBXNativeTarget "Kolkalk" */;
@@ -288,10 +397,12 @@
 				B98B3D672CAC176600EE7D92 /* Sources */,
 				B98B3D682CAC176600EE7D92 /* Frameworks */,
 				B98B3D692CAC176600EE7D92 /* Resources */,
+				B97C74AF2CB7D26F0073AC17 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				B97C74A92CB7D26F0073AC17 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				B98B3D6C2CAC176600EE7D92 /* kolkalk Watch App */,
@@ -359,6 +470,9 @@
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
+					B97C749A2CB7D26E0073AC17 = {
+						CreatedOnToolsVersion = 16.0;
+					};
 					B98B3D382CAC170200EE7D92 = {
 						CreatedOnToolsVersion = 16.0;
 					};
@@ -403,11 +517,19 @@
 				B98B3D532CAC170300EE7D92 /* KolkalkUITests */,
 				B98B3D792CAC176700EE7D92 /* kolkalk Watch AppTests */,
 				B98B3D832CAC176700EE7D92 /* kolkalk Watch AppUITests */,
+				B97C749A2CB7D26E0073AC17 /* komplikationExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		B97C74992CB7D26E0073AC17 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B98B3D372CAC170200EE7D92 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -453,6 +575,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		B97C74972CB7D26E0073AC17 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B98B3D352CAC170200EE7D92 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -498,6 +627,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		B97C74A92CB7D26F0073AC17 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B97C749A2CB7D26E0073AC17 /* komplikationExtension */;
+			targetProxy = B97C74A82CB7D26F0073AC17 /* PBXContainerItemProxy */;
+		};
 		B98B3D4C2CAC170300EE7D92 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = B98B3D382CAC170200EE7D92 /* Kolkalk */;
@@ -526,6 +660,69 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		B97C74AC2CB7D26F0073AC17 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = komplikationExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ZD2P3P8L7B;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = komplikation/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = komplikation;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = MG.Kolkalk.watchkitapp.komplikation;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Debug;
+		};
+		B97C74AD2CB7D26F0073AC17 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = komplikationExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ZD2P3P8L7B;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = komplikation/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = komplikation;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = MG.Kolkalk.watchkitapp.komplikation;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Release;
+		};
 		B98B3D5C2CAC170300EE7D92 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -814,6 +1011,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = "kolkalk Watch App/kolkalk Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"kolkalk Watch App/Preview Content\"";
@@ -846,6 +1044,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = "kolkalk Watch App/kolkalk Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"kolkalk Watch App/Preview Content\"";
@@ -956,6 +1155,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		B97C74AB2CB7D26F0073AC17 /* Build configuration list for PBXNativeTarget "komplikationExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B97C74AC2CB7D26F0073AC17 /* Debug */,
+				B97C74AD2CB7D26F0073AC17 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		B98B3D342CAC170200EE7D92 /* Build configuration list for PBXProject "Kolkalk" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
