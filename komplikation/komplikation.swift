@@ -1,20 +1,35 @@
 import WidgetKit
 import SwiftUI
 
+// MARK: - ExistingComplication
+
+struct ExistingComplication: Widget {
+    let kind: String = "komplikation"
+
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: kind, provider: Provider()) { entry in
+            KomplikationEntryView(entry: entry)
+        }
+        .configurationDisplayName("Kolhydratkomplikation")
+        .description("Visar totala gram kolhydrater på tallriken.")
+        .supportedFamilies([.accessoryCircular, .accessoryRectangular, .accessoryInline, .accessoryCorner])
+    }
+}
+
 struct Provider: TimelineProvider {
-    func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), totalCarbs: 0.0)
+    func placeholder(in context: Context) -> KomplikationEntry {
+        KomplikationEntry(date: Date(), totalCarbs: 0.0)
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
+    func getSnapshot(in context: Context, completion: @escaping (KomplikationEntry) -> Void) {
         let totalCarbs = fetchTotalCarbs()
-        let entry = SimpleEntry(date: Date(), totalCarbs: totalCarbs)
+        let entry = KomplikationEntry(date: Date(), totalCarbs: totalCarbs)
         completion(entry)
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<SimpleEntry>) -> ()) {
+    func getTimeline(in context: Context, completion: @escaping (Timeline<KomplikationEntry>) -> Void) {
         let totalCarbs = fetchTotalCarbs()
-        let entry = SimpleEntry(date: Date(), totalCarbs: totalCarbs)
+        let entry = KomplikationEntry(date: Date(), totalCarbs: totalCarbs)
         let timeline = Timeline(entries: [entry], policy: .never)
         completion(timeline)
     }
@@ -32,32 +47,180 @@ struct Provider: TimelineProvider {
     }
 }
 
-struct SimpleEntry: TimelineEntry {
+struct KomplikationEntry: TimelineEntry {
     let date: Date
     let totalCarbs: Double
 }
 
-struct komplikationEntryView: View {
-    let entry: SimpleEntry
-
-    @AppStorage("totalCarbs", store: UserDefaults(suiteName: "group.mg.kolkalk")) var totalCarbs: Double = 0.0
+struct KomplikationEntryView: View {
+    let entry: KomplikationEntry
+    @Environment(\.widgetFamily) var family
 
     var body: some View {
-        Text(String(format: "%.1f gk", totalCarbs))
-            .containerBackground(.fill, for: .widget) // Korrigerat anrop
+        switch family {
+        case .accessoryCircular:
+            Text(String(format: "%.1f", entry.totalCarbs))
+                .widgetURL(URL(string: "kolkalk://FoodPlate"))
+                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+        case .accessoryCorner:
+            Text(String(format: "%.1f gk", entry.totalCarbs))
+                .widgetURL(URL(string: "kolkalk://FoodPlate"))
+                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+        case .accessoryInline:
+            Text(String(format: "Kolhydrater: %.1f gk", entry.totalCarbs))
+                .widgetURL(URL(string: "kolkalk://FoodPlate"))
+                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+        case .accessoryRectangular:
+            VStack(alignment: .leading) {
+                Text("Totalt kolhydrater")
+                    .font(.headline)
+                Text(String(format: "%.1f gram", entry.totalCarbs))
+                    .font(.body)
+            }
+            .widgetURL(URL(string: "kolkalk://FoodPlate"))
+            .containerBackground(.fill, for: .widget) // Uppdaterad rad
+        default:
+            Text("Unsupported")
+                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+        }
     }
 }
 
-@main
-struct komplikation: Widget {
-    let kind: String = "komplikation"
+// MARK: - AddFoodComplication
+
+struct AddFoodComplication: Widget {
+    let kind: String = "AddFoodComplication"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            komplikationEntryView(entry: entry)
+        StaticConfiguration(kind: kind, provider: AddFoodProvider()) { entry in
+            AddFoodEntryView(entry: entry)
         }
-        .configurationDisplayName("Kolhydratkomplikation")
-        .description("Visar totala gram kolhydrater på tallriken.")
-        .supportedFamilies([.accessoryCircular, .accessoryRectangular, .accessoryInline])
+        .configurationDisplayName("Lägg till livsmedel")
+        .description("Gå direkt till lägg till livsmedel.")
+        .supportedFamilies([.accessoryCircular, .accessoryRectangular, .accessoryInline, .accessoryCorner])
+    }
+}
+
+struct AddFoodProvider: TimelineProvider {
+    func placeholder(in context: Context) -> SimpleEntry {
+        SimpleEntry(date: Date())
+    }
+
+    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> Void) {
+        let entry = SimpleEntry(date: Date())
+        completion(entry)
+    }
+
+    func getTimeline(in context: Context, completion: @escaping (Timeline<SimpleEntry>) -> Void) {
+        let timeline = Timeline(entries: [SimpleEntry(date: Date())], policy: .never)
+        completion(timeline)
+    }
+}
+
+struct AddFoodEntryView: View {
+    var entry: SimpleEntry
+    @Environment(\.widgetFamily) var family
+
+    var body: some View {
+        switch family {
+        case .accessoryCircular:
+            Image(systemName: "plus")
+                .widgetURL(URL(string: "kolkalk://addFood"))
+                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+        case .accessoryCorner:
+            Image(systemName: "plus")
+                .widgetLabel("Lägg till")
+                .widgetURL(URL(string: "kolkalk://addFood"))
+                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+        case .accessoryInline:
+            Text("Lägg till livsmedel")
+                .widgetURL(URL(string: "kolkalk://addFood"))
+                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+        case .accessoryRectangular:
+            Text("Lägg till livsmedel")
+                .widgetURL(URL(string: "kolkalk://addFood"))
+                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+        default:
+            Text("Unsupported")
+                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+        }
+    }
+}
+
+// MARK: - EmptyAndAddFoodComplication
+
+struct EmptyAndAddFoodComplication: Widget {
+    let kind: String = "EmptyAndAddFoodComplication"
+
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: kind, provider: EmptyAndAddFoodProvider()) { entry in
+            EmptyAndAddFoodEntryView(entry: entry)
+        }
+        .configurationDisplayName("Töm och lägg till livsmedel")
+        .description("Töm tallriken och lägg till livsmedel.")
+        .supportedFamilies([.accessoryCircular, .accessoryRectangular, .accessoryInline, .accessoryCorner])
+    }
+}
+
+struct EmptyAndAddFoodProvider: TimelineProvider {
+    func placeholder(in context: Context) -> SimpleEntry {
+        SimpleEntry(date: Date())
+    }
+
+    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> Void) {
+        let entry = SimpleEntry(date: Date())
+        completion(entry)
+    }
+
+    func getTimeline(in context: Context, completion: @escaping (Timeline<SimpleEntry>) -> Void) {
+        let timeline = Timeline(entries: [SimpleEntry(date: Date())], policy: .never)
+        completion(timeline)
+    }
+}
+
+struct EmptyAndAddFoodEntryView: View {
+    var entry: SimpleEntry
+    @Environment(\.widgetFamily) var family
+
+    var body: some View {
+        switch family {
+        case .accessoryCircular:
+            Image(systemName: "trash")
+                .widgetURL(URL(string: "kolkalk://emptyAndAddFood"))
+                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+        case .accessoryCorner:
+            Image(systemName: "trash")
+                .widgetLabel("Töm & Lägg")
+                .widgetURL(URL(string: "kolkalk://emptyAndAddFood"))
+                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+        case .accessoryInline:
+            Text("Töm & Lägg till")
+                .widgetURL(URL(string: "kolkalk://emptyAndAddFood"))
+                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+        case .accessoryRectangular:
+            Text("Töm tallriken och lägg till livsmedel")
+                .widgetURL(URL(string: "kolkalk://emptyAndAddFood"))
+                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+        default:
+            Text("Unsupported")
+                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+        }
+    }
+}
+
+// MARK: - SimpleEntry
+
+struct SimpleEntry: TimelineEntry {
+    let date: Date
+}
+
+// MARK: - WidgetBundle
+
+@main
+struct KomplikationBundle: WidgetBundle {
+    var body: some Widget {
+        ExistingComplication()
+        AddFoodComplication()
+        EmptyAndAddFoodComplication()
     }
 }

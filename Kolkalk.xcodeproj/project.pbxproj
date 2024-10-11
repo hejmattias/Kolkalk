@@ -123,6 +123,7 @@
 		B97C74BE2CB7F7410073AC17 /* Exceptions for "kolkalk Watch App" folder in "kolkalk Watch App" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				info.plist,
 				"kolkalk Watch App.entitlements",
 			);
 			target = B98B3D6A2CAC176600EE7D92 /* kolkalk Watch App */;
@@ -171,6 +172,7 @@
 				B97C74B52CB7D38A0073AC17 /* Exceptions for "kolkalk Watch App" folder in "komplikationExtension" target */,
 			);
 			explicitFileTypes = {
+				info.plist = text;
 				"kolkalk Watch App.entitlements" = text;
 			};
 			path = "kolkalk Watch App";

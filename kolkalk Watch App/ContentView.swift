@@ -74,6 +74,23 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Totalt: \(totalCarbs, specifier: "%.1f") gk")
+            .onOpenURL { url in
+                handleDeepLink(url: url)
+            }
+        }
+    }
+
+    // Funktion för att hantera djupa länkar
+    func handleDeepLink(url: URL) {
+        switch url.host {
+        case "addFood":
+            navigationPath.append(Route.foodListView(isEmptyAndAdd: false))
+        case "emptyAndAddFood":
+            navigationPath.append(Route.foodListView(isEmptyAndAdd: true))
+        case "FoodPlate":
+            navigationPath.append(Route.plateView)
+        default:
+            break
         }
     }
 }
