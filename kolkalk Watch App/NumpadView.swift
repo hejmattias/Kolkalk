@@ -26,6 +26,58 @@ struct CustomButtonStyle: ButtonStyle {
     }
 }
 
+// Anpassad knappvy med dynamisk bredd och höjd
+struct CustomNumpadButton: View {
+    let label: String
+    let width: CGFloat
+    let height: CGFloat
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(label)
+                .font(.title3)
+                .frame(width: width, height: height)
+        }
+        .buttonStyle(CustomButtonStyle())
+    }
+}
+
+// Anpassad knapp med långtryck
+struct CustomNumpadButtonWithLongPress: View {
+    let label: String
+    let width: CGFloat
+    let height: CGFloat
+    let shortPressAction: () -> Void
+    let longPressAction: () -> Void
+
+    @State private var isLongPressActive = false
+
+    var body: some View {
+        Button(action: {
+            if !isLongPressActive {
+                shortPressAction()
+            }
+            // Återställ långtrycksstatus här för att förhindra efterföljande korttryck.
+            isLongPressActive = false
+        }) {
+            Text(label)
+                .font(.title3)
+                .multilineTextAlignment(.center)
+                .frame(width: width, height: height)
+        }
+        .simultaneousGesture(
+            LongPressGesture(minimumDuration: 0.5)
+                .onEnded { _ in
+                    longPressAction()
+                    // Sätt långtrycksstatus till true under själva långtryckshändelsen.
+                    isLongPressActive = true
+                }
+        )
+        .buttonStyle(CustomButtonStyle())
+    }
+}
+
 struct NumpadView: View {
     @Binding var value: Int
     @Environment(\.presentationMode) var presentationMode
@@ -49,6 +101,7 @@ struct NumpadView: View {
 
                 HStack {
                     Spacer().frame(width: 40) // Flyttar ScrollView inåt med 40 punkter
+
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 10) {  // Lägg till mellanrum mellan upprepningarna
                             Text(foodName)
@@ -72,7 +125,7 @@ struct NumpadView: View {
                         .frame(height: 20)
                         .background(GeometryReader { geo in
                             Color.clear.onAppear {
-                                titleWidth = geo.size.width / 4  // Dela med 2 eftersom vi har två kopior av texten
+                                titleWidth = geo.size.width / 4  // Dela med 4 eftersom vi har fyra kopior av texten
                             }
                         })
                     }
@@ -81,7 +134,21 @@ struct NumpadView: View {
                     .onAppear {
                         animateTitle(viewWidth: geometry.size.width * 0.40)
                     }
-                    
+                    // Applicera fade-effekten med en mask
+                    .mask(
+                        LinearGradient(
+                            gradient: Gradient(stops: [
+                                .init(color: Color.black.opacity(0), location: 0),
+                                .init(color: Color.black.opacity(1), location: 0.1),
+                                .init(color: Color.black.opacity(1), location: 0.9),
+                                .init(color: Color.black.opacity(0), location: 1)
+                            ]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                        .frame(width: geometry.size.width * 0.40, height: 20)
+                    )
+
                     Spacer()
                 }
                 .padding(.horizontal)
@@ -147,8 +214,9 @@ struct NumpadView: View {
             .edgesIgnoringSafeArea(.all)
         }
         .background(Color.black)
-        // .navigationBarBackButtonHidden(true) // Tar bort standardnavigeringskrysset
     }
+
+    // MARK: - Funktioner
 
     func animateTitle(viewWidth: CGFloat) {
         withAnimation(Animation.linear(duration: Double(titleWidth) * 0.05).repeatForever(autoreverses: false)) {
@@ -223,56 +291,3 @@ struct NumpadView: View {
         }
     }
 }
-
-// Anpassad knappvy med dynamisk bredd och höjd
-struct CustomNumpadButton: View {
-    let label: String
-    let width: CGFloat
-    let height: CGFloat
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text(label)
-                .font(.title3)
-                .frame(width: width, height: height)
-        }
-        .buttonStyle(CustomButtonStyle())
-    }
-}
-
-// Anpassad knapp med långtryck
-struct CustomNumpadButtonWithLongPress: View {
-    let label: String
-    let width: CGFloat
-    let height: CGFloat
-    let shortPressAction: () -> Void
-    let longPressAction: () -> Void
-
-    @State private var isLongPressActive = false
-
-    var body: some View {
-        Button(action: {
-            if !isLongPressActive {
-                shortPressAction()
-            }
-            // Återställ långtrycksstatus här för att förhindra efterföljande korttryck.
-            isLongPressActive = false
-        }) {
-            Text(label)
-                .font(.title3)
-                .multilineTextAlignment(.center)
-                .frame(width: width, height: height)
-        }
-        .simultaneousGesture(
-            LongPressGesture(minimumDuration: 0.5)
-                .onEnded { _ in
-                    longPressAction()
-                    // Sätt långtrycksstatus till true under själva långtryckshändelsen.
-                    isLongPressActive = true
-                }
-        )
-        .buttonStyle(CustomButtonStyle())
-    }
-}
-
