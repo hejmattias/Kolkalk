@@ -1,6 +1,6 @@
 import SwiftUI
 
-// Enum för navigeringsvägar
+// MARK: - Global Route Enum
 enum Route: Hashable {
     case plateView
     case foodListView(isEmptyAndAdd: Bool)
@@ -11,8 +11,9 @@ enum Route: Hashable {
     case importInstructions
 }
 
+// MARK: - ContentView
 struct ContentView: View {
-    @ObservedObject var plate = Plate()
+    @ObservedObject var plate = Plate.shared
     @ObservedObject var foodData = WatchViewModel.shared.foodData
     @State private var navigationPath = NavigationPath()
 
@@ -43,7 +44,7 @@ struct ContentView: View {
                     Text("Importera livsmedel från CSV")
                 }
 
-                // Ny knapp för att exportera livsmedelslistan
+                // Knapp för att exportera livsmedelslistan
                 Button(action: {
                     WatchViewModel.shared.exportFoodList()
                 }) {
@@ -80,15 +81,15 @@ struct ContentView: View {
         }
     }
 
-    // Funktion för att hantera djupa länkar
+    // MARK: - Handle Deep Link
     func handleDeepLink(url: URL) {
         switch url.host {
         case "addFood":
-            navigationPath.append(Route.foodListView(isEmptyAndAdd: false))
+            navigationPath = NavigationPath([Route.foodListView(isEmptyAndAdd: false)])
         case "emptyAndAddFood":
-            navigationPath.append(Route.foodListView(isEmptyAndAdd: true))
+            navigationPath = NavigationPath([Route.foodListView(isEmptyAndAdd: true)])
         case "FoodPlate":
-            navigationPath.append(Route.plateView)
+            navigationPath = NavigationPath([Route.plateView])
         default:
             break
         }
