@@ -61,15 +61,18 @@ struct KomplikationEntryView: View {
         case .accessoryCircular:
             Text(String(format: "%.1f", entry.totalCarbs))
                 .widgetURL(URL(string: "kolkalk://FoodPlate"))
-                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+                .widgetLabel {
+                    Text("på tallriken")
+                }
+                .containerBackground(.fill, for: .widget)
         case .accessoryCorner:
             Text(String(format: "%.1f gk", entry.totalCarbs))
                 .widgetURL(URL(string: "kolkalk://FoodPlate"))
-                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+                .containerBackground(.fill, for: .widget)
         case .accessoryInline:
             Text(String(format: "Kolhydrater: %.1f gk", entry.totalCarbs))
                 .widgetURL(URL(string: "kolkalk://FoodPlate"))
-                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+                .containerBackground(.fill, for: .widget)
         case .accessoryRectangular:
             VStack(alignment: .leading) {
                 Text("Totalt kolhydrater")
@@ -78,10 +81,10 @@ struct KomplikationEntryView: View {
                     .font(.body)
             }
             .widgetURL(URL(string: "kolkalk://FoodPlate"))
-            .containerBackground(.fill, for: .widget) // Uppdaterad rad
+            .containerBackground(.fill, for: .widget)
         default:
             Text("Unsupported")
-                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+                .containerBackground(.fill, for: .widget)
         }
     }
 }
