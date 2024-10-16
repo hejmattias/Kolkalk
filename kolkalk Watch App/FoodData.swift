@@ -38,10 +38,7 @@ class FoodData: ObservableObject {
     // Standardlivsmedel
     private var defaultFoodList: [FoodItem] {
         return [
-            FoodItem(name: "Äpple", carbsPer100g: 11.4, grams: 0, gramsPerDl: 65, isDefault: true),
-            FoodItem(name: "Fiskpinnar", carbsPer100g: 10, grams: 0, gramsPerDl: 50, styckPerGram: 100, isDefault: true),
-            FoodItem(name: "Pinnfiskar", carbsPer100g: 10, grams: 0, styckPerGram: 100, isDefault: true),
-            FoodItem(name: "Banan", carbsPer100g: 22.8, grams: 0, gramsPerDl: 85, isDefault: true)
+            FoodItem(name: "Annat", carbsPer100g: 100, grams: 0, gramsPerDl: 0, isDefault: true),
         ]
     }
 
