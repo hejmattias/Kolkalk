@@ -13,6 +13,7 @@ struct CreateFoodFromPlateView: View {
     @State private var calculatedCarbsPer100g: Double?
     @State private var showingTotalWeightInput = false
     @State private var showingContainerWeightInput = false
+    @State private var showingChooseContainer = false // Ny state-variabel
 
     var totalWeight: Double {
         Double(totalWeightString.replacingOccurrences(of: ",", with: ".")) ?? 0
@@ -43,6 +44,16 @@ struct CreateFoodFromPlateView: View {
                             showingContainerWeightInput = true
                         }
                     }
+                    
+                    // Ny HStack för "Välj kärl"
+                    HStack {
+                        Spacer()
+                        Button("Välj kärl") {
+                            showingChooseContainer = true
+                        }
+                        .foregroundColor(.blue)
+                        Spacer()
+                    }
                 }
 
                 if let carbsPer100g = calculatedCarbsPer100g {
@@ -63,6 +74,9 @@ struct CreateFoodFromPlateView: View {
         }
         .sheet(isPresented: $showingContainerWeightInput) {
             InputValueDoubleView(value: $containerWeightString, title: "Ange kärlets vikt")
+        }
+        .sheet(isPresented: $showingChooseContainer) { // Presentera ChooseContainerView
+            ChooseContainerView(selectedWeight: $containerWeightString)
         }
     }
 
