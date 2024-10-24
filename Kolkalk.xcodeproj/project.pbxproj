@@ -99,6 +99,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		B94FFE872CCA28B4002BF504 /* Exceptions for "Kolkalk" folder in "Kolkalk" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = B98B3D382CAC170200EE7D92 /* Kolkalk */;
+		};
 		B97C74AE2CB7D26F0073AC17 /* Exceptions for "komplikation" folder in "komplikationExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -116,6 +123,7 @@
 		B97C74B92CB7EA850073AC17 /* Exceptions for "Shared" folder in "komplikationExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Container.swift,
 				FoodItem.swift,
 			);
 			target = B97C749A2CB7D26E0073AC17 /* komplikationExtension */;
@@ -131,6 +139,7 @@
 		B9A84FAA2CAEB70200DB4389 /* Exceptions for "Shared" folder in "kolkalk Watch App" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Container.swift,
 				FoodItem.swift,
 			);
 			target = B98B3D6A2CAC176600EE7D92 /* kolkalk Watch App */;
@@ -152,6 +161,9 @@
 		};
 		B98B3D3B2CAC170200EE7D92 /* Kolkalk */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B94FFE872CCA28B4002BF504 /* Exceptions for "Kolkalk" folder in "Kolkalk" target */,
+			);
 			path = Kolkalk;
 			sourceTree = "<group>";
 		};
@@ -852,6 +864,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Kolkalk/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -891,6 +904,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Kolkalk/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

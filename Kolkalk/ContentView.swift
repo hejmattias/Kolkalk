@@ -55,6 +55,17 @@ struct ContentView: View {
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
+                // Inuti VStack i ContentView.swift
+
+                NavigationLink(destination: ContainerListView()) {
+                    Text("Hantera Kärl")
+                        .font(.title2)
+                        .padding()
+                        .background(Color.orange)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+
 
                 Spacer()
             }
