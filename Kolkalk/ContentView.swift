@@ -82,6 +82,15 @@ struct ContentView: View {
                 Spacer()
             }
             .navigationTitle("Kolkalk iOS App")
+            .onAppear {
+                    HealthKitManager.shared.requestAuthorization { success, error in
+                        if let error = error {
+                            print("HealthKit Authorization Failed: \(error.localizedDescription)")
+                        } else {
+                            print("HealthKit Authorization Succeeded")
+                        }
+                    }
+                }
         }
     }
 }

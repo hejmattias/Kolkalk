@@ -126,6 +126,7 @@
 			membershipExceptions = (
 				Container.swift,
 				FoodItem.swift,
+				HealthKitManager.swift,
 			);
 			target = B97C749A2CB7D26E0073AC17 /* komplikationExtension */;
 		};
@@ -142,6 +143,7 @@
 			membershipExceptions = (
 				Container.swift,
 				FoodItem.swift,
+				HealthKitManager.swift,
 			);
 			target = B98B3D6A2CAC176600EE7D92 /* kolkalk Watch App */;
 		};
@@ -1040,6 +1042,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = kolkalk;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = MG.Kolkalk;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
@@ -1073,6 +1077,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = kolkalk;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = MG.Kolkalk;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;

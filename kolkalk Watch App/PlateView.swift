@@ -1,12 +1,20 @@
+// kolkalk Watch App/PlateView.swift
+
 import Foundation
 import SwiftUI
+import HealthKit // Importera HealthKit
 
 struct PlateView: View {
     @ObservedObject var plate: Plate
     @Binding var navigationPath: NavigationPath
     @State private var showDetailsForItemId: UUID?
     
-    // Ny statlig variabel för bekräftelse-alert
+    // State-variabler för HealthKit-loggning
+    @State private var isLogging = false
+    @State private var logSuccess = false
+    @State private var showLogAlert = false
+
+    // State-variabel för bekräftelse-alert
     @State private var showEmptyConfirmation = false
 
     var totalCarbs: Double {
@@ -27,7 +35,7 @@ struct PlateView: View {
                         Text("\(item.totalCarbs, specifier: "%.1f") gk")
                     }
 
-                    // Visa detaljer om användaren sveper
+                    // Visa detaljer när användaren sveper
                     if showDetailsForItemId == item.id {
                         Text(itemDetailString(for: item))
                             .font(.caption)
@@ -39,10 +47,10 @@ struct PlateView: View {
                     DragGesture(minimumDistance: 50, coordinateSpace: .local)
                         .onEnded { value in
                             if value.translation.width > 0 {
-                                // Svep från vänster till höger för att visa informationen
+                                // Svep från vänster till höger för att visa information
                                 showDetailsForItemId = item.id
                             } else if value.translation.width < 0 {
-                                // Svep från höger till vänster för att dölja informationen
+                                // Svep från höger till vänster för att dölja information
                                 showDetailsForItemId = nil
                             }
                         }
@@ -58,7 +66,7 @@ struct PlateView: View {
 
             if !plate.items.isEmpty {
                 Button(action: {
-                    showEmptyConfirmation = true // Visa bekräftelse-alerten
+                    showEmptyConfirmation = true // Visa bekräftelse-alert
                 }) {
                     HStack {
                         Spacer()
@@ -67,7 +75,6 @@ struct PlateView: View {
                         Spacer()
                     }
                 }
-                // Lägg till alert-modifieraren här
                 .alert("Bekräfta Töm Tallriken", isPresented: $showEmptyConfirmation) {
                     Button("Ja", role: .destructive) {
                         plate.emptyPlate()
@@ -76,17 +83,48 @@ struct PlateView: View {
                 } message: {
                     Text("Är du säker på att du vill tömma tallriken?")
                 }
+
+                // "Logga till Apple Hälsa"-knappen
+                Button(action: {
+                    logToHealth()
+                }) {
+                    HStack {
+                        Spacer()
+                        Text("Logga till Apple Hälsa")
+                            .foregroundColor(.blue)
+                        Spacer()
+                    }
+                }
+                .disabled(isLogging)
+            } else {
+                // Visa meddelande om tallriken är tom
+                Text("Tallriken är tom")
+                    .foregroundColor(.gray)
             }
         }
-        .navigationTitle("Totalt: \(totalCarbs, specifier: "%.1f") Gk")
+        .navigationTitle("Totalt: \(totalCarbs, specifier: "%.1f") gk")
         .onDisappear {
             showDetailsForItemId = nil
         }
+        .alert(isPresented: $showLogAlert) {
+            if logSuccess {
+                return Alert(
+                    title: Text("Lyckades"),
+                    message: Text("Data har loggats till Apple Hälsa."),
+                    dismissButton: .default(Text("OK"))
+                )
+            } else {
+                return Alert(
+                    title: Text("Misslyckades"),
+                    message: Text("Kunde inte logga data till Apple Hälsa."),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
+        }
     }
-}
 
-// Extension för hjälpfunktioner
-extension PlateView {
+    // MARK: - Hjälpmetoder
+
     private func deleteItem(item: FoodItem) {
         if let index = plate.items.firstIndex(where: { $0.id == item.id }) {
             plate.items.remove(at: index)
@@ -132,5 +170,30 @@ extension PlateView {
             return "\(String(format: "%.1f", inputValue))\(unitString) (\(gramsString))"
         }
     }
-}
 
+    // Funktion för att logga till HealthKit
+    private func logToHealth() {
+        isLogging = true
+
+        // Skapa metadata med livsmedel och mängder
+        let foodDetails = plate.items.map { item in
+            "\(item.name): \(item.formattedDetail())"
+        }.joined(separator: "; ")
+
+        let metadata = [
+            HKMetadataKeyFoodType: foodDetails
+        ]
+
+        HealthKitManager.shared.logCarbohydrates(totalCarbs: totalCarbs, metadata: metadata) { success, error in
+            DispatchQueue.main.async {
+                self.isLogging = false
+                self.logSuccess = success
+                self.showLogAlert = true
+
+                if let error = error {
+                    print("Fel vid loggning till HealthKit: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+}
