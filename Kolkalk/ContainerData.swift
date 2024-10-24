@@ -1,11 +1,3 @@
-//
-//  ContainerData.swift
-//  Kolkalk
-//
-//  Created by Mattias Göransson on 2024-10-24.
-//
-
-
 // Kolkalk/ContainerData.swift
 
 import Foundation

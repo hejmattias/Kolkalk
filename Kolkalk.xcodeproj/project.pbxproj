@@ -103,6 +103,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Kolkalk.entitlements,
 			);
 			target = B98B3D382CAC170200EE7D92 /* Kolkalk */;
 		};
@@ -164,6 +165,10 @@
 			exceptions = (
 				B94FFE872CCA28B4002BF504 /* Exceptions for "Kolkalk" folder in "Kolkalk" target */,
 			);
+			explicitFileTypes = {
+				Info.plist = text;
+				Kolkalk.entitlements = text;
+			};
 			path = Kolkalk;
 			sourceTree = "<group>";
 		};

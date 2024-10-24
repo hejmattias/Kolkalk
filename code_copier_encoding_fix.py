@@ -40,10 +40,19 @@ def copy_to_clipboard(text):
     pyperclip.copy(text)
     print("Koden har kopierats till urklipp!")
 
+def main():
+    while True:
+        # Hämta katalogvägen där skriptet är placerat
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+        
+        # Läs in textfiler i samma katalog och undermappar och kopiera koden till urklipp
+        code = read_files_in_directory(script_directory)
+        copy_to_clipboard(code)
+        
+        # Fråga användaren om de vill köra skriptet igen
+        answer = input("Vill du köra skriptet igen? (j/n): ")
+        if answer.lower() != 'j':
+            break
+
 if __name__ == "__main__":
-    # Hämta katalogvägen där skriptet är placerat
-    script_directory = os.path.dirname(os.path.abspath(__file__))
-    
-    # Läs in textfiler i samma katalog och undermappar och kopiera koden till urklipp
-    code = read_files_in_directory(script_directory)
-    copy_to_clipboard(code)
+    main()

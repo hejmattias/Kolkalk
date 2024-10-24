@@ -11,7 +11,6 @@ enum Route: Hashable {
     case importInstructions
 }
 
-// MARK: - ContentView
 struct ContentView: View {
     @ObservedObject var plate = Plate.shared
     @ObservedObject var foodData = WatchViewModel.shared.foodData

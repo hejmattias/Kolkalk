@@ -1,11 +1,3 @@
-//
-//  ContainerListView.swift
-//  Kolkalk
-//
-//  Created by Mattias Göransson on 2024-10-24.
-//
-
-
 // Kolkalk/ContainerListView.swift
 
 import SwiftUI
@@ -19,10 +11,26 @@ struct ContainerListView: View {
         List {
             ForEach(containerData.containerList) { container in
                 HStack {
-                    Text(container.name)
+                    if let imageData = container.imageData, let uiImage = UIImage(data: imageData) {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 50, height: 50)
+                    } else {
+                        // Placeholder-bild
+                        Image(systemName: "photo")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 50, height: 50)
+                            .foregroundColor(.gray)
+                    }
+
+                    VStack(alignment: .leading) {
+                        Text(container.name)
+                        Text("\(container.weight, specifier: "%.0f") g")
+                            .foregroundColor(.gray)
+                    }
                     Spacer()
-                    Text("\(container.weight, specifier: "%.0f") g")
-                        .foregroundColor(.gray)
                 }
                 .contentShape(Rectangle())
                 .onTapGesture {
@@ -55,3 +63,4 @@ struct ContainerListView: View {
         }
     }
 }
+

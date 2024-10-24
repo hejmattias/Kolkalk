@@ -1,37 +1,73 @@
+// kolkalk Watch App/WatchViewModel.swift
+
 import Foundation
 import WatchConnectivity
+import os.log
 
 class WatchViewModel: NSObject, ObservableObject, WCSessionDelegate {
     static let shared = WatchViewModel()
     @Published var foodData = FoodData()
+    @Published var containerData = WatchContainerData.shared
 
     override private init() {
         super.init()
         if WCSession.isSupported() {
-            WCSession.default.delegate = self
-            WCSession.default.activate()
+            let session = WCSession.default
+            session.delegate = self
+            session.activate()
         }
     }
 
     // Funktion för att exportera livsmedelslistan till iOS-appen
     func exportFoodList() {
+        let foodListData = self.foodData.foodList.map { foodItem -> [String: Any] in
+            return [
+                "id": foodItem.id.uuidString,
+                "name": foodItem.name,
+                "carbsPer100g": foodItem.carbsPer100g ?? 0.0,
+                "gramsPerDl": foodItem.gramsPerDl ?? 0.0,
+                "styckPerGram": foodItem.styckPerGram ?? 0.0
+            ]
+        }
+        let message = ["foodList": foodListData]
         if WCSession.default.isReachable {
-            // Konvertera livsmedelslistan till ett format som kan skickas
-            let foodListData = foodData.foodList.map { foodItem -> [String: Any] in
-                return [
-                    "id": foodItem.id.uuidString,
-                    "name": foodItem.name,
-                    "carbsPer100g": foodItem.carbsPer100g ?? 0.0,
-                    "gramsPerDl": foodItem.gramsPerDl ?? 0.0,
-                    "styckPerGram": foodItem.styckPerGram ?? 0.0
-                ]
-            }
-            let message = ["foodList": foodListData]
-            WCSession.default.sendMessage(message, replyHandler: nil) { error in
-                print("Fel vid skickande av livsmedelslista: \(error.localizedDescription)")
-            }
+            WCSession.default.sendMessage(message, replyHandler: nil, errorHandler: { error in
+                os_log("Watch: Error sending food list: %@", error.localizedDescription)
+            })
+            os_log("Watch: Sent food list to iOS via sendMessage")
         } else {
-            print("iOS-appen är inte nåbar")
+            os_log("Watch: iOS is not reachable")
+        }
+    }
+
+    // MARK: - WCSessionDelegate
+
+    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+        if let error = error {
+            os_log("WCSession aktivering misslyckades: %@", error.localizedDescription)
+        } else {
+            os_log("WCSession aktiverad med state: %d", activationState.rawValue)
+        }
+    }
+
+    func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
+        DispatchQueue.main.async {
+            os_log("Watch: Received message: %@", message)
+            if let requestFoodList = message["requestFoodList"] as? Bool, requestFoodList {
+                os_log("Watch: Received request for food list via sendMessage")
+                let foodListData = self.foodData.foodList.map { foodItem -> [String: Any] in
+                    return [
+                        "id": foodItem.id.uuidString,
+                        "name": foodItem.name,
+                        "carbsPer100g": foodItem.carbsPer100g ?? 0.0,
+                        "gramsPerDl": foodItem.gramsPerDl ?? 0.0,
+                        "styckPerGram": foodItem.styckPerGram ?? 0.0
+                    ]
+                }
+                let response = ["foodList": foodListData]
+                replyHandler(response)
+                os_log("Watch: Sent food list to iOS via replyHandler")
+            }
         }
     }
 
@@ -57,11 +93,5 @@ class WatchViewModel: NSObject, ObservableObject, WCSessionDelegate {
         return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
 
-    // WCSessionDelegate
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) { }
-
-    // Andra nödvändiga WCSessionDelegate-metoder
-    func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
-        // Hantera inkommande meddelanden om det behövs
-    }
+    // Om du behöver implementera andra delegate-metoder, lägg till dem här
 }

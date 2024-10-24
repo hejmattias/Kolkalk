@@ -2,6 +2,7 @@
 
 import Foundation
 import WatchConnectivity
+import SwiftUI
 
 class WatchContainerData: NSObject, ObservableObject, WCSessionDelegate {
     static let shared = WatchContainerData()
@@ -53,7 +54,7 @@ class WatchContainerData: NSObject, ObservableObject, WCSessionDelegate {
         }
     }
 
-    // Ta bort dessa metoder eftersom de är otillgängliga i nyare versioner av watchOS
+    // Om du har dessa metoder, ta bort dem eftersom de är otillgängliga i nyare watchOS-versioner
     /*
     func sessionDidBecomeInactive(_ session: WCSession) {}
 

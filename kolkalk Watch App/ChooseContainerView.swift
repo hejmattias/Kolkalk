@@ -10,31 +10,39 @@ struct ChooseContainerView: View {
 
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(spacing: 20) {
-                    ForEach(containerData.containerList) { container in
-                        Button(action: {
-                            selectedWeight = String(container.weight)
-                            dismiss()
-                        }) {
-                            HStack {
-                                Image(systemName: "square")
+            List {
+                ForEach(containerData.containerList) { container in
+                    Button(action: {
+                        selectedWeight = String(container.weight)
+                        dismiss()
+                    }) {
+                        HStack {
+                            if let imageData = container.imageData, let uiImage = UIImage(data: imageData) {
+                                Image(uiImage: uiImage)
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 50, height: 50)
-                                Text(container.name)
-                                    .font(.headline)
-                                Spacer()
-                                Text("\(container.weight, specifier: "%.0f") g")
+                            } else {
+                                // Placeholder-bild
+                                Image(systemName: "photo")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 50, height: 50)
                                     .foregroundColor(.gray)
                             }
-                            .padding()
-                            .background(Color.gray.opacity(0.2))
-                            .cornerRadius(10)
+
+                            VStack(alignment: .leading) {
+                                Text(container.name)
+                                    .font(.headline)
+                                Text("\(container.weight, specifier: "%.0f") g")
+                                    .foregroundColor(.gray)
+                                    .font(.subheadline)
+                            }
+                            Spacer()
                         }
+                        .padding(.vertical, 5)
                     }
                 }
-                .padding()
             }
             .navigationTitle("Välj Kärl")
             .toolbar {
@@ -44,10 +52,9 @@ struct ChooseContainerView: View {
                     }
                 }
             }
-        }
-        .onAppear {
-            containerData.loadFromUserDefaults()
+            .onAppear {
+                containerData.loadFromUserDefaults()
+            }
         }
     }
 }
-
