@@ -51,7 +51,6 @@ struct AddEditContainerView: View {
                 },
                 trailing: Button("Spara") {
                     saveContainer()
-                    presentationMode.wrappedValue.dismiss()
                 }
                 .disabled(name.isEmpty || weightString.isEmpty)
             )
@@ -61,6 +60,9 @@ struct AddEditContainerView: View {
                     weightString = String(container.weight)
                     if let imageData = container.imageData, let uiImage = UIImage(data: imageData) {
                         selectedImage = uiImage
+                        print("Bildstorlek: \(uiImage.size)") // För felsökning
+                    } else {
+                        print("Kunde inte ladda bilden.")
                     }
                 }
             }
@@ -73,33 +75,46 @@ struct AddEditContainerView: View {
     func saveContainer() {
         guard let weight = Double(weightString.replacingOccurrences(of: ",", with: ".")) else { return }
 
-        var imageData: Data? = nil
-        if let selectedImage = selectedImage {
-            let resizedImage = selectedImage.resize(toWidth: 200) // Anpassa storleken vid behov
-            imageData = resizedImage.jpegData(compressionQuality: 0.8)
-        }
+        // Flytta bildbehandlingen till en bakgrundstråd
+        DispatchQueue.global(qos: .userInitiated).async {
+            var imageData: Data? = nil
+            if let selectedImage = selectedImage {
+                let resizedImage = selectedImage.resize(toWidth: 200) // Anpassa storleken vid behov
+                imageData = resizedImage.jpegData(compressionQuality: 0.8)
+            }
 
-        if let container = containerToEdit {
-            var updatedContainer = container
-            updatedContainer.name = name
-            updatedContainer.weight = weight
-            updatedContainer.imageData = imageData
-            containerData.updateContainer(updatedContainer)
-        } else {
-            let newContainer = Container(name: name, weight: weight, imageData: imageData)
-            containerData.addContainer(newContainer)
+            // Uppdatera UI och spara data på huvudtråden
+            DispatchQueue.main.async {
+                if let container = containerToEdit {
+                    var updatedContainer = container
+                    updatedContainer.name = name
+                    updatedContainer.weight = weight
+                    updatedContainer.imageData = imageData
+                    containerData.updateContainer(updatedContainer)
+                } else {
+                    let newContainer = Container(name: name, weight: weight, imageData: imageData)
+                    containerData.addContainer(newContainer)
+                }
+
+                presentationMode.wrappedValue.dismiss()
+            }
         }
     }
 }
 
-// Extension för att ändra storlek på bilder
+// Uppdaterad extension för att ändra storlek på bilder
 extension UIImage {
     func resize(toWidth width: CGFloat) -> UIImage {
-        let canvasSize = CGSize(width: width, height: CGFloat(ceil(width/size.width * size.height)))
+        guard size.width > 0 && size.height > 0 else {
+            print("Fel: Bildens storlek är 0")
+            return self
+        }
+        let scaleFactor = width / size.width
+        let newHeight = size.height * scaleFactor
+        let canvasSize = CGSize(width: width, height: newHeight)
         UIGraphicsBeginImageContextWithOptions(canvasSize, false, scale)
         defer { UIGraphicsEndImageContext() }
-        draw(in: CGRect(origin: .zero, size: canvasSize))
+        self.draw(in: CGRect(origin: .zero, size: canvasSize))
         return UIGraphicsGetImageFromCurrentImageContext() ?? self
     }
 }
-
