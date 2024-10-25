@@ -1,3 +1,5 @@
+// kolkalk Watch App/ContentView.swift
+
 import SwiftUI
 
 // MARK: - Global Route Enum
@@ -9,6 +11,7 @@ enum Route: Hashable {
     case createNewFoodItem
     case editFoodItem(FoodItem)
     case importInstructions
+    case insulinLoggingView // Nytt fall för insulinloggning
 }
 
 struct ContentView: View {
@@ -43,6 +46,11 @@ struct ContentView: View {
                     Text("Importera livsmedel från CSV")
                 }
 
+                // Knapp för att logga insulin till Apple Hälsa
+                NavigationLink(value: Route.insulinLoggingView) {
+                    Text("Logga insulin till Apple Hälsa")
+                }
+
                 // Knapp för att exportera livsmedelslistan
                 Button(action: {
                     WatchViewModel.shared.exportFoodList()
@@ -71,6 +79,8 @@ struct ContentView: View {
                     EditFoodItemView(food: food, foodData: foodData, navigationPath: $navigationPath)
                 case .importInstructions:
                     ImportInstructionsView()
+                case .insulinLoggingView:
+                    InsulinLoggingView()
                 }
             }
             .navigationTitle("Totalt: \(totalCarbs, specifier: "%.1f") gk")
@@ -94,3 +104,4 @@ struct ContentView: View {
         }
     }
 }
+

@@ -11,9 +11,8 @@ struct PlateView: View {
     
     // State-variabler för HealthKit-loggning
     @State private var isLogging = false
-    // Ta bort logSuccess och showLogAlert, vi kommer använda logAlert istället
-    @State private var logAlert: LogAlert? // Nytt
-
+    @State private var logAlert: LogAlert?
+    
     // State-variabel för bekräftelse-alert
     @State private var showEmptyConfirmation = false
 
@@ -63,7 +62,6 @@ struct PlateView: View {
                                 // Svep från vänster till höger för att visa information
                                 showDetailsForItemId = item.id
                             } else if value.translation.width < 0 {
-                                // Svep från höger till vänster för att dölja information
                                 showDetailsForItemId = nil
                             }
                         }
@@ -114,6 +112,18 @@ struct PlateView: View {
                 Text("Tallriken är tom")
                     .foregroundColor(.gray)
             }
+
+            // Knapp för att logga insulin till Apple Hälsa
+            Button(action: {
+                navigationPath.append(Route.insulinLoggingView)
+            }) {
+                HStack {
+                    Spacer()
+                    Text("Logga insulin till Apple Hälsa")
+                        .foregroundColor(.blue)
+                    Spacer()
+                }
+            }
         }
         .navigationTitle("Totalt: \(totalCarbs, specifier: "%.1f") gk")
         .onDisappear {
@@ -123,9 +133,7 @@ struct PlateView: View {
             Alert(
                 title: Text(alert.title),
                 message: Text(alert.message),
-                dismissButton: .default(Text("OK")) {
-                    // Inga ytterligare åtgärder behövs här, alerten avfärdas automatiskt
-                }
+                dismissButton: .default(Text("OK"))
             )
         }
     }

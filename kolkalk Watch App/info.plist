@@ -50,10 +50,10 @@
         <string>watch-companion</string>
     </array>
 <key>NSHealthShareUsageDescription</key>
-<string>Appen behöver läsa data från Apple Hälsa för att visa kolhydrater.</string>
+<string>Appen behöver läsa data från Apple Hälsa för att visa kolhydrater och insulin.</string>
 
 <key>NSHealthUpdateUsageDescription</key>
-<string>Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.</string>
+<string>Appen behöver skriva data till Apple Hälsa för att logga kolhydrater och insulin.</string>
 
     <!-- Other configurations (if any) -->
     <!-- ... -->
