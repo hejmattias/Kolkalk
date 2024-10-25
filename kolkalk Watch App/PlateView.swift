@@ -11,14 +11,21 @@ struct PlateView: View {
     
     // State-variabler för HealthKit-loggning
     @State private var isLogging = false
-    @State private var logSuccess = false
-    @State private var showLogAlert = false
+    // Ta bort logSuccess och showLogAlert, vi kommer använda logAlert istället
+    @State private var logAlert: LogAlert? // Nytt
 
     // State-variabel för bekräftelse-alert
     @State private var showEmptyConfirmation = false
 
     var totalCarbs: Double {
         plate.items.reduce(0) { $0 + $1.totalCarbs }
+    }
+    
+    // Struktur för att hantera alerten
+    struct LogAlert: Identifiable {
+        var id = UUID()
+        var title: String
+        var message: String
     }
 
     var body: some View {
@@ -27,9 +34,15 @@ struct PlateView: View {
                 VStack(alignment: .leading) {
                     HStack {
                         NavigationLink(destination: EditFoodView(plate: plate, item: item)) {
-                            Text(item.name)
-                                .font(.body)
-                                .foregroundColor(.primary)
+                            HStack {
+                                Text(item.name)
+                                    .font(.body)
+                                    .foregroundColor(.primary)
+                                if item.hasBeenLogged {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.green)
+                                }
+                            }
                         }
                         Spacer()
                         Text("\(item.totalCarbs, specifier: "%.1f") gk")
@@ -95,7 +108,7 @@ struct PlateView: View {
                         Spacer()
                     }
                 }
-                .disabled(isLogging)
+                .disabled(isLogging || plate.items.allSatisfy { $0.hasBeenLogged })
             } else {
                 // Visa meddelande om tallriken är tom
                 Text("Tallriken är tom")
@@ -106,20 +119,14 @@ struct PlateView: View {
         .onDisappear {
             showDetailsForItemId = nil
         }
-        .alert(isPresented: $showLogAlert) {
-            if logSuccess {
-                return Alert(
-                    title: Text("Lyckades"),
-                    message: Text("Data har loggats till Apple Hälsa."),
-                    dismissButton: .default(Text("OK"))
-                )
-            } else {
-                return Alert(
-                    title: Text("Misslyckades"),
-                    message: Text("Kunde inte logga data till Apple Hälsa."),
-                    dismissButton: .default(Text("OK"))
-                )
-            }
+        .alert(item: $logAlert) { alert in
+            Alert(
+                title: Text(alert.title),
+                message: Text(alert.message),
+                dismissButton: .default(Text("OK")) {
+                    // Inga ytterligare åtgärder behövs här, alerten avfärdas automatiskt
+                }
+            )
         }
     }
 
@@ -175,8 +182,19 @@ struct PlateView: View {
     private func logToHealth() {
         isLogging = true
 
+        // Filtrera ut livsmedel som inte har loggats
+        let itemsToLog = plate.items.filter { !$0.hasBeenLogged }
+
+        guard !itemsToLog.isEmpty else {
+            isLogging = false
+            self.logAlert = LogAlert(title: "Inget att logga", message: "Det finns inga nya livsmedel att logga.")
+            return
+        }
+
+        let totalCarbsToLog = itemsToLog.reduce(0) { $0 + $1.totalCarbs }
+
         // Skapa metadata med livsmedel och mängder
-        let foodDetails = plate.items.map { item in
+        let foodDetails = itemsToLog.map { item in
             "\(item.name): \(item.formattedDetail())"
         }.joined(separator: "; ")
 
@@ -184,11 +202,22 @@ struct PlateView: View {
             HKMetadataKeyFoodType: foodDetails
         ]
 
-        HealthKitManager.shared.logCarbohydrates(totalCarbs: totalCarbs, metadata: metadata) { success, error in
+        HealthKitManager.shared.logCarbohydrates(totalCarbs: totalCarbsToLog, metadata: metadata) { success, error in
             DispatchQueue.main.async {
                 self.isLogging = false
-                self.logSuccess = success
-                self.showLogAlert = true
+
+                if success {
+                    // Uppdatera hasBeenLogged för de loggade livsmedlen
+                    for index in plate.items.indices {
+                        if !plate.items[index].hasBeenLogged {
+                            plate.items[index].hasBeenLogged = true
+                        }
+                    }
+                    plate.saveToUserDefaults()
+                    self.logAlert = LogAlert(title: "Lyckades", message: "Nya livsmedel har loggats till Apple Hälsa.")
+                } else {
+                    self.logAlert = LogAlert(title: "Fel", message: "Kunde inte logga till Apple Hälsa.")
+                }
 
                 if let error = error {
                     print("Fel vid loggning till HealthKit: \(error.localizedDescription)")
@@ -197,3 +226,4 @@ struct PlateView: View {
         }
     }
 }
+
