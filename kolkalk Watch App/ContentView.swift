@@ -42,22 +42,14 @@ struct ContentView: View {
                     Text("Tallrik till livsmedel")
                 }
 
-                NavigationLink(value: Route.importInstructions) {
-                    Text("Importera livsmedel från CSV")
-                }
+
 
                 // Knapp för att logga insulin till Apple Hälsa
                 NavigationLink(value: Route.insulinLoggingView) {
                     Text("Logga insulin till Apple Hälsa")
                 }
 
-                // Knapp för att exportera livsmedelslistan
-                Button(action: {
-                    WatchViewModel.shared.exportFoodList()
-                }) {
-                    Text("Exportera livsmedelslista")
-                        .foregroundColor(.blue)
-                }
+            
             }
             .onAppear {
                 plate.loadFromUserDefaults()
