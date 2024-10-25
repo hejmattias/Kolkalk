@@ -226,21 +226,31 @@ struct NumpadView: View {
 
     func toggleUnit() {
         if unit == "g" {
-            if gramsPerDl != nil {
+            // Kontrollera om gramsPerDl inte är nil och inte är 0
+            if let grams = gramsPerDl, grams != 0 {
                 unit = "dl"
-            } else if styckPerGram != nil {
+            }
+            // Om ovanstående inte gäller, kontrollera styckPerGram
+            else if let styck = styckPerGram, styck != 0 {
                 unit = "st"
             }
-        } else if unit == "dl" {
-            if styckPerGram != nil {
+        }
+        else if unit == "dl" {
+            // Kontrollera om styckPerGram inte är nil och inte är 0
+            if let styck = styckPerGram, styck != 0 {
                 unit = "st"
-            } else {
+            }
+            // Om ovanstående inte gäller, sätt enheten tillbaka till "g"
+            else {
                 unit = "g"
             }
-        } else {
+        }
+        else {
+            // Om enheten inte är "g" eller "dl", sätt den till "g"
             unit = "g"
         }
     }
+
 
     func calculatedCarbs() -> Double {
         let inputValue = Double(inputString.replacingOccurrences(of: ",", with: ".")) ?? 0
