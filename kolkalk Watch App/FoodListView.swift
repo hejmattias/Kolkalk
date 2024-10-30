@@ -109,7 +109,9 @@ struct FoodListView: View {
             .onAppear {
                 // Vänta tills listan har laddats, sedan scrolla till favoritväxlingen
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    scrollProxy.scrollTo("favoritesToggle", anchor: .top)
+                    if !filteredFoodList.isEmpty {
+                        scrollProxy.scrollTo("firstFood", anchor: .top)
+                    }
                 }
             }
         }
