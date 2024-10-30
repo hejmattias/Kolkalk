@@ -7,8 +7,12 @@
 		<string>fetch</string>
 		<string>bluetooth-central</string>
 	</array>
+ <key>NSHealthShareUsageDescription</key>
+<string>Appen behöver läsa data från Apple Hälsa för att visa kolhydrater och insulin.</string>
+
+<key>NSHealthUpdateUsageDescription</key>
+<string>Appen behöver skriva data till Apple Hälsa för att logga kolhydrater och insulin.</string>
  <key>NSPhotoLibraryUsageDescription</key>
- 
 <string>Appen behöver åtkomst till ditt fotobibliotek för att välja bilder till kärl.</string>
  <key>UIFileSharingEnabled</key>
     <true/>

@@ -1,7 +1,6 @@
-// kolkalk Watch App/WatchViewModel.swift
-
 import Foundation
 import WatchConnectivity
+import SwiftUI
 import os.log
 
 class WatchViewModel: NSObject, ObservableObject, WCSessionDelegate {
@@ -18,7 +17,7 @@ class WatchViewModel: NSObject, ObservableObject, WCSessionDelegate {
         }
     }
 
-    // Funktion för att exportera livsmedelslistan till iOS-appen
+    // Funktion för att exportera livsmedelslistan till iOS-appen inklusive isFavorite
     func exportFoodList() {
         let foodListData = self.foodData.foodList.map { foodItem -> [String: Any] in
             return [
@@ -26,7 +25,8 @@ class WatchViewModel: NSObject, ObservableObject, WCSessionDelegate {
                 "name": foodItem.name,
                 "carbsPer100g": foodItem.carbsPer100g ?? 0.0,
                 "gramsPerDl": foodItem.gramsPerDl ?? 0.0,
-                "styckPerGram": foodItem.styckPerGram ?? 0.0
+                "styckPerGram": foodItem.styckPerGram ?? 0.0,
+                "isFavorite": foodItem.isFavorite // Inkludera isFavorite
             ]
         }
         let message = ["foodList": foodListData]
@@ -61,7 +61,8 @@ class WatchViewModel: NSObject, ObservableObject, WCSessionDelegate {
                         "name": foodItem.name,
                         "carbsPer100g": foodItem.carbsPer100g ?? 0.0,
                         "gramsPerDl": foodItem.gramsPerDl ?? 0.0,
-                        "styckPerGram": foodItem.styckPerGram ?? 0.0
+                        "styckPerGram": foodItem.styckPerGram ?? 0.0,
+                        "isFavorite": foodItem.isFavorite // Inkludera isFavorite
                     ]
                 }
                 let response = ["foodList": foodListData]
@@ -95,3 +96,4 @@ class WatchViewModel: NSObject, ObservableObject, WCSessionDelegate {
 
     // Om du behöver implementera andra delegate-metoder, lägg till dem här
 }
+

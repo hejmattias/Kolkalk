@@ -8,6 +8,7 @@ struct EditFoodItemView: View {
     @State private var carbsPer100gString: String
     @State private var gramsPerDlString: String
     @State private var styckPerGramString: String
+    @State private var isFavorite: Bool // Ny State-variabel för favoritstatus
 
     @State private var showingCarbsNumpad = false
     @State private var showingGramsPerDlNumpad = false
@@ -21,6 +22,7 @@ struct EditFoodItemView: View {
         self._carbsPer100gString = State(initialValue: food.carbsPer100g != nil ? "\(food.carbsPer100g!)" : "")
         self._gramsPerDlString = State(initialValue: food.gramsPerDl != nil ? "\(food.gramsPerDl!)" : "")
         self._styckPerGramString = State(initialValue: food.styckPerGram != nil ? "\(food.styckPerGram!)" : "")
+        self._isFavorite = State(initialValue: food.isFavorite) // Initialisera isFavorite
     }
 
     var body: some View {
@@ -53,6 +55,13 @@ struct EditFoodItemView: View {
                 }) {
                     Text(styckPerGramString.isEmpty ? "Ange värde" : styckPerGramString)
                         .foregroundColor(.blue)
+                }
+            }
+
+            // Ny sektion för favoritmarkering
+            Section {
+                Toggle(isOn: $isFavorite) {
+                    Text("Favorit")
                 }
             }
 
@@ -94,6 +103,7 @@ struct EditFoodItemView: View {
         updatedFood.carbsPer100g = carbsPer100g
         updatedFood.gramsPerDl = gramsPerDl
         updatedFood.styckPerGram = styckPerGram
+        updatedFood.isFavorite = isFavorite // Uppdatera favoritstatus
 
         // Hitta och uppdatera livsmedlet i listan
         if let index = foodData.foodList.firstIndex(where: { $0.id == food.id }) {
@@ -107,3 +117,4 @@ struct EditFoodItemView: View {
         navigationPath.removeLast()
     }
 }
+

@@ -1,6 +1,5 @@
 import SwiftUI
 
-// Vy för att skapa nytt livsmedel
 struct CreateNewFoodItemView: View {
     @ObservedObject var foodData: FoodData
     @Binding var navigationPath: NavigationPath
@@ -9,6 +8,7 @@ struct CreateNewFoodItemView: View {
     @State private var carbsPer100gString: String = ""
     @State private var gramsPerDlString: String = ""
     @State private var styckPerGramString: String = ""
+    @State private var isFavorite: Bool = false // Ny State-variabel
 
     @State private var showingCarbsNumpad = false
     @State private var showingGramsPerDlNumpad = false
@@ -47,6 +47,13 @@ struct CreateNewFoodItemView: View {
                 }
             }
 
+            // Ny sektion för favoritmarkering
+            Section {
+                Toggle(isOn: $isFavorite) {
+                    Text("Favorit")
+                }
+            }
+
             Section {
                 Button("Spara") {
                     saveNewFoodItem()
@@ -79,9 +86,17 @@ struct CreateNewFoodItemView: View {
             styckPerGram = styckPerGramValue
         }
 
-        let newFoodItem = FoodItem(name: foodName, carbsPer100g: carbsPer100g, grams: 0, gramsPerDl: gramsPerDl, styckPerGram: styckPerGram)
+        let newFoodItem = FoodItem(
+            name: foodName,
+            carbsPer100g: carbsPer100g,
+            grams: 0,
+            gramsPerDl: gramsPerDl,
+            styckPerGram: styckPerGram,
+            isFavorite: isFavorite // Sätt favoritstatus
+        )
         foodData.addFoodItem(newFoodItem)
 
         navigationPath.removeLast() // Återgå till livsmedelslistan
     }
 }
+

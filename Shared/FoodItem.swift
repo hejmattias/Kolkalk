@@ -12,11 +12,12 @@ struct FoodItem: Identifiable, Codable, Hashable, Equatable {
     var inputUnit: String? // "g", "dl", "st"
     var isDefault: Bool?
     var hasBeenLogged: Bool = false
+    var isFavorite: Bool = false // Ny egenskap för favoritmarkering
 
     // MARK: - Anpassad initialiserare för Codable
 
     enum CodingKeys: String, CodingKey {
-        case id, name, carbsPer100g, grams, gramsPerDl, styckPerGram, inputUnit, isDefault, hasBeenLogged
+        case id, name, carbsPer100g, grams, gramsPerDl, styckPerGram, inputUnit, isDefault, hasBeenLogged, isFavorite
     }
 
     init(
@@ -28,7 +29,8 @@ struct FoodItem: Identifiable, Codable, Hashable, Equatable {
         styckPerGram: Double? = nil,
         inputUnit: String? = nil,
         isDefault: Bool? = nil,
-        hasBeenLogged: Bool = false
+        hasBeenLogged: Bool = false,
+        isFavorite: Bool = false // Inkludera isFavorite i initialiseraren
     ) {
         self.id = id
         self.name = name
@@ -39,11 +41,8 @@ struct FoodItem: Identifiable, Codable, Hashable, Equatable {
         self.inputUnit = inputUnit
         self.isDefault = isDefault
         self.hasBeenLogged = hasBeenLogged
+        self.isFavorite = isFavorite
     }
-
-    // Resten av din kod...
-
-
 
     // Anpassad initialiserare för att hantera bakåtkompatibilitet
     init(from decoder: Decoder) throws {
@@ -58,8 +57,9 @@ struct FoodItem: Identifiable, Codable, Hashable, Equatable {
         inputUnit = try container.decodeIfPresent(String.self, forKey: .inputUnit)
         isDefault = try container.decodeIfPresent(Bool.self, forKey: .isDefault)
         hasBeenLogged = try container.decodeIfPresent(Bool.self, forKey: .hasBeenLogged) ?? false
+        isFavorite = try container.decodeIfPresent(Bool.self, forKey: .isFavorite) ?? false // Dekodera isFavorite
     }
-    
+
     // Funktion för att formatera detaljer (används i logToHealth)
     func formattedDetail() -> String {
         let inputValue: Double

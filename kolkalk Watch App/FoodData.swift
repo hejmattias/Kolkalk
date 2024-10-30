@@ -86,13 +86,21 @@ class FoodData: ObservableObject {
                             }
                         }
                         
+                        // Kontrollera om det finns en femte kolumn för isFavorite
+                        var isFavorite: Bool = false
+                        if columns.count > 4 {
+                            let isFavoriteString = columns[4].trimmingCharacters(in: .whitespacesAndNewlines)
+                            isFavorite = isFavoriteString.lowercased() == "true"
+                        }
+                        
                         // Skapa en ny FoodItem med de importerade värdena
                         let newFoodItem = FoodItem(
                             name: name,
                             carbsPer100g: carbsPer100g,
                             grams: 0,
                             gramsPerDl: gramsPerDl,
-                            styckPerGram: styckPerGram
+                            styckPerGram: styckPerGram,
+                            isFavorite: isFavorite
                         )
                         self.foodList.append(newFoodItem)
                         
@@ -113,8 +121,32 @@ class FoodData: ObservableObject {
         }
     }
     
-    // Sortera foodList i bokstavsordning
+    // Exportera foodList till CSV-fil inklusive isFavorite
+    func exportToCSV(fileURL: URL) {
+        var csvString = "name,carbsPer100g,gramsPerDl,styckPerGram,isFavorite\n"
+        
+        for food in foodList {
+            let name = food.name.replacingOccurrences(of: ",", with: ";") // Undvik kommatecken i namn
+            let carbs = food.carbsPer100g != nil ? "\(food.carbsPer100g!)" : ""
+            let gramsPerDl = food.gramsPerDl != nil ? "\(food.gramsPerDl!)" : ""
+            let styckPerGram = food.styckPerGram != nil ? "\(food.styckPerGram!)" : ""
+            let favorite = food.isFavorite ? "true" : "false"
+            
+            let row = "\(name),\(carbs),\(gramsPerDl),\(styckPerGram),\(favorite)\n"
+            csvString.append(row)
+        }
+        
+        do {
+            try csvString.write(to: fileURL, atomically: true, encoding: .utf8)
+            print("CSV-fil exporterad till \(fileURL.path)")
+        } catch {
+            print("Fel vid export av CSV-fil: \(error)")
+        }
+    }
+    
+    // Funktion för att sortera foodList i bokstavsordning
     private func sortFoodList() {
         foodList.sort { $0.name.lowercased() < $1.name.lowercased() }
     }
 }
+

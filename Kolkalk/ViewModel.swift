@@ -58,6 +58,7 @@ class ViewModel: NSObject, ObservableObject, WCSessionDelegate {
                             let carbsPer100g = foodDict["carbsPer100g"] as? Double ?? 0.0
                             let gramsPerDl = foodDict["gramsPerDl"] as? Double
                             let styckPerGram = foodDict["styckPerGram"] as? Double
+                            let isFavorite = foodDict["isFavorite"] as? Bool ?? false // Lägg till isFavorite
 
                             let foodItem = FoodItem(
                                 id: id,
@@ -65,7 +66,8 @@ class ViewModel: NSObject, ObservableObject, WCSessionDelegate {
                                 carbsPer100g: carbsPer100g,
                                 grams: 0.0,
                                 gramsPerDl: gramsPerDl,
-                                styckPerGram: styckPerGram
+                                styckPerGram: styckPerGram,
+                                isFavorite: isFavorite // Sätt isFavorite
                             )
                             foodList.append(foodItem)
                         }
@@ -96,14 +98,15 @@ class ViewModel: NSObject, ObservableObject, WCSessionDelegate {
         let fileName = "exported_food_list.csv"
         let path = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
 
-        var csvText = "Name;CarbsPer100g;GramsPerDl;StyckPerGram\n"
+        var csvText = "Name;CarbsPer100g;GramsPerDl;StyckPerGram;IsFavorite\n" // Uppdatera headern
 
         for food in receivedFoodList {
             let name = food.name
             let carbsPer100g = String(format: "%.2f", food.carbsPer100g ?? 0.0).replacingOccurrences(of: ".", with: ",")
             let gramsPerDl = food.gramsPerDl != nil ? String(format: "%.2f", food.gramsPerDl!).replacingOccurrences(of: ".", with: ",") : ""
             let styckPerGram = food.styckPerGram != nil ? String(format: "%.2f", food.styckPerGram!).replacingOccurrences(of: ".", with: ",") : ""
-            let newLine = "\(name);\(carbsPer100g);\(gramsPerDl);\(styckPerGram)\n"
+            let isFavorite = food.isFavorite ? "true" : "false" // Lägg till isFavorite
+            let newLine = "\(name);\(carbsPer100g);\(gramsPerDl);\(styckPerGram);\(isFavorite)\n" // Uppdatera raden
             csvText.append(newLine)
         }
 
@@ -157,6 +160,7 @@ class ViewModel: NSObject, ObservableObject, WCSessionDelegate {
                     let carbsPer100g = foodDict["carbsPer100g"] as? Double ?? 0.0
                     let gramsPerDl = foodDict["gramsPerDl"] as? Double
                     let styckPerGram = foodDict["styckPerGram"] as? Double
+                    let isFavorite = foodDict["isFavorite"] as? Bool ?? false // Lägg till isFavorite
 
                     let foodItem = FoodItem(
                         id: id,
@@ -164,7 +168,8 @@ class ViewModel: NSObject, ObservableObject, WCSessionDelegate {
                         carbsPer100g: carbsPer100g,
                         grams: 0.0,
                         gramsPerDl: gramsPerDl,
-                        styckPerGram: styckPerGram
+                        styckPerGram: styckPerGram,
+                        isFavorite: isFavorite // Sätt isFavorite
                     )
                     foodList.append(foodItem)
                 }
@@ -194,3 +199,4 @@ class ViewModel: NSObject, ObservableObject, WCSessionDelegate {
         }
     }
 }
+

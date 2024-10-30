@@ -9,23 +9,37 @@ struct FoodListView: View {
 
     @State private var searchText: String = ""
     @State private var showDeleteConfirmation = false
+    @State private var showFavoritesOnly: Bool = false // Ny State-variabel för favoritfilter
 
     var filteredFoodList: [FoodItem] {
-        if searchText.isEmpty {
-            return foodData.foodList
-        } else {
-            return foodData.foodList.filter { $0.name.lowercased().contains(searchText.lowercased()) }
+        var list = foodData.foodList
+
+        // Filtrera på favoriter om växlingen är på
+        if showFavoritesOnly {
+            list = list.filter { $0.isFavorite }
         }
+
+        // Filtrera på söktext
+        if !searchText.isEmpty {
+            list = list.filter { $0.name.lowercased().contains(searchText.lowercased()) }
+        }
+
+        return list
     }
 
     var body: some View {
         ScrollViewReader { scrollProxy in
             List {
-                // Sökfältet som första raden
+                // Växlingsknapp för att visa endast favoriter
+                Toggle(isOn: $showFavoritesOnly) {
+                    Text("Visa endast favoriter")
+                }
+                .id("favoritesToggle") // Tilldela ID för att kunna scrolla till den
+
+                // Sökfältet
                 TextField("Sök", text: $searchText)
                     .id("searchField") // Tilldela ID
 
-                // Första livsmedelsposten med ID för scrollning
                 if !filteredFoodList.isEmpty {
                     ForEach(filteredFoodList.indices, id: \.self) { index in
                         let food = filteredFoodList[index]
@@ -93,11 +107,9 @@ struct FoodListView: View {
                 }
             }
             .onAppear {
-                // Vänta tills listan har laddats, sedan scrolla till första livsmedelsposten
+                // Vänta tills listan har laddats, sedan scrolla till favoritväxlingen
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    if !filteredFoodList.isEmpty {
-                        scrollProxy.scrollTo("firstFood", anchor: .top)
-                    }
+                    scrollProxy.scrollTo("favoritesToggle", anchor: .top)
                 }
             }
         }
@@ -116,3 +128,4 @@ struct FoodListView: View {
         foodData.saveToUserDefaults() // Spara uppdateringarna
     }
 }
+
