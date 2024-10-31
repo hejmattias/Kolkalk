@@ -16,6 +16,7 @@ class ContainerData: NSObject, ObservableObject, WCSessionDelegate {
             let session = WCSession.default
             session.delegate = self
             session.activate()
+            print("iOS: WCSession activated")
         }
     }
 
@@ -67,23 +68,42 @@ class ContainerData: NSObject, ObservableObject, WCSessionDelegate {
                 let data = try JSONEncoder().encode(containerList)
                 let message = ["containerList": data]
                 WCSession.default.transferUserInfo(message)
+                print("iOS: Sent containerList to Watch")
             } catch {
                 print("Misslyckades att koda kärllistan: \(error.localizedDescription)")
             }
+        } else {
+            print("iOS: Watch is not paired or app is not installed.")
         }
     }
 
     // MARK: - WCSessionDelegate-metoder
 
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {}
-
-    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
-        // Hantera inkommande data från Apple Watch om det behövs
+    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+        if let error = error {
+            print("iOS: WCSession activation failed with error: \(error.localizedDescription)")
+        } else {
+            print("iOS: WCSession activated with state: \(activationState.rawValue)")
+        }
     }
 
-    func sessionDidBecomeInactive(_ session: WCSession) {}
+    func session(_ session: WCSession, didFinish userInfoTransfer: WCSessionUserInfoTransfer, error: Error?) {
+        if let error = error {
+            print("iOS: Failed to transfer user info: \(error.localizedDescription)")
+        } else {
+            print("iOS: User info transfer completed successfully.")
+        }
+    }
+
+    // Om du behöver hantera inkommande meddelanden från Watch
+    func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
+        // Hantera inkommande meddelanden om det behövs
+    }
+
+    func sessionDidBecomeInactive(_ session: WCSession) { }
 
     func sessionDidDeactivate(_ session: WCSession) {
         session.activate()
     }
 }
+

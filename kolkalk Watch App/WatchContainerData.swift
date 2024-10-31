@@ -1,22 +1,13 @@
-// kolkalk Watch App/WatchContainerData.swift
-
 import Foundation
-import WatchConnectivity
 import SwiftUI
 
-class WatchContainerData: NSObject, ObservableObject, WCSessionDelegate {
+class WatchContainerData: ObservableObject {
     static let shared = WatchContainerData()
     @Published var containerList: [Container] = []
 
-    private override init() {
-        super.init()
+    private init() {
         loadFromUserDefaults()
-
-        if WCSession.isSupported() {
-            let session = WCSession.default
-            session.delegate = self
-            session.activate()
-        }
+        // Ta bort WCSession-konfigurationen härifrån
     }
 
     func loadFromUserDefaults() {
@@ -39,27 +30,6 @@ class WatchContainerData: NSObject, ObservableObject, WCSessionDelegate {
         }
     }
 
-    // MARK: - WCSessionDelegate-metoder
-
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {}
-
-    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
-        if let data = userInfo["containerList"] as? Data {
-            if let containers = try? JSONDecoder().decode([Container].self, from: data) {
-                DispatchQueue.main.async {
-                    self.containerList = containers
-                    self.saveToUserDefaults()
-                }
-            }
-        }
-    }
-
-    // Om du har dessa metoder, ta bort dem eftersom de är otillgängliga i nyare watchOS-versioner
-    /*
-    func sessionDidBecomeInactive(_ session: WCSession) {}
-
-    func sessionDidDeactivate(_ session: WCSession) {
-        session.activate()
-    }
-    */
+    // Ta bort WCSessionDelegate-konformitet och metoder
 }
+
