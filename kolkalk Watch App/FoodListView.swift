@@ -126,8 +126,17 @@ struct FoodListView: View {
     }
 
     private func deleteAllFoodItems() {
-        foodData.foodList.removeAll() // Rensar alla livsmedel
+        // Filtrera bort endast användarskapade livsmedel
+        foodData.foodList.removeAll(where: { $0.isDefault != true })
         foodData.saveToUserDefaults() // Spara uppdateringarna
+
+        // Återställ filtren för att visa standardlivsmedlen
+        searchText = ""
+        showFavoritesOnly = false
+
+        // Stäng alerten
+        showDeleteConfirmation = false
     }
+
 }
 

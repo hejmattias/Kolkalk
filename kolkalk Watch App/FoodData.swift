@@ -125,7 +125,10 @@ class FoodData: ObservableObject {
     func exportToCSV(fileURL: URL) {
         var csvString = "name,carbsPer100g,gramsPerDl,styckPerGram,isFavorite\n"
         
-        for food in foodList {
+        // Filtrera ut standardlivsmedel
+        let userAddedFoods = foodList.filter { $0.isDefault != true }
+        
+        for food in userAddedFoods {
             let name = food.name.replacingOccurrences(of: ",", with: ";") // Undvik kommatecken i namn
             let carbs = food.carbsPer100g != nil ? "\(food.carbsPer100g!)" : ""
             let gramsPerDl = food.gramsPerDl != nil ? "\(food.gramsPerDl!)" : ""
@@ -143,6 +146,7 @@ class FoodData: ObservableObject {
             print("Fel vid export av CSV-fil: \(error)")
         }
     }
+
     
     // Funktion för att sortera foodList i bokstavsordning
     private func sortFoodList() {
