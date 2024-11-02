@@ -1,6 +1,6 @@
 import SwiftUI
 
-// Lista över tillgängliga livsmedel
+// List of available food items
 struct FoodListView: View {
     @ObservedObject var plate: Plate
     @ObservedObject var foodData: FoodData
@@ -9,17 +9,17 @@ struct FoodListView: View {
 
     @State private var searchText: String = ""
     @State private var showDeleteConfirmation = false
-    @State private var showFavoritesOnly: Bool = false // Ny State-variabel för favoritfilter
+    @State private var showFavoritesOnly: Bool = false // State variable for favorite filter
 
     var filteredFoodList: [FoodItem] {
         var list = foodData.foodList
 
-        // Filtrera på favoriter om växlingen är på
+        // Filter on favorites if the toggle is on
         if showFavoritesOnly {
             list = list.filter { $0.isFavorite }
         }
 
-        // Filtrera på söktext
+        // Filter on search text
         if !searchText.isEmpty {
             list = list.filter { $0.name.lowercased().contains(searchText.lowercased()) }
         }
@@ -30,15 +30,15 @@ struct FoodListView: View {
     var body: some View {
         ScrollViewReader { scrollProxy in
             List {
-                // Växlingsknapp för att visa endast favoriter
+                // Toggle button to show only favorites
                 Toggle(isOn: $showFavoritesOnly) {
                     Text("Visa endast favoriter")
                 }
-                .id("favoritesToggle") // Tilldela ID för att kunna scrolla till den
+                .id("favoritesToggle") // Assign ID to scroll to it
 
-                // Sökfältet
+                // Search field
                 TextField("Sök", text: $searchText)
-                    .id("searchField") // Tilldela ID
+                    .id("searchField") // Assign ID
 
                 if !filteredFoodList.isEmpty {
                     ForEach(filteredFoodList.indices, id: \.self) { index in
@@ -68,11 +68,15 @@ struct FoodListView: View {
                             }
                             .tint(.blue)
                         }
-                        .id(index == 0 ? "firstFood" : nil) // Tilldela ID till första posten
+                        .id(index == 0 ? "firstFood" : nil) // Assign ID to the first item
                     }
+                } else {
+                    // Display message when the list is empty
+                    Text("Inga livsmedel att visa")
+                        .foregroundColor(.gray)
                 }
 
-                // Knappar för att lägga till eller radera livsmedel
+                // Buttons to add or delete food items
                 Button(action: {
                     navigationPath.append(Route.createNewFoodItem)
                 }) {
@@ -84,7 +88,7 @@ struct FoodListView: View {
                     }
                 }
 
-                // Knapp för att radera alla livsmedel
+                // Button to delete all food items
                 Button(action: {
                     showDeleteConfirmation = true
                 }) {
@@ -95,19 +99,24 @@ struct FoodListView: View {
                         Spacer()
                     }
                 }
-                .alert(isPresented: $showDeleteConfirmation) {
-                    Alert(
-                        title: Text("Bekräfta radering"),
-                        message: Text("Är du säker på att du vill ta bort alla livsmedel?"),
-                        primaryButton: .destructive(Text("Ja")) {
-                            deleteAllFoodItems()
-                        },
-                        secondaryButton: .cancel(Text("Avbryt"))
-                    )
+                // Use confirmationDialog instead of alert
+                .confirmationDialog(
+                    "Bekräfta radering",
+                    isPresented: $showDeleteConfirmation,
+                    titleVisibility: .visible
+                ) {
+                    Button("Ta bort alla livsmedel", role: .destructive) {
+                        deleteAllFoodItems()
+                    }
+                    Button("Avbryt", role: .cancel) {
+                        // Optionally reset any state if needed
+                    }
+                } message: {
+                    Text("Är du säker på att du vill ta bort alla livsmedel?")
                 }
             }
             .onAppear {
-                // Vänta tills listan har laddats, sedan scrolla till favoritväxlingen
+                // Wait until the list has loaded, then scroll to the favorite toggle
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     if !filteredFoodList.isEmpty {
                         scrollProxy.scrollTo("firstFood", anchor: .top)
@@ -126,17 +135,17 @@ struct FoodListView: View {
     }
 
     private func deleteAllFoodItems() {
-        // Filtrera bort endast användarskapade livsmedel
-        foodData.foodList.removeAll(where: { $0.isDefault != true })
-        foodData.saveToUserDefaults() // Spara uppdateringarna
+        DispatchQueue.main.async {
+            // Remove only user-created food items
+            foodData.foodList.removeAll(where: { $0.isDefault != true })
+            foodData.saveToUserDefaults() // Save the updates
 
-        // Återställ filtren för att visa standardlivsmedlen
-        searchText = ""
-        showFavoritesOnly = false
+            // Reset filters to show default foods
+            searchText = ""
+            showFavoritesOnly = false
 
-        // Stäng alerten
-        showDeleteConfirmation = false
+            // Close the delete confirmation alert
+            showDeleteConfirmation = false
+        }
     }
-
 }
-
