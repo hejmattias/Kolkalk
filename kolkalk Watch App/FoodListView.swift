@@ -9,7 +9,8 @@ struct FoodListView: View {
 
     @State private var searchText: String = ""
     @State private var showDeleteConfirmation = false
-    @State private var showFavoritesOnly: Bool = false // State variable for favorite filter
+    // Initialize showFavoritesOnly from UserDefaults
+    @State private var showFavoritesOnly: Bool = UserDefaults.standard.bool(forKey: "showFavoritesOnly")
 
     var filteredFoodList: [FoodItem] {
         var list = foodData.foodList
@@ -35,6 +36,10 @@ struct FoodListView: View {
                     Text("Visa endast favoriter")
                 }
                 .id("favoritesToggle") // Assign ID to scroll to it
+                // Save the toggle state when it changes
+                .onChange(of: showFavoritesOnly) {
+                    UserDefaults.standard.set(showFavoritesOnly, forKey: "showFavoritesOnly")
+                }
 
                 // Search field
                 TextField("Sök", text: $searchText)
@@ -142,7 +147,7 @@ struct FoodListView: View {
 
             // Reset filters to show default foods
             searchText = ""
-            showFavoritesOnly = false
+            // Note: We are not resetting showFavoritesOnly to preserve the toggle state
 
             // Close the delete confirmation alert
             showDeleteConfirmation = false
