@@ -38,6 +38,33 @@ class WatchViewModel: NSObject, ObservableObject, WCSessionDelegate {
         // Hantera annan inkommande data om det behövs
     }
 
+    // Implementera session(_:didReceiveFile:)
+    func session(_ session: WCSession, didReceive file: WCSessionFile) {
+        print("WatchViewModel: Received file: \(file.fileURL)")
+
+        // Hantera mottagen CSV-fil
+        let destinationURL = getDocumentsDirectory().appendingPathComponent("food_items.csv")
+
+        do {
+            // Ta bort eventuell tidigare fil
+            if FileManager.default.fileExists(atPath: destinationURL.path) {
+                try FileManager.default.removeItem(at: destinationURL)
+            }
+            try FileManager.default.copyItem(at: file.fileURL, to: destinationURL)
+            DispatchQueue.main.async {
+                self.foodData.importFromCSV(fileURL: destinationURL)
+                print("WatchViewModel: Imported food items from CSV.")
+            }
+        } catch {
+            print("WatchViewModel: Error copying file: \(error.localizedDescription)")
+        }
+    }
+
+    // Hjälpmetod för att få Documents Directory
+    func getDocumentsDirectory() -> URL {
+        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }
+
     // MARK: - WCSessionDelegate
 
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
@@ -48,13 +75,5 @@ class WatchViewModel: NSObject, ObservableObject, WCSessionDelegate {
         }
     }
 
-    // Ta bort eller kommentera bort dessa metoder om de finns
-    // func sessionDidBecomeInactive(_ session: WCSession) { }
-
-    // func sessionDidDeactivate(_ session: WCSession) {
-    //     session.activate()
-    // }
-
     // Om du har andra WCSessionDelegate-metoder, implementera dem här
 }
-
