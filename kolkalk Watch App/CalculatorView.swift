@@ -121,7 +121,7 @@ struct CalculatorView: View {
             .background(Color.black.edgesIgnoringSafeArea(.all))
         }
         // Visar resultatet i navigationstiteln
-        .navigationTitle("Resultat: \(formatResult(result))")
+        .navigationTitle("= \(formatResult(result))")
         .navigationBarTitleDisplayMode(.inline) // Minskar mellanrummet mellan rubrik och innehåll
         // Uppdaterad onChange-syntax för watchOS 10.0
         .onChange(of: calculation) { newValue, oldValue in
@@ -136,23 +136,43 @@ struct CalculatorView: View {
     }
 
     func appendComma() {
-        let operators = ["+", "-", "*", "/"]
-        
-        // Kontrollera att det senaste tecknet inte är en operator
+        let operators = ["+", "-", "×", "÷"] // Uppdaterad lista med operatorer
+
+        // Förhindra att kommatecken läggs direkt efter en operator
         if let lastChar = calculation.last, operators.contains(String(lastChar)) {
-            // Förhindra att kommatecken läggs direkt efter en operator
+            // Lägg till "0," om sista tecknet är en operator
+            calculation += "0,"
             return
         }
 
-        // Definiera operatorer för att separera tal
-        var lastNumber = calculation
+        // Hitta den sista operatorn i uttrycket
+        var lastOperatorIndex: String.Index? = nil
         for op in operators {
             if let range = calculation.range(of: op, options: .backwards) {
-                lastNumber = String(calculation[range.upperBound...])
+                if let currentLast = lastOperatorIndex {
+                    if range.lowerBound > currentLast {
+                        lastOperatorIndex = range.lowerBound
+                    }
+                } else {
+                    lastOperatorIndex = range.lowerBound
+                }
             }
         }
 
-        // Kontrollera om det senaste talet redan innehåller ett kommatecken
+        // Extrahera den sista delen av uttrycket efter den sista operatorn
+        let lastNumber: String
+        if let index = lastOperatorIndex {
+            let afterOpIndex = calculation.index(after: index)
+            if afterOpIndex < calculation.endIndex {
+                lastNumber = String(calculation[afterOpIndex...])
+            } else {
+                lastNumber = ""
+            }
+        } else {
+            lastNumber = calculation
+        }
+
+        // Kontrollera om det sista talet redan innehåller ett kommatecken
         if !lastNumber.contains(",") {
             calculation += ","
         }
@@ -203,7 +223,7 @@ struct CalculatorView: View {
 
     func addResultToPlate(value: Double) {
         let foodItem = FoodItem(
-            name: "Kalkylator",
+            name: calculation,
             carbsPer100g: 100,
             grams: value,
             gramsPerDl: nil,
