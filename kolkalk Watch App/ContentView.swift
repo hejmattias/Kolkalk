@@ -11,7 +11,8 @@ enum Route: Hashable {
     case createNewFoodItem
     case editFoodItem(FoodItem)
     case importInstructions
-    case insulinLoggingView // Nytt fall för insulinloggning
+    case insulinLoggingView
+    case calculator // Lägg till detta fall för kalkylatorn
 }
 
 struct ContentView: View {
@@ -42,14 +43,10 @@ struct ContentView: View {
                     Text("Tallrik till livsmedel")
                 }
 
-
-
                 // Knapp för att logga insulin till Apple Hälsa
                 NavigationLink(value: Route.insulinLoggingView) {
                     Text("Logga insulin till Apple Hälsa")
                 }
-
-            
             }
             .onAppear {
                 plate.loadFromUserDefaults()
@@ -73,6 +70,8 @@ struct ContentView: View {
                     ImportInstructionsView()
                 case .insulinLoggingView:
                     InsulinLoggingView()
+                case .calculator:
+                    CalculatorView(plate: plate, navigationPath: $navigationPath) // Hantera kalkylatorn
                 }
             }
             .navigationTitle("Totalt: \(totalCarbs, specifier: "%.1f") gk")
@@ -96,4 +95,3 @@ struct ContentView: View {
         }
     }
 }
-

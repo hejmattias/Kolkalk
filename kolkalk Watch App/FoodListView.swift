@@ -45,6 +45,18 @@ struct FoodListView: View {
                 TextField("Sök", text: $searchText)
                     .id("searchField") // Assign ID
 
+                // Lägg till "Kalkylator"-knappen under sökfältet
+                Button(action: {
+                    navigationPath.append(Route.calculator)
+                }) {
+                    HStack {
+                        Spacer()
+                        Text("Kalkylator")
+                            .foregroundColor(.blue)
+                        Spacer()
+                    }
+                }
+
                 if !filteredFoodList.isEmpty {
                     ForEach(filteredFoodList.indices, id: \.self) { index in
                         let food = filteredFoodList[index]
