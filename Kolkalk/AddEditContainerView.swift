@@ -79,7 +79,7 @@ struct AddEditContainerView: View {
         DispatchQueue.global(qos: .userInitiated).async {
             var imageData: Data? = nil
             if let selectedImage = selectedImage {
-                let resizedImage = selectedImage.resize(toWidth: 200) // Anpassa storleken vid behov
+                let resizedImage = selectedImage.resize(toWidth: 100) // Anpassa storleken vid behov
                 imageData = resizedImage.jpegData(compressionQuality: 0.8)
             }
 

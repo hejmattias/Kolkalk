@@ -36,9 +36,9 @@ class FoodData: ObservableObject {
     }
 
     // Standardlivsmedel
+    // Standardlivsmedel
     private var defaultFoodList: [FoodItem] {
         return [
-            FoodItem(name: "Annat", carbsPer100g: 100, grams: 0, gramsPerDl: 0, isDefault: true),
         ]
     }
 
