@@ -13,11 +13,22 @@ struct FoodItem: Identifiable, Codable, Hashable, Equatable {
     var isDefault: Bool?
     var hasBeenLogged: Bool = false
     var isFavorite: Bool = false // Ny egenskap för favoritmarkering
+    var isCalculatorItem: Bool = false // Ny egenskap
 
     // MARK: - Anpassad initialiserare för Codable
 
     enum CodingKeys: String, CodingKey {
-        case id, name, carbsPer100g, grams, gramsPerDl, styckPerGram, inputUnit, isDefault, hasBeenLogged, isFavorite
+        case id
+        case name
+        case carbsPer100g
+        case grams
+        case gramsPerDl
+        case styckPerGram
+        case inputUnit
+        case isDefault
+        case hasBeenLogged
+        case isFavorite
+        case isCalculatorItem // Lägg till isCalculatorItem i CodingKeys
     }
 
     init(
@@ -30,7 +41,8 @@ struct FoodItem: Identifiable, Codable, Hashable, Equatable {
         inputUnit: String? = nil,
         isDefault: Bool? = nil,
         hasBeenLogged: Bool = false,
-        isFavorite: Bool = false // Inkludera isFavorite i initialiseraren
+        isFavorite: Bool = false, // Inkludera isFavorite i initialiseraren
+        isCalculatorItem: Bool = false // Inkludera isCalculatorItem i initialiseraren
     ) {
         self.id = id
         self.name = name
@@ -42,6 +54,7 @@ struct FoodItem: Identifiable, Codable, Hashable, Equatable {
         self.isDefault = isDefault
         self.hasBeenLogged = hasBeenLogged
         self.isFavorite = isFavorite
+        self.isCalculatorItem = isCalculatorItem // Tilldela isCalculatorItem
     }
 
     // Anpassad initialiserare för att hantera bakåtkompatibilitet
@@ -58,6 +71,7 @@ struct FoodItem: Identifiable, Codable, Hashable, Equatable {
         isDefault = try container.decodeIfPresent(Bool.self, forKey: .isDefault)
         hasBeenLogged = try container.decodeIfPresent(Bool.self, forKey: .hasBeenLogged) ?? false
         isFavorite = try container.decodeIfPresent(Bool.self, forKey: .isFavorite) ?? false // Dekodera isFavorite
+        isCalculatorItem = try container.decodeIfPresent(Bool.self, forKey: .isCalculatorItem) ?? false // Dekodera isCalculatorItem
     }
 
     // Funktion för att formatera detaljer (används i logToHealth)
@@ -97,5 +111,21 @@ struct FoodItem: Identifiable, Codable, Hashable, Equatable {
     var totalCarbs: Double {
         return (carbsPer100g ?? 0) * grams / 100
     }
-}
 
+    // Om du behöver kunna koda objektet (till exempel spara till UserDefaults)
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode(id, forKey: .id)
+        try container.encode(name, forKey: .name)
+        try container.encodeIfPresent(carbsPer100g, forKey: .carbsPer100g)
+        try container.encode(grams, forKey: .grams)
+        try container.encodeIfPresent(gramsPerDl, forKey: .gramsPerDl)
+        try container.encodeIfPresent(styckPerGram, forKey: .styckPerGram)
+        try container.encodeIfPresent(inputUnit, forKey: .inputUnit)
+        try container.encodeIfPresent(isDefault, forKey: .isDefault)
+        try container.encode(hasBeenLogged, forKey: .hasBeenLogged)
+        try container.encode(isFavorite, forKey: .isFavorite)
+        try container.encode(isCalculatorItem, forKey: .isCalculatorItem) // Koda isCalculatorItem
+    }
+}

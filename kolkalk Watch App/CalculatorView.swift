@@ -1,41 +1,52 @@
+// CalculatorView.swift
+
 import SwiftUI
 
 struct CalculatorView: View {
     @ObservedObject var plate: Plate
     @Binding var navigationPath: NavigationPath
 
-    // Håller hela kalkyleringen
-    @State private var calculation: String = ""
+    // Holds the entire calculation
+    @State private var calculation: String
 
-    // Håller det beräknade resultatet
+    // Holds the calculated result
     @State private var result: Double?
+
+    var itemToEdit: FoodItem?
+
+    init(plate: Plate, navigationPath: Binding<NavigationPath>, initialCalculation: String = "", itemToEdit: FoodItem? = nil) {
+        self._plate = ObservedObject(initialValue: plate)
+        self._navigationPath = navigationPath
+        self._calculation = State(initialValue: initialCalculation)
+        self.itemToEdit = itemToEdit
+    }
 
     var body: some View {
         GeometryReader { geometry in
-            // Beräkna fontstorlekar och höjder baserat på skärmens storlek
+            // Calculate font sizes and heights based on screen size
             let screenWidth = geometry.size.width
             let screenHeight = geometry.size.height
             let spacing: CGFloat = 1
             let columns: Int = 4
-            let rows: Int = 4 // Antal rader i knapplayouten
+            let rows: Int = 4 // Number of rows in the keypad layout
             let totalSpacingWidth = spacing * CGFloat(columns + 1)
             let totalSpacingHeight = spacing * CGFloat(rows + 1)
 
             let availableWidth = screenWidth - totalSpacingWidth
-            let availableHeight = screenHeight - totalSpacingHeight - 10 // Justera för inmatningsfältet
+            let availableHeight = screenHeight - totalSpacingHeight - 10 // Adjust for input field
 
             let buttonWidth = availableWidth / CGFloat(columns)
             let buttonHeight = availableHeight / CGFloat(rows)
 
-            // Anpassa fontstorlekar
-            let inputFontSize = screenHeight * 0.08 // Ökad fontstorlek för uträkningen
+            // Adjust font sizes
+            let inputFontSize = screenHeight * 0.08 // Increased font size for the calculation
             let buttonFontSize = buttonHeight * 0.4
 
             VStack(spacing: 1) {
-                // Inmatningsfält som visar hela kalkyleringen
+                // Input field displaying the entire calculation
                 Text(calculation.isEmpty ? " " : calculation)
                     .font(.system(size: inputFontSize))
-                    .frame(height: screenHeight * 0.12, alignment: .trailing) // Justerad höjd för inmatningsfältet
+                    .frame(height: screenHeight * 0.12, alignment: .trailing) // Adjusted height for input field
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .padding(.horizontal, 5)
                     .padding(.vertical, 2)
@@ -45,9 +56,9 @@ struct CalculatorView: View {
                     .background(Color.black)
                     .cornerRadius(5)
 
-                // Kalkylatorns knappnät
+                // Calculator keypad
                 VStack(spacing: spacing) {
-                    // Rad 1
+                    // Row 1
                     HStack(spacing: spacing) {
                         CalculatorButton(label: "7", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize) {
                             appendToCalculation("7")
@@ -58,14 +69,14 @@ struct CalculatorView: View {
                         CalculatorButton(label: "9", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize) {
                             appendToCalculation("9")
                         }
-                        // Plus/Minus-knapp med långtryck
+                        // Plus/Minus button with long press
                         CalculatorButtonWithLongPress(label: "+\n-", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: .orange) {
                             appendToCalculation("+")
                         } longPressAction: {
                             appendToCalculation("-")
                         }
                     }
-                    // Rad 2
+                    // Row 2
                     HStack(spacing: spacing) {
                         CalculatorButton(label: "4", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize) {
                             appendToCalculation("4")
@@ -80,7 +91,7 @@ struct CalculatorView: View {
                             appendToCalculation("×")
                         }
                     }
-                    // Rad 3
+                    // Row 3
                     HStack(spacing: spacing) {
                         CalculatorButton(label: "1", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize) {
                             appendToCalculation("1")
@@ -95,20 +106,20 @@ struct CalculatorView: View {
                             appendToCalculation("÷")
                         }
                     }
-                    // Rad 4
+                    // Row 4
                     HStack(spacing: spacing) {
-                        // Kommaknapp istället för minusknapp
+                        // Comma button
                         CalculatorButton(label: ",", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize) {
                             appendComma()
                         }
                         CalculatorButton(label: "0", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize) {
                             appendToCalculation("0")
                         }
-                        // Bakåtknapp
+                        // Backspace button
                         CalculatorButton(label: "⌫", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize) {
                             backspace()
                         }
-                        // "OK"-knappen
+                        // "OK" button
                         CalculatorButton(label: "OK", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: .blue) {
                             if let value = result {
                                 addResultToPlate(value: value)
@@ -120,32 +131,35 @@ struct CalculatorView: View {
             }
             .background(Color.black.edgesIgnoringSafeArea(.all))
         }
-        // Visar resultatet i navigationstiteln
+        // Display the result in the navigation title
         .navigationTitle("= \(formatResult(result))")
-        .navigationBarTitleDisplayMode(.inline) // Minskar mellanrummet mellan rubrik och innehåll
-        // Uppdaterad onChange-syntax för watchOS 10.0
-        .onChange(of: calculation) { newValue, oldValue in
+        .navigationBarTitleDisplayMode(.inline)
+        // Updated 'onChange' closure for watchOS 10.0
+        .onChange(of: calculation) {
+            calculateResult()
+        }
+        .onAppear {
             calculateResult()
         }
     }
 
-    // MARK: - Kalkylatorfunktioner
+    // MARK: - Calculator Functions
 
     func appendToCalculation(_ value: String) {
         calculation += value
     }
 
     func appendComma() {
-        let operators = ["+", "-", "×", "÷"] // Uppdaterad lista med operatorer
+        let operators = ["+", "-", "×", "÷"]
 
-        // Förhindra att kommatecken läggs direkt efter en operator
+        // Prevent comma from being added directly after an operator
         if let lastChar = calculation.last, operators.contains(String(lastChar)) {
-            // Lägg till "0," om sista tecknet är en operator
+            // Add "0," if the last character is an operator
             calculation += "0,"
             return
         }
 
-        // Hitta den sista operatorn i uttrycket
+        // Find the last operator in the expression
         var lastOperatorIndex: String.Index? = nil
         for op in operators {
             if let range = calculation.range(of: op, options: .backwards) {
@@ -159,7 +173,7 @@ struct CalculatorView: View {
             }
         }
 
-        // Extrahera den sista delen av uttrycket efter den sista operatorn
+        // Extract the last part of the expression after the last operator
         let lastNumber: String
         if let index = lastOperatorIndex {
             let afterOpIndex = calculation.index(after: index)
@@ -172,7 +186,7 @@ struct CalculatorView: View {
             lastNumber = calculation
         }
 
-        // Kontrollera om det sista talet redan innehåller ett kommatecken
+        // Check if the last number already contains a comma
         if !lastNumber.contains(",") {
             calculation += ","
         }
@@ -190,29 +204,29 @@ struct CalculatorView: View {
             return
         }
 
-        // Ersätt specialtecken med standardoperatorer och hantera decimalseparatör
+        // Replace special characters with standard operators and handle decimal separator
         let expressionString = calculation
             .replacingOccurrences(of: "×", with: "*")
             .replacingOccurrences(of: "÷", with: "/")
-            .replacingOccurrences(of: ",", with: ".") // Hantera kommatecken som decimalseparatör
+            .replacingOccurrences(of: ",", with: ".") // Handle comma as decimal separator
 
-        // Kontrollera att uttrycket inte slutar med en operator eller decimalpunkt
+        // Check that the expression doesn't end with an operator or decimal point
         let operators = ["+", "-", "*", "/"]
         if let lastChar = expressionString.last, operators.contains(String(lastChar)) || lastChar == "." {
-            // Utvärdera inte ofullständiga uttryck
+            // Do not evaluate incomplete expressions
             result = nil
             return
         }
 
-        // Kontrollera att uttrycket endast innehåller tillåtna tecken (siffror och operatorer)
+        // Check that the expression contains only allowed characters (numbers and operators)
         let allowedCharacters = CharacterSet(charactersIn: "0123456789+-*/().")
         if expressionString.rangeOfCharacter(from: allowedCharacters.inverted) != nil {
-            // Uttrycket innehåller ogiltiga tecken
+            // Expression contains invalid characters
             result = nil
             return
         }
 
-        // Använd NSExpression för att utvärdera uttrycket
+        // Use NSExpression to evaluate the expression
         let expression = NSExpression(format: expressionString)
         if let value = expression.expressionValue(with: nil, context: nil) as? NSNumber {
             result = value.doubleValue
@@ -222,19 +236,28 @@ struct CalculatorView: View {
     }
 
     func addResultToPlate(value: Double) {
-        let foodItem = FoodItem(
-            name: calculation,
-            carbsPer100g: 100,
-            grams: value,
-            gramsPerDl: nil,
-            styckPerGram: nil,
-            inputUnit: "g",
-            isDefault: false,
-            hasBeenLogged: false,
-            isFavorite: false
-        )
-        plate.addItem(foodItem)
-        // Navigera tillbaka till tallriken
+        if var item = itemToEdit {
+            // Update existing food item
+            item.name = calculation
+            item.grams = value
+            plate.updateItem(item)
+        } else {
+            // Create new food item and mark it as a calculator item
+            let foodItem = FoodItem(
+                name: calculation,
+                carbsPer100g: 100,
+                grams: value,
+                gramsPerDl: nil,
+                styckPerGram: nil,
+                inputUnit: "g",
+                isDefault: false,
+                hasBeenLogged: false,
+                isFavorite: false,
+                isCalculatorItem: true // Mark as calculator item
+            )
+            plate.addItem(foodItem)
+        }
+        // Navigate back to the plate
         navigationPath = NavigationPath([Route.plateView])
     }
 
@@ -251,7 +274,7 @@ struct CalculatorView: View {
     }
 }
 
-// Anpassad knappvy med långtryck för operatorer
+// Custom button view with long press for operators
 struct CalculatorButtonWithLongPress: View {
     let label: String
     let width: CGFloat
@@ -289,7 +312,7 @@ struct CalculatorButtonWithLongPress: View {
     }
 }
 
-// Anpassad knappvy
+// Custom button view
 struct CalculatorButton: View {
     let label: String
     let width: CGFloat

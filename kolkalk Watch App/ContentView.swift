@@ -1,4 +1,4 @@
-// kolkalk Watch App/ContentView.swift
+// ContentView.swift
 
 import SwiftUI
 
@@ -10,9 +10,10 @@ enum Route: Hashable {
     case foodDetailView(FoodItem, shouldEmptyPlate: Bool)
     case createNewFoodItem
     case editFoodItem(FoodItem)
+    case editPlateItem(FoodItem) // New case for editing a plate item
     case importInstructions
     case insulinLoggingView
-    case calculator // Lägg till detta fall för kalkylatorn
+    case calculator // Calculator
 }
 
 struct ContentView: View {
@@ -43,7 +44,7 @@ struct ContentView: View {
                     Text("Tallrik till livsmedel")
                 }
 
-                // Knapp för att logga insulin till Apple Hälsa
+                // Button to log insulin to Apple Health
                 NavigationLink(value: Route.insulinLoggingView) {
                     Text("Logga insulin till Apple Hälsa")
                 }
@@ -66,12 +67,18 @@ struct ContentView: View {
                     CreateNewFoodItemView(foodData: foodData, navigationPath: $navigationPath)
                 case .editFoodItem(let food):
                     EditFoodItemView(food: food, foodData: foodData, navigationPath: $navigationPath)
+                case .editPlateItem(let item):
+                    if item.isCalculatorItem {
+                        CalculatorView(plate: plate, navigationPath: $navigationPath, initialCalculation: item.name, itemToEdit: item)
+                    } else {
+                        EditFoodView(plate: plate, item: item)
+                    }
                 case .importInstructions:
                     ImportInstructionsView()
                 case .insulinLoggingView:
                     InsulinLoggingView()
                 case .calculator:
-                    CalculatorView(plate: plate, navigationPath: $navigationPath) // Hantera kalkylatorn
+                    CalculatorView(plate: plate, navigationPath: $navigationPath)
                 }
             }
             .navigationTitle("Totalt: \(totalCarbs, specifier: "%.1f") gk")
@@ -82,6 +89,7 @@ struct ContentView: View {
     }
 
     // MARK: - Handle Deep Link
+
     func handleDeepLink(url: URL) {
         switch url.host {
         case "addFood":

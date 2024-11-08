@@ -1,26 +1,25 @@
-// kolkalk Watch App/PlateView.swift
+// PlateView.swift
 
-import Foundation
 import SwiftUI
-import HealthKit // Importera HealthKit
+import HealthKit
 
 struct PlateView: View {
     @ObservedObject var plate: Plate
     @Binding var navigationPath: NavigationPath
     @State private var showDetailsForItemId: UUID?
-    
-    // State-variabler för HealthKit-loggning
+
+    // State variables for HealthKit logging
     @State private var isLogging = false
     @State private var logAlert: LogAlert?
-    
-    // State-variabel för bekräftelse-alert
+
+    // State variable for confirmation alert
     @State private var showEmptyConfirmation = false
 
     var totalCarbs: Double {
         plate.items.reduce(0) { $0 + $1.totalCarbs }
     }
-    
-    // Struktur för att hantera alerten
+
+    // Structure to handle alerts
     struct LogAlert: Identifiable {
         var id = UUID()
         var title: String
@@ -32,7 +31,7 @@ struct PlateView: View {
             ForEach(plate.items) { item in
                 VStack(alignment: .leading) {
                     HStack {
-                        NavigationLink(destination: EditFoodView(plate: plate, item: item)) {
+                        NavigationLink(value: Route.editPlateItem(item)) {
                             HStack {
                                 Text(item.name)
                                     .font(.body)
@@ -47,7 +46,7 @@ struct PlateView: View {
                         Text("\(item.totalCarbs, specifier: "%.1f") gk")
                     }
 
-                    // Visa detaljer när användaren sveper
+                    // Show details when the user swipes
                     if showDetailsForItemId == item.id {
                         Text(itemDetailString(for: item))
                             .font(.caption)
@@ -59,7 +58,7 @@ struct PlateView: View {
                     DragGesture(minimumDistance: 50, coordinateSpace: .local)
                         .onEnded { value in
                             if value.translation.width > 0 {
-                                // Svep från vänster till höger för att visa information
+                                // Swipe from left to right to show information
                                 showDetailsForItemId = item.id
                             } else if value.translation.width < 0 {
                                 showDetailsForItemId = nil
@@ -77,7 +76,7 @@ struct PlateView: View {
 
             if !plate.items.isEmpty {
                 Button(action: {
-                    showEmptyConfirmation = true // Visa bekräftelse-alert
+                    showEmptyConfirmation = true // Show confirmation alert
                 }) {
                     HStack {
                         Spacer()
@@ -95,7 +94,7 @@ struct PlateView: View {
                     Text("Är du säker på att du vill tömma tallriken?")
                 }
 
-                // "Logga till Apple Hälsa"-knappen
+                // "Log to Apple Health" button
                 Button(action: {
                     logToHealth()
                 }) {
@@ -108,12 +107,12 @@ struct PlateView: View {
                 }
                 .disabled(isLogging || plate.items.allSatisfy { $0.hasBeenLogged })
             } else {
-                // Visa meddelande om tallriken är tom
+                // Display message when the plate is empty
                 Text("Tallriken är tom")
                     .foregroundColor(.gray)
             }
 
-            // Knapp för att logga insulin till Apple Hälsa
+            // Button to log insulin to Apple Health
             Button(action: {
                 navigationPath.append(Route.insulinLoggingView)
             }) {
@@ -138,7 +137,7 @@ struct PlateView: View {
         }
     }
 
-    // MARK: - Hjälpmetoder
+    // MARK: - Helper Methods
 
     private func deleteItem(item: FoodItem) {
         if let index = plate.items.firstIndex(where: { $0.id == item.id }) {
@@ -186,11 +185,11 @@ struct PlateView: View {
         }
     }
 
-    // Funktion för att logga till HealthKit
+    // Function to log to HealthKit
     private func logToHealth() {
         isLogging = true
 
-        // Filtrera ut livsmedel som inte har loggats
+        // Filter out food items that haven't been logged
         let itemsToLog = plate.items.filter { !$0.hasBeenLogged }
 
         guard !itemsToLog.isEmpty else {
@@ -201,7 +200,7 @@ struct PlateView: View {
 
         let totalCarbsToLog = itemsToLog.reduce(0) { $0 + $1.totalCarbs }
 
-        // Skapa metadata med livsmedel och mängder
+        // Create metadata with food items and quantities
         let foodDetails = itemsToLog.map { item in
             "\(item.name): \(item.formattedDetail())"
         }.joined(separator: "; ")
@@ -215,7 +214,7 @@ struct PlateView: View {
                 self.isLogging = false
 
                 if success {
-                    // Uppdatera hasBeenLogged för de loggade livsmedlen
+                    // Update hasBeenLogged for the logged food items
                     for index in plate.items.indices {
                         if !plate.items[index].hasBeenLogged {
                             plate.items[index].hasBeenLogged = true
@@ -228,10 +227,9 @@ struct PlateView: View {
                 }
 
                 if let error = error {
-                    print("Fel vid loggning till HealthKit: \(error.localizedDescription)")
+                    print("Error logging to HealthKit: \(error.localizedDescription)")
                 }
             }
         }
     }
 }
-
