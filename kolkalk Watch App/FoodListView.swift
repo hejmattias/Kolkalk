@@ -1,3 +1,5 @@
+// FoodListView.swift
+
 import SwiftUI
 
 // List of available food items
@@ -45,9 +47,9 @@ struct FoodListView: View {
                 TextField("Sök", text: $searchText)
                     .id("searchField") // Assign ID
 
-                // Lägg till "Kalkylator"-knappen under sökfältet
+                // "Calculator" button under the search field
                 Button(action: {
-                    navigationPath.append(Route.calculator)
+                    navigationPath.append(Route.calculator(shouldEmptyPlate: isEmptyAndAdd)) // Pass isEmptyAndAdd
                 }) {
                     HStack {
                         Spacer()

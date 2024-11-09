@@ -13,12 +13,14 @@ struct CalculatorView: View {
     @State private var result: Double?
 
     var itemToEdit: FoodItem?
+    var shouldEmptyPlate: Bool = false // Existing property
 
-    init(plate: Plate, navigationPath: Binding<NavigationPath>, initialCalculation: String = "", itemToEdit: FoodItem? = nil) {
+    init(plate: Plate, navigationPath: Binding<NavigationPath>, initialCalculation: String = "", itemToEdit: FoodItem? = nil, shouldEmptyPlate: Bool = false) {
         self._plate = ObservedObject(initialValue: plate)
         self._navigationPath = navigationPath
         self._calculation = State(initialValue: initialCalculation)
         self.itemToEdit = itemToEdit
+        self.shouldEmptyPlate = shouldEmptyPlate // Initialize property
     }
 
     var body: some View {
@@ -131,8 +133,8 @@ struct CalculatorView: View {
             }
             .background(Color.black.edgesIgnoringSafeArea(.all))
         }
-        // Display the result in the navigation title
-        .navigationTitle("= \(formatResult(result))")
+        // Display the result in the navigation title with '-+' prefix if shouldEmptyPlate is true
+        .navigationTitle("\(shouldEmptyPlate ? "-+ " : "")= \(formatResult(result))")
         .navigationBarTitleDisplayMode(.inline)
         // Updated 'onChange' closure for watchOS 10.0
         .onChange(of: calculation) {
@@ -236,6 +238,10 @@ struct CalculatorView: View {
     }
 
     func addResultToPlate(value: Double) {
+        if shouldEmptyPlate {
+            plate.emptyPlate()
+        }
+
         if var item = itemToEdit {
             // Update existing food item
             item.name = calculation

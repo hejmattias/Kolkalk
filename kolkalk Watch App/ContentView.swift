@@ -10,10 +10,10 @@ enum Route: Hashable {
     case foodDetailView(FoodItem, shouldEmptyPlate: Bool)
     case createNewFoodItem
     case editFoodItem(FoodItem)
-    case editPlateItem(FoodItem) // New case for editing a plate item
+    case editPlateItem(FoodItem)
     case importInstructions
     case insulinLoggingView
-    case calculator // Calculator
+    case calculator(shouldEmptyPlate: Bool) // Updated to include shouldEmptyPlate
 }
 
 struct ContentView: View {
@@ -77,8 +77,8 @@ struct ContentView: View {
                     ImportInstructionsView()
                 case .insulinLoggingView:
                     InsulinLoggingView()
-                case .calculator:
-                    CalculatorView(plate: plate, navigationPath: $navigationPath)
+                case .calculator(let shouldEmptyPlate): // Handle the updated case
+                    CalculatorView(plate: plate, navigationPath: $navigationPath, shouldEmptyPlate: shouldEmptyPlate)
                 }
             }
             .navigationTitle("Totalt: \(totalCarbs, specifier: "%.1f") gk")
