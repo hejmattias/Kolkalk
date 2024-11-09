@@ -133,15 +133,27 @@ struct CalculatorView: View {
             }
             .background(Color.black.edgesIgnoringSafeArea(.all))
         }
-        // Display the result in the navigation title with '-+' prefix if shouldEmptyPlate is true
-        .navigationTitle("\(shouldEmptyPlate ? "-+ " : "")= \(formatResult(result))")
+        // Set the navigation title with emoji
+        .navigationTitle(navigationTitleWithIcons())
         .navigationBarTitleDisplayMode(.inline)
-        // Updated 'onChange' closure for watchOS 10.0
         .onChange(of: calculation) {
             calculateResult()
         }
         .onAppear {
             calculateResult()
+        }
+    }
+
+    // Function to create the navigation title with icons
+    func navigationTitleWithIcons() -> String {
+        let resultString = " \(formatResult(result))"
+
+        if shouldEmptyPlate {
+            // Include trash and plus emoji
+            return "🗑️➕ \(resultString)"
+        } else {
+            // Include only plus emoji
+            return "➕ \(resultString)"
         }
     }
 

@@ -199,7 +199,7 @@ struct NumpadView: View {
                     HStack(spacing: 4) {
                         CustomNumpadButton(label: "⌫", width: buttonWidth, height: buttonHeight, action: { backspace() })
                         // Knapp med långtryck för kommatecken
-                        CustomNumpadButtonWithLongPress(label: "0\n,", width: buttonWidth, height: buttonHeight, shortPressAction: {
+                        CustomNumpadButtonWithLongPress(label: "0/,", width: buttonWidth, height: buttonHeight, shortPressAction: {
                             appendNumber("0")
                         }, longPressAction: {
                             appendComma()
