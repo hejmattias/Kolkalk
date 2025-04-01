@@ -1,3 +1,4 @@
+// Kolkalk.zip/kolkalk Watch App/ContentView.swift
 // ContentView.swift
 
 import SwiftUI
@@ -13,13 +14,17 @@ enum Route: Hashable {
     case editPlateItem(FoodItem)
     case importInstructions
     case insulinLoggingView
-    case calculator(shouldEmptyPlate: Bool) // Updated to include shouldEmptyPlate
+    case calculator(shouldEmptyPlate: Bool)
+    case settings // *** NY ROUTE ***
 }
 
 struct ContentView: View {
     @ObservedObject var plate = Plate.shared
     @ObservedObject var foodData = WatchViewModel.shared.foodData
     @State private var navigationPath = NavigationPath()
+
+    // *** NYTT: Läs in inställningen för insulinloggning ***
+    @AppStorage("enableInsulinLogging") private var enableInsulinLogging = true
 
     var totalCarbs: Double {
         plate.items.reduce(0) { $0 + $1.totalCarbs }
@@ -29,29 +34,38 @@ struct ContentView: View {
         NavigationStack(path: $navigationPath) {
             List {
                 NavigationLink(value: Route.plateView) {
-                    Text("Visa tallriken")
+                    Label("Visa tallriken", systemImage: "fork.knife.circle") // Lägg till ikon
                 }
 
                 NavigationLink(value: Route.foodListView(isEmptyAndAdd: false)) {
-                    Text("Lägg till på tallriken")
+                    Label("Lägg till på tallriken", systemImage: "plus.circle") // Lägg till ikon
                 }
 
                 NavigationLink(value: Route.foodListView(isEmptyAndAdd: true)) {
-                    Text("Töm och lägg till på tallriken")
+                    Label("Töm och lägg till", systemImage: "trash.circle") // Lägg till ikon
                 }
 
                 NavigationLink(value: Route.createFoodFromPlateView) {
-                    Text("Tallrik till livsmedel")
+                    Label("Tallrik till livsmedel", systemImage: "scalemass") // Lägg till ikon
                 }
 
-                // Button to log insulin to Apple Health
-                NavigationLink(value: Route.insulinLoggingView) {
-                    Text("Logga insulin till Apple Hälsa")
+                // *** NYTT: Dölj insulinlänken baserat på inställning ***
+                if enableInsulinLogging {
+                    NavigationLink(value: Route.insulinLoggingView) {
+                        Label("Logga insulin", systemImage: "syringe") // Byt text och lägg till ikon
+                    }
+                }
+
+                // *** NYTT: Länk till inställningar ***
+                NavigationLink(value: Route.settings) {
+                     Label("Inställningar", systemImage: "gearshape") // Lägg till ikon
                 }
             }
             .onAppear {
                 plate.loadFromUserDefaults()
                 foodData.loadFromUserDefaults()
+                // Begär HealthKit-auktorisation vid start om funktionerna är aktiverade
+                 requestAuthIfEnabled()
             }
             .navigationDestination(for: Route.self) { route in
                 switch route {
@@ -77,8 +91,11 @@ struct ContentView: View {
                     ImportInstructionsView()
                 case .insulinLoggingView:
                     InsulinLoggingView()
-                case .calculator(let shouldEmptyPlate): // Handle the updated case
+                case .calculator(let shouldEmptyPlate):
                     CalculatorView(plate: plate, navigationPath: $navigationPath, shouldEmptyPlate: shouldEmptyPlate)
+                // *** NYTT: Lägg till destination för settings ***
+                case .settings:
+                    SettingsView()
                 }
             }
             .navigationTitle("Totalt: \(totalCarbs, specifier: "%.1f") gk")
@@ -102,4 +119,26 @@ struct ContentView: View {
             break
         }
     }
+
+    // *** NYTT: Funktion för att begära auktorisering vid start ***
+    private func requestAuthIfEnabled() {
+         // Läs in den andra inställningen här också för att kolla båda
+         let enableCarbLogging = UserDefaults.standard.bool(forKey: "enableCarbLogging")
+         // Standardvärdet om nyckeln inte finns är false, men vi vill ha true som standard.
+         // Om nyckeln *aldrig* har satts (första gången), använd true.
+         let carbLoggingSettingExists = UserDefaults.standard.object(forKey: "enableCarbLogging") != nil
+         let shouldRequestCarb = carbLoggingSettingExists ? enableCarbLogging : true
+
+         let insulinLoggingSettingExists = UserDefaults.standard.object(forKey: "enableInsulinLogging") != nil
+         let shouldRequestInsulin = insulinLoggingSettingExists ? enableInsulinLogging : true
+
+
+         if shouldRequestCarb || shouldRequestInsulin {
+             HealthKitManager.shared.requestAuthorization { success, error in
+                 if !success {
+                     print("HealthKit authorization was not granted on app start.")
+                 }
+             }
+         }
+     }
 }

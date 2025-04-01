@@ -1,3 +1,4 @@
+// Kolkalk.zip/kolkalk Watch App/PlateView.swift
 // PlateView.swift
 
 import SwiftUI
@@ -15,6 +16,12 @@ struct PlateView: View {
     // State variable for confirmation alert
     @State private var showEmptyConfirmation = false
 
+    // *** NYTT: Läs in inställningen för kolhydratloggning ***
+    @AppStorage("enableCarbLogging") private var enableCarbLogging = true
+    // *** NYTT: Läs in inställningen för insulinloggning (för att dölja knappen) ***
+    @AppStorage("enableInsulinLogging") private var enableInsulinLogging = true
+
+
     var totalCarbs: Double {
         plate.items.reduce(0) { $0 + $1.totalCarbs }
     }
@@ -28,6 +35,8 @@ struct PlateView: View {
 
     var body: some View {
         List {
+            // MARK: - Existing List Content (Items, Empty Plate, Log to Health, Log Insulin)
+
             ForEach(plate.items) { item in
                 VStack(alignment: .leading) {
                     HStack {
@@ -36,7 +45,7 @@ struct PlateView: View {
                                 Text(item.name)
                                     .font(.body)
                                     .foregroundColor(.primary)
-                                if item.hasBeenLogged {
+                                if item.hasBeenLogged && enableCarbLogging { // Visa bara bocken om loggning är på
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundColor(.green)
                                 }
@@ -94,37 +103,53 @@ struct PlateView: View {
                     Text("Är du säker på att du vill tömma tallriken?")
                 }
 
-                // "Log to Apple Health" button
+                // *** NYTT: Dölj kolhydratloggningsknappen baserat på inställning ***
+                if enableCarbLogging {
+                    // "Log to Apple Health" button
+                    Button(action: {
+                        logToHealth()
+                    }) {
+                        HStack {
+                            Spacer()
+                            Text("Logga kolhydrater") // Ändrad text
+                                .foregroundColor(.blue)
+                            Spacer()
+                        }
+                    }
+                    .disabled(isLogging || plate.items.allSatisfy { $0.hasBeenLogged })
+                }
+            } else {
+                // Display message when the plate is empty
+                Text("Tallriken är tom. Tryck på '+' för att lägga till.")
+                    .foregroundColor(.gray)
+                    .padding()
+            }
+
+            // *** NYTT: Dölj insulinloggningsknappen baserat på inställning ***
+            if enableInsulinLogging {
+                // Button to log insulin to Apple Health
                 Button(action: {
-                    logToHealth()
+                    navigationPath.append(Route.insulinLoggingView)
                 }) {
                     HStack {
                         Spacer()
-                        Text("Logga till Apple Hälsa")
+                        Text("Logga insulin") // Ändrad text
                             .foregroundColor(.blue)
                         Spacer()
                     }
                 }
-                .disabled(isLogging || plate.items.allSatisfy { $0.hasBeenLogged })
-            } else {
-                // Display message when the plate is empty
-                Text("Tallriken är tom")
-                    .foregroundColor(.gray)
-            }
-
-            // Button to log insulin to Apple Health
-            Button(action: {
-                navigationPath.append(Route.insulinLoggingView)
-            }) {
-                HStack {
-                    Spacer()
-                    Text("Logga insulin till Apple Hälsa")
-                        .foregroundColor(.blue)
-                    Spacer()
-                }
             }
         }
         .navigationTitle("Totalt: \(totalCarbs, specifier: "%.1f") gk")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    navigationPath.append(Route.foodListView(isEmptyAndAdd: false))
+                } label: {
+                    Image(systemName: "plus")
+                }
+            }
+        }
         .onDisappear {
             showDetailsForItemId = nil
         }
@@ -221,9 +246,9 @@ struct PlateView: View {
                         }
                     }
                     plate.saveToUserDefaults()
-                    self.logAlert = LogAlert(title: "Lyckades", message: "Nya livsmedel har loggats till Apple Hälsa.")
+                    self.logAlert = LogAlert(title: "Lyckades", message: "Kolhydrater har loggats till Apple Hälsa.") // Ändrad text
                 } else {
-                    self.logAlert = LogAlert(title: "Fel", message: "Kunde inte logga till Apple Hälsa.")
+                    self.logAlert = LogAlert(title: "Fel", message: "Kunde inte logga kolhydrater till Apple Hälsa.") // Ändrad text
                 }
 
                 if let error = error {
