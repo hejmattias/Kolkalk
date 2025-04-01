@@ -75,6 +75,7 @@ struct CustomNumpadButtonWithLongPress: View {
                 }
         )
         .buttonStyle(CustomButtonStyle())
+        
     }
 }
 
@@ -96,63 +97,7 @@ struct NumpadView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            VStack(spacing: 4) {
-                Spacer() // Flyttar ned back-knappen
-
-                HStack {
-                    Spacer().frame(width: 40) // Flyttar ScrollView inåt med 40 punkter
-
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 10) {  // Lägg till mellanrum mellan upprepningarna
-                            Text(foodName)
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .fixedSize(horizontal: true, vertical: false)
-                            Text(foodName)
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .fixedSize(horizontal: true, vertical: false)
-                            Text(foodName)
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .fixedSize(horizontal: true, vertical: false)
-                            Text(foodName)
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .fixedSize(horizontal: true, vertical: false)
-                        }
-                        .offset(x: titleOffset, y: 0)
-                        .frame(height: 20)
-                        .background(GeometryReader { geo in
-                            Color.clear.onAppear {
-                                titleWidth = geo.size.width / 4  // Dela med 4 eftersom vi har fyra kopior av texten
-                            }
-                        })
-                    }
-                    .frame(width: geometry.size.width * 0.40)
-                    .clipped()
-                    .onAppear {
-                        animateTitle(viewWidth: geometry.size.width * 0.40)
-                    }
-                    // Applicera fade-effekten med en mask
-                    .mask(
-                        LinearGradient(
-                            gradient: Gradient(stops: [
-                                .init(color: Color.black.opacity(0), location: 0),
-                                .init(color: Color.black.opacity(1), location: 0.1),
-                                .init(color: Color.black.opacity(1), location: 0.9),
-                                .init(color: Color.black.opacity(0), location: 1)
-                            ]),
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                        .frame(width: geometry.size.width * 0.40, height: 20)
-                    )
-
-                    Spacer()
-                }
-                .padding(.horizontal)
-
+            VStack(spacing: 1) {
                 // Flytta ned inputfältet med extra padding
                 HStack {
                     Text("\(inputString)\(unit)")
@@ -174,8 +119,6 @@ struct NumpadView: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
                 }
-                .padding(.horizontal)
-                .padding(.top, 20) // Justera padding efter behov
 
                 let buttonWidth = geometry.size.width / 5
                 let buttonHeight = geometry.size.height / 10 // Minskat från /8 till /10
@@ -208,12 +151,13 @@ struct NumpadView: View {
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(.horizontal, 6)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .edgesIgnoringSafeArea(.all)
+           // .edgesIgnoringSafeArea(.all)
         }
         .background(Color.black)
+        .navigationTitle(foodName)
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     // MARK: - Funktioner

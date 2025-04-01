@@ -35,25 +35,23 @@ struct CalculatorView: View {
             let totalSpacingHeight = spacing * CGFloat(rows + 1)
 
             let availableWidth = screenWidth - totalSpacingWidth
-            let availableHeight = screenHeight - totalSpacingHeight - 10 // Adjust for input field
+            let availableHeight = screenHeight - totalSpacingHeight //- 10 // Adjust for input field
 
             let buttonWidth = availableWidth / CGFloat(columns)
             let buttonHeight = availableHeight / CGFloat(rows)
 
             // Adjust font sizes
-            let inputFontSize = screenHeight * 0.08 // Increased font size for the calculation
+            let inputFontSize = screenHeight * 0.1 // Increased font size for the calculation
             let buttonFontSize = buttonHeight * 0.4
 
             VStack(spacing: 1) {
                 // Input field displaying the entire calculation
                 Text(calculation.isEmpty ? " " : calculation)
                     .font(.system(size: inputFontSize))
-                    .frame(height: screenHeight * 0.12, alignment: .trailing) // Adjusted height for input field
+                    .frame(height: screenHeight * 0.1, alignment: .trailing) // Adjusted height for input field
                     .frame(maxWidth: .infinity, alignment: .trailing)
-                    .padding(.horizontal, 5)
-                    .padding(.vertical, 2)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.5)
+                    //.minimumScaleFactor(0.5)
                     .foregroundColor(.white)
                     .background(Color.black)
                     .cornerRadius(5)
@@ -129,9 +127,8 @@ struct CalculatorView: View {
                         }
                     }
                 }
-                .padding(.horizontal, spacing)
             }
-            .background(Color.black.edgesIgnoringSafeArea(.all))
+           // .background(Color.black.edgesIgnoringSafeArea(.all))
         }
         // Set the navigation title with emoji
         .navigationTitle(navigationTitleWithIcons())

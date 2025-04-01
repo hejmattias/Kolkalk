@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -11,6 +11,64 @@
 		B97C749F2CB7D26E0073AC17 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B97C749E2CB7D26E0073AC17 /* SwiftUI.framework */; };
 		B97C74AA2CB7D26F0073AC17 /* komplikationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B97C749B2CB7D26E0073AC17 /* komplikationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B97E03FF2CAC84D100450835 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B97E03FE2CAC84D100450835 /* WatchConnectivity.framework */; };
+		B97FFDF32D88650500DD4DB6 /* Container.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE32D88650500DD4DB6 /* Container.swift */; };
+		B97FFDF42D88650500DD4DB6 /* FoodItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE42D88650500DD4DB6 /* FoodItem.swift */; };
+		B97FFDF52D88650500DD4DB6 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE52D88650500DD4DB6 /* HealthKitManager.swift */; };
+		B97FFDF62D88650500DD4DB6 /* AddEditContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE72D88650500DD4DB6 /* AddEditContainerView.swift */; };
+		B97FFDF72D88650500DD4DB6 /* ContainerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDEA2D88650500DD4DB6 /* ContainerData.swift */; };
+		B97FFDF82D88650500DD4DB6 /* ContainerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDEB2D88650500DD4DB6 /* ContainerListView.swift */; };
+		B97FFDF92D88650500DD4DB6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDEC2D88650500DD4DB6 /* ContentView.swift */; };
+		B97FFDFA2D88650500DD4DB6 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDED2D88650500DD4DB6 /* ImagePicker.swift */; };
+		B97FFDFB2D88650500DD4DB6 /* KolkalkApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDF02D88650500DD4DB6 /* KolkalkApp.swift */; };
+		B97FFDFC2D88650500DD4DB6 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDF12D88650500DD4DB6 /* ViewModel.swift */; };
+		B97FFDFD2D88650500DD4DB6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B97FFDE12D88650500DD4DB6 /* Preview Assets.xcassets */; };
+		B97FFDFE2D88650500DD4DB6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B97FFDE82D88650500DD4DB6 /* Assets.xcassets */; };
+		B97FFDFF2D88650500DD4DB6 /* code_copier_encoding_fix.py in Resources */ = {isa = PBXBuildFile; fileRef = B97FFDE92D88650500DD4DB6 /* code_copier_encoding_fix.py */; };
+		B97FFE012D88650500DD4DB6 /* Kolkalk.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B97FFDEF2D88650500DD4DB6 /* Kolkalk.entitlements */; };
+		B97FFE022D88650500DD4DB6 /* FoodItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE42D88650500DD4DB6 /* FoodItem.swift */; };
+		B97FFE032D88650500DD4DB6 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE52D88650500DD4DB6 /* HealthKitManager.swift */; };
+		B97FFE042D88650500DD4DB6 /* Container.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE32D88650500DD4DB6 /* Container.swift */; };
+		B97FFE052D88650500DD4DB6 /* FoodItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE42D88650500DD4DB6 /* FoodItem.swift */; };
+		B97FFE062D88650500DD4DB6 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE52D88650500DD4DB6 /* HealthKitManager.swift */; };
+		B97FFE072D88650500DD4DB6 /* Container.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE32D88650500DD4DB6 /* Container.swift */; };
+		B97FFE0F2D88650500DD4DB6 /*  komplikation.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B97FFE082D88650500DD4DB6 /*  komplikation.entitlements */; };
+		B97FFE102D88650500DD4DB6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B97FFE0A2D88650500DD4DB6 /* Assets.xcassets */; };
+		B97FFE122D88650500DD4DB6 /* AppIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE092D88650500DD4DB6 /* AppIntent.swift */; };
+		B97FFE132D88650500DD4DB6 /* komplikation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE0D2D88650500DD4DB6 /* komplikation.swift */; };
+		B97FFE332D88650500DD4DB6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B97FFE142D88650500DD4DB6 /* Preview Assets.xcassets */; };
+		B97FFE342D88650500DD4DB6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B97FFE162D88650500DD4DB6 /* Assets.xcassets */; };
+		B97FFE352D88650500DD4DB6 /* code_copier_encoding_fix.py in Resources */ = {isa = PBXBuildFile; fileRef = B97FFE192D88650500DD4DB6 /* code_copier_encoding_fix.py */; };
+		B97FFE382D88650500DD4DB6 /* CalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE172D88650500DD4DB6 /* CalculatorView.swift */; };
+		B97FFE392D88650500DD4DB6 /* ChooseContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE182D88650500DD4DB6 /* ChooseContainerView.swift */; };
+		B97FFE3A2D88650500DD4DB6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE1A2D88650500DD4DB6 /* ContentView.swift */; };
+		B97FFE3B2D88650500DD4DB6 /* CreateFoodFromPlateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE1B2D88650500DD4DB6 /* CreateFoodFromPlateView.swift */; };
+		B97FFE3C2D88650500DD4DB6 /* CreateNewFood.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE1C2D88650500DD4DB6 /* CreateNewFood.swift */; };
+		B97FFE3D2D88650500DD4DB6 /* EditFoodItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE1D2D88650500DD4DB6 /* EditFoodItemView.swift */; };
+		B97FFE3E2D88650500DD4DB6 /* EditFoodView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE1E2D88650500DD4DB6 /* EditFoodView.swift */; };
+		B97FFE3F2D88650500DD4DB6 /* FoodData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE1F2D88650500DD4DB6 /* FoodData.swift */; };
+		B97FFE402D88650500DD4DB6 /* FoodDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE202D88650500DD4DB6 /* FoodDetailView.swift */; };
+		B97FFE412D88650500DD4DB6 /* FoodListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE212D88650500DD4DB6 /* FoodListView.swift */; };
+		B97FFE422D88650500DD4DB6 /* ImportInstructionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE222D88650500DD4DB6 /* ImportInstructionsView.swift */; };
+		B97FFE432D88650500DD4DB6 /* InputValueDoubleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE242D88650500DD4DB6 /* InputValueDoubleView.swift */; };
+		B97FFE442D88650500DD4DB6 /* InputValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE252D88650500DD4DB6 /* InputValueView.swift */; };
+		B97FFE452D88650500DD4DB6 /* InsulinLoggingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE262D88650500DD4DB6 /* InsulinLoggingView.swift */; };
+		B97FFE462D88650500DD4DB6 /* kolhydratApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE272D88650500DD4DB6 /* kolhydratApp.swift */; };
+		B97FFE472D88650500DD4DB6 /* kolkalkApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE292D88650500DD4DB6 /* kolkalkApp.swift */; };
+		B97FFE482D88650500DD4DB6 /* NumpadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE2A2D88650500DD4DB6 /* NumpadView.swift */; };
+		B97FFE492D88650500DD4DB6 /* Plateklassen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE2B2D88650500DD4DB6 /* Plateklassen.swift */; };
+		B97FFE4A2D88650500DD4DB6 /* PlateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE2C2D88650500DD4DB6 /* PlateView.swift */; };
+		B97FFE4B2D88650500DD4DB6 /* SharedViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE2D2D88650500DD4DB6 /* SharedViews.swift */; };
+		B97FFE4C2D88650500DD4DB6 /* SimpleNumpadDoubleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE2E2D88650500DD4DB6 /* SimpleNumpadDoubleView.swift */; };
+		B97FFE4D2D88650500DD4DB6 /* SimpleNumpadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE2F2D88650500DD4DB6 /* SimpleNumpadView.swift */; };
+		B97FFE4E2D88650500DD4DB6 /* WatchContainerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE302D88650500DD4DB6 /* WatchContainerData.swift */; };
+		B97FFE4F2D88650500DD4DB6 /* WatchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE312D88650500DD4DB6 /* WatchViewModel.swift */; };
+		B97FFE502D88650500DD4DB6 /* Plateklassen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE2B2D88650500DD4DB6 /* Plateklassen.swift */; };
+		B97FFE532D88650500DD4DB6 /* kolkalk_Watch_AppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE512D88650500DD4DB6 /* kolkalk_Watch_AppTests.swift */; };
+		B97FFE572D88650500DD4DB6 /* KolkalkUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE542D88650500DD4DB6 /* KolkalkUITests.swift */; };
+		B97FFE582D88650500DD4DB6 /* KolkalkUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE552D88650500DD4DB6 /* KolkalkUITestsLaunchTests.swift */; };
+		B97FFE5C2D88650500DD4DB6 /* kolkalk_Watch_AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE592D88650500DD4DB6 /* kolkalk_Watch_AppUITests.swift */; };
+		B97FFE5D2D88650500DD4DB6 /* kolkalk_Watch_AppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE5A2D88650500DD4DB6 /* kolkalk_Watch_AppUITestsLaunchTests.swift */; };
+		B97FFE602D88650500DD4DB6 /* KolkalkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE5E2D88650500DD4DB6 /* KolkalkTests.swift */; };
 		B98B3D8E2CAC176700EE7D92 /* kolkalk Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B98B3D6B2CAC176600EE7D92 /* kolkalk Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -90,6 +148,62 @@
 		B97C749E2CB7D26E0073AC17 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		B97C74BD2CB7F2DB0073AC17 /* komplikationExtension.entitlements */ = {isa = PBXFileReference; explicitFileType = text; path = komplikationExtension.entitlements; sourceTree = "<group>"; };
 		B97E03FE2CAC84D100450835 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.0.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
+		B97FFDE12D88650500DD4DB6 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		B97FFDE32D88650500DD4DB6 /* Container.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Container.swift; sourceTree = "<group>"; };
+		B97FFDE42D88650500DD4DB6 /* FoodItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodItem.swift; sourceTree = "<group>"; };
+		B97FFDE52D88650500DD4DB6 /* HealthKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
+		B97FFDE72D88650500DD4DB6 /* AddEditContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEditContainerView.swift; sourceTree = "<group>"; };
+		B97FFDE82D88650500DD4DB6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B97FFDE92D88650500DD4DB6 /* code_copier_encoding_fix.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = code_copier_encoding_fix.py; sourceTree = "<group>"; };
+		B97FFDEA2D88650500DD4DB6 /* ContainerData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerData.swift; sourceTree = "<group>"; };
+		B97FFDEB2D88650500DD4DB6 /* ContainerListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerListView.swift; sourceTree = "<group>"; };
+		B97FFDEC2D88650500DD4DB6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B97FFDED2D88650500DD4DB6 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		B97FFDEE2D88650500DD4DB6 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = text; path = Info.plist; sourceTree = "<group>"; };
+		B97FFDEF2D88650500DD4DB6 /* Kolkalk.entitlements */ = {isa = PBXFileReference; explicitFileType = text; path = Kolkalk.entitlements; sourceTree = "<group>"; };
+		B97FFDF02D88650500DD4DB6 /* KolkalkApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KolkalkApp.swift; sourceTree = "<group>"; };
+		B97FFDF12D88650500DD4DB6 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
+		B97FFE082D88650500DD4DB6 /*  komplikation.entitlements */ = {isa = PBXFileReference; explicitFileType = text; path = " komplikation.entitlements"; sourceTree = "<group>"; };
+		B97FFE092D88650500DD4DB6 /* AppIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntent.swift; sourceTree = "<group>"; };
+		B97FFE0A2D88650500DD4DB6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B97FFE0B2D88650500DD4DB6 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = text; path = Info.plist; sourceTree = "<group>"; };
+		B97FFE0C2D88650500DD4DB6 /* komplikation.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = komplikation.entitlements; sourceTree = "<group>"; };
+		B97FFE0D2D88650500DD4DB6 /* komplikation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = komplikation.swift; sourceTree = "<group>"; };
+		B97FFE142D88650500DD4DB6 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		B97FFE162D88650500DD4DB6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B97FFE172D88650500DD4DB6 /* CalculatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatorView.swift; sourceTree = "<group>"; };
+		B97FFE182D88650500DD4DB6 /* ChooseContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseContainerView.swift; sourceTree = "<group>"; };
+		B97FFE192D88650500DD4DB6 /* code_copier_encoding_fix.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = code_copier_encoding_fix.py; sourceTree = "<group>"; };
+		B97FFE1A2D88650500DD4DB6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B97FFE1B2D88650500DD4DB6 /* CreateFoodFromPlateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateFoodFromPlateView.swift; sourceTree = "<group>"; };
+		B97FFE1C2D88650500DD4DB6 /* CreateNewFood.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewFood.swift; sourceTree = "<group>"; };
+		B97FFE1D2D88650500DD4DB6 /* EditFoodItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditFoodItemView.swift; sourceTree = "<group>"; };
+		B97FFE1E2D88650500DD4DB6 /* EditFoodView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditFoodView.swift; sourceTree = "<group>"; };
+		B97FFE1F2D88650500DD4DB6 /* FoodData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodData.swift; sourceTree = "<group>"; };
+		B97FFE202D88650500DD4DB6 /* FoodDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodDetailView.swift; sourceTree = "<group>"; };
+		B97FFE212D88650500DD4DB6 /* FoodListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodListView.swift; sourceTree = "<group>"; };
+		B97FFE222D88650500DD4DB6 /* ImportInstructionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportInstructionsView.swift; sourceTree = "<group>"; };
+		B97FFE232D88650500DD4DB6 /* info.plist */ = {isa = PBXFileReference; explicitFileType = text; path = info.plist; sourceTree = "<group>"; };
+		B97FFE242D88650500DD4DB6 /* InputValueDoubleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputValueDoubleView.swift; sourceTree = "<group>"; };
+		B97FFE252D88650500DD4DB6 /* InputValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputValueView.swift; sourceTree = "<group>"; };
+		B97FFE262D88650500DD4DB6 /* InsulinLoggingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsulinLoggingView.swift; sourceTree = "<group>"; };
+		B97FFE272D88650500DD4DB6 /* kolhydratApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = kolhydratApp.swift; sourceTree = "<group>"; };
+		B97FFE282D88650500DD4DB6 /* kolkalk Watch App.entitlements */ = {isa = PBXFileReference; explicitFileType = text; path = "kolkalk Watch App.entitlements"; sourceTree = "<group>"; };
+		B97FFE292D88650500DD4DB6 /* kolkalkApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = kolkalkApp.swift; sourceTree = "<group>"; };
+		B97FFE2A2D88650500DD4DB6 /* NumpadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumpadView.swift; sourceTree = "<group>"; };
+		B97FFE2B2D88650500DD4DB6 /* Plateklassen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plateklassen.swift; sourceTree = "<group>"; };
+		B97FFE2C2D88650500DD4DB6 /* PlateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlateView.swift; sourceTree = "<group>"; };
+		B97FFE2D2D88650500DD4DB6 /* SharedViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedViews.swift; sourceTree = "<group>"; };
+		B97FFE2E2D88650500DD4DB6 /* SimpleNumpadDoubleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleNumpadDoubleView.swift; sourceTree = "<group>"; };
+		B97FFE2F2D88650500DD4DB6 /* SimpleNumpadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleNumpadView.swift; sourceTree = "<group>"; };
+		B97FFE302D88650500DD4DB6 /* WatchContainerData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchContainerData.swift; sourceTree = "<group>"; };
+		B97FFE312D88650500DD4DB6 /* WatchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchViewModel.swift; sourceTree = "<group>"; };
+		B97FFE512D88650500DD4DB6 /* kolkalk_Watch_AppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = kolkalk_Watch_AppTests.swift; sourceTree = "<group>"; };
+		B97FFE542D88650500DD4DB6 /* KolkalkUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KolkalkUITests.swift; sourceTree = "<group>"; };
+		B97FFE552D88650500DD4DB6 /* KolkalkUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KolkalkUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		B97FFE592D88650500DD4DB6 /* kolkalk_Watch_AppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = kolkalk_Watch_AppUITests.swift; sourceTree = "<group>"; };
+		B97FFE5A2D88650500DD4DB6 /* kolkalk_Watch_AppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = kolkalk_Watch_AppUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		B97FFE5E2D88650500DD4DB6 /* KolkalkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KolkalkTests.swift; sourceTree = "<group>"; };
 		B98B3D392CAC170200EE7D92 /* Kolkalk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kolkalk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B98B3D4A2CAC170300EE7D92 /* KolkalkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KolkalkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B98B3D542CAC170300EE7D92 /* KolkalkUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KolkalkUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -97,118 +211,6 @@
 		B98B3D7A2CAC176700EE7D92 /* kolkalk Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "kolkalk Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B98B3D842CAC176700EE7D92 /* kolkalk Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "kolkalk Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		B95A09A52CD36DE5007BC9C3 /* Exceptions for "Kolkalk" folder in "Kolkalk" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = B98B3D382CAC170200EE7D92 /* Kolkalk */;
-		};
-		B964B3F02CD36B7C004FADBA /* Exceptions for "Kolkalk" folder in "kolkalk Watch App" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Shared/Container.swift,
-				Shared/FoodItem.swift,
-				Shared/HealthKitManager.swift,
-			);
-			target = B98B3D6A2CAC176600EE7D92 /* kolkalk Watch App */;
-		};
-		B964B3F12CD36B7C004FADBA /* Exceptions for "Kolkalk" folder in "komplikationExtension" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Shared/Container.swift,
-				Shared/FoodItem.swift,
-				Shared/HealthKitManager.swift,
-			);
-			target = B97C749A2CB7D26E0073AC17 /* komplikationExtension */;
-		};
-		B97C74AE2CB7D26F0073AC17 /* Exceptions for "komplikation" folder in "komplikationExtension" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = B97C749A2CB7D26E0073AC17 /* komplikationExtension */;
-		};
-		B97C74B52CB7D38A0073AC17 /* Exceptions for "kolkalk Watch App" folder in "komplikationExtension" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Plateklassen.swift,
-			);
-			target = B97C749A2CB7D26E0073AC17 /* komplikationExtension */;
-		};
-		B97C74BE2CB7F7410073AC17 /* Exceptions for "kolkalk Watch App" folder in "kolkalk Watch App" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				info.plist,
-				"kolkalk Watch App.entitlements",
-			);
-			target = B98B3D6A2CAC176600EE7D92 /* kolkalk Watch App */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		B97C74A02CB7D26E0073AC17 /* komplikation */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				B97C74AE2CB7D26F0073AC17 /* Exceptions for "komplikation" folder in "komplikationExtension" target */,
-			);
-			explicitFileTypes = {
-				" komplikation.entitlements" = text;
-				Info.plist = text;
-			};
-			path = komplikation;
-			sourceTree = "<group>";
-		};
-		B98B3D3B2CAC170200EE7D92 /* Kolkalk */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				B964B3F02CD36B7C004FADBA /* Exceptions for "Kolkalk" folder in "kolkalk Watch App" target */,
-				B95A09A52CD36DE5007BC9C3 /* Exceptions for "Kolkalk" folder in "Kolkalk" target */,
-				B964B3F12CD36B7C004FADBA /* Exceptions for "Kolkalk" folder in "komplikationExtension" target */,
-			);
-			explicitFileTypes = {
-				Info.plist = text;
-				Kolkalk.entitlements = text;
-			};
-			path = Kolkalk;
-			sourceTree = "<group>";
-		};
-		B98B3D4D2CAC170300EE7D92 /* KolkalkTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = KolkalkTests;
-			sourceTree = "<group>";
-		};
-		B98B3D572CAC170300EE7D92 /* KolkalkUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = KolkalkUITests;
-			sourceTree = "<group>";
-		};
-		B98B3D6C2CAC176600EE7D92 /* kolkalk Watch App */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				B97C74BE2CB7F7410073AC17 /* Exceptions for "kolkalk Watch App" folder in "kolkalk Watch App" target */,
-				B97C74B52CB7D38A0073AC17 /* Exceptions for "kolkalk Watch App" folder in "komplikationExtension" target */,
-			);
-			explicitFileTypes = {
-				info.plist = text;
-				"kolkalk Watch App.entitlements" = text;
-			};
-			path = "kolkalk Watch App";
-			sourceTree = "<group>";
-		};
-		B98B3D7D2CAC176700EE7D92 /* kolkalk Watch AppTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "kolkalk Watch AppTests";
-			sourceTree = "<group>";
-		};
-		B98B3D872CAC176700EE7D92 /* kolkalk Watch AppUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "kolkalk Watch AppUITests";
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		B97C74982CB7D26E0073AC17 /* Frameworks */ = {
@@ -276,16 +278,145 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		B97FFDE22D88650500DD4DB6 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				B97FFDE12D88650500DD4DB6 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		B97FFDE62D88650500DD4DB6 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				B97FFDE32D88650500DD4DB6 /* Container.swift */,
+				B97FFDE42D88650500DD4DB6 /* FoodItem.swift */,
+				B97FFDE52D88650500DD4DB6 /* HealthKitManager.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		B97FFDF22D88650500DD4DB6 /* Kolkalk */ = {
+			isa = PBXGroup;
+			children = (
+				B97FFDE22D88650500DD4DB6 /* Preview Content */,
+				B97FFDE62D88650500DD4DB6 /* Shared */,
+				B97FFDE72D88650500DD4DB6 /* AddEditContainerView.swift */,
+				B97FFDE82D88650500DD4DB6 /* Assets.xcassets */,
+				B97FFDE92D88650500DD4DB6 /* code_copier_encoding_fix.py */,
+				B97FFDEA2D88650500DD4DB6 /* ContainerData.swift */,
+				B97FFDEB2D88650500DD4DB6 /* ContainerListView.swift */,
+				B97FFDEC2D88650500DD4DB6 /* ContentView.swift */,
+				B97FFDED2D88650500DD4DB6 /* ImagePicker.swift */,
+				B97FFDEE2D88650500DD4DB6 /* Info.plist */,
+				B97FFDEF2D88650500DD4DB6 /* Kolkalk.entitlements */,
+				B97FFDF02D88650500DD4DB6 /* KolkalkApp.swift */,
+				B97FFDF12D88650500DD4DB6 /* ViewModel.swift */,
+			);
+			path = Kolkalk;
+			sourceTree = "<group>";
+		};
+		B97FFE0E2D88650500DD4DB6 /* komplikation */ = {
+			isa = PBXGroup;
+			children = (
+				B97FFE082D88650500DD4DB6 /*  komplikation.entitlements */,
+				B97FFE092D88650500DD4DB6 /* AppIntent.swift */,
+				B97FFE0A2D88650500DD4DB6 /* Assets.xcassets */,
+				B97FFE0B2D88650500DD4DB6 /* Info.plist */,
+				B97FFE0C2D88650500DD4DB6 /* komplikation.entitlements */,
+				B97FFE0D2D88650500DD4DB6 /* komplikation.swift */,
+			);
+			path = komplikation;
+			sourceTree = "<group>";
+		};
+		B97FFE152D88650500DD4DB6 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				B97FFE142D88650500DD4DB6 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		B97FFE322D88650500DD4DB6 /* kolkalk Watch App */ = {
+			isa = PBXGroup;
+			children = (
+				B97FFE152D88650500DD4DB6 /* Preview Content */,
+				B97FFE162D88650500DD4DB6 /* Assets.xcassets */,
+				B97FFE172D88650500DD4DB6 /* CalculatorView.swift */,
+				B97FFE182D88650500DD4DB6 /* ChooseContainerView.swift */,
+				B97FFE192D88650500DD4DB6 /* code_copier_encoding_fix.py */,
+				B97FFE1A2D88650500DD4DB6 /* ContentView.swift */,
+				B97FFE1B2D88650500DD4DB6 /* CreateFoodFromPlateView.swift */,
+				B97FFE1C2D88650500DD4DB6 /* CreateNewFood.swift */,
+				B97FFE1D2D88650500DD4DB6 /* EditFoodItemView.swift */,
+				B97FFE1E2D88650500DD4DB6 /* EditFoodView.swift */,
+				B97FFE1F2D88650500DD4DB6 /* FoodData.swift */,
+				B97FFE202D88650500DD4DB6 /* FoodDetailView.swift */,
+				B97FFE212D88650500DD4DB6 /* FoodListView.swift */,
+				B97FFE222D88650500DD4DB6 /* ImportInstructionsView.swift */,
+				B97FFE232D88650500DD4DB6 /* info.plist */,
+				B97FFE242D88650500DD4DB6 /* InputValueDoubleView.swift */,
+				B97FFE252D88650500DD4DB6 /* InputValueView.swift */,
+				B97FFE262D88650500DD4DB6 /* InsulinLoggingView.swift */,
+				B97FFE272D88650500DD4DB6 /* kolhydratApp.swift */,
+				B97FFE282D88650500DD4DB6 /* kolkalk Watch App.entitlements */,
+				B97FFE292D88650500DD4DB6 /* kolkalkApp.swift */,
+				B97FFE2A2D88650500DD4DB6 /* NumpadView.swift */,
+				B97FFE2B2D88650500DD4DB6 /* Plateklassen.swift */,
+				B97FFE2C2D88650500DD4DB6 /* PlateView.swift */,
+				B97FFE2D2D88650500DD4DB6 /* SharedViews.swift */,
+				B97FFE2E2D88650500DD4DB6 /* SimpleNumpadDoubleView.swift */,
+				B97FFE2F2D88650500DD4DB6 /* SimpleNumpadView.swift */,
+				B97FFE302D88650500DD4DB6 /* WatchContainerData.swift */,
+				B97FFE312D88650500DD4DB6 /* WatchViewModel.swift */,
+			);
+			path = "kolkalk Watch App";
+			sourceTree = "<group>";
+		};
+		B97FFE522D88650500DD4DB6 /* kolkalk Watch AppTests */ = {
+			isa = PBXGroup;
+			children = (
+				B97FFE512D88650500DD4DB6 /* kolkalk_Watch_AppTests.swift */,
+			);
+			path = "kolkalk Watch AppTests";
+			sourceTree = "<group>";
+		};
+		B97FFE562D88650500DD4DB6 /* KolkalkUITests */ = {
+			isa = PBXGroup;
+			children = (
+				B97FFE542D88650500DD4DB6 /* KolkalkUITests.swift */,
+				B97FFE552D88650500DD4DB6 /* KolkalkUITestsLaunchTests.swift */,
+			);
+			path = KolkalkUITests;
+			sourceTree = "<group>";
+		};
+		B97FFE5B2D88650500DD4DB6 /* kolkalk Watch AppUITests */ = {
+			isa = PBXGroup;
+			children = (
+				B97FFE592D88650500DD4DB6 /* kolkalk_Watch_AppUITests.swift */,
+				B97FFE5A2D88650500DD4DB6 /* kolkalk_Watch_AppUITestsLaunchTests.swift */,
+			);
+			path = "kolkalk Watch AppUITests";
+			sourceTree = "<group>";
+		};
+		B97FFE5F2D88650500DD4DB6 /* KolkalkTests */ = {
+			isa = PBXGroup;
+			children = (
+				B97FFE5E2D88650500DD4DB6 /* KolkalkTests.swift */,
+			);
+			path = KolkalkTests;
+			sourceTree = "<group>";
+		};
 		B98B3D302CAC170200EE7D92 = {
 			isa = PBXGroup;
 			children = (
-				B98B3D3B2CAC170200EE7D92 /* Kolkalk */,
-				B98B3D4D2CAC170300EE7D92 /* KolkalkTests */,
-				B98B3D572CAC170300EE7D92 /* KolkalkUITests */,
-				B98B3D6C2CAC176600EE7D92 /* kolkalk Watch App */,
-				B98B3D7D2CAC176700EE7D92 /* kolkalk Watch AppTests */,
-				B98B3D872CAC176700EE7D92 /* kolkalk Watch AppUITests */,
-				B97C74A02CB7D26E0073AC17 /* komplikation */,
+				B97FFDF22D88650500DD4DB6 /* Kolkalk */,
+				B97FFE5F2D88650500DD4DB6 /* KolkalkTests */,
+				B97FFE562D88650500DD4DB6 /* KolkalkUITests */,
+				B97FFE322D88650500DD4DB6 /* kolkalk Watch App */,
+				B97FFE522D88650500DD4DB6 /* kolkalk Watch AppTests */,
+				B97FFE5B2D88650500DD4DB6 /* kolkalk Watch AppUITests */,
+				B97FFE0E2D88650500DD4DB6 /* komplikation */,
 				B97E03FD2CAC84D100450835 /* Frameworks */,
 				B98B3D3A2CAC170200EE7D92 /* Products */,
 				B97C74BD2CB7F2DB0073AC17 /* komplikationExtension.entitlements */,
@@ -321,9 +452,6 @@
 			);
 			dependencies = (
 			);
-			fileSystemSynchronizedGroups = (
-				B97C74A02CB7D26E0073AC17 /* komplikation */,
-			);
 			name = komplikationExtension;
 			packageProductDependencies = (
 			);
@@ -345,9 +473,6 @@
 			dependencies = (
 				B98B3D8D2CAC176700EE7D92 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				B98B3D3B2CAC170200EE7D92 /* Kolkalk */,
-			);
 			name = Kolkalk;
 			packageProductDependencies = (
 			);
@@ -368,9 +493,6 @@
 			dependencies = (
 				B98B3D4C2CAC170300EE7D92 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				B98B3D4D2CAC170300EE7D92 /* KolkalkTests */,
-			);
 			name = KolkalkTests;
 			packageProductDependencies = (
 			);
@@ -390,9 +512,6 @@
 			);
 			dependencies = (
 				B98B3D562CAC170300EE7D92 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				B98B3D572CAC170300EE7D92 /* KolkalkUITests */,
 			);
 			name = KolkalkUITests;
 			packageProductDependencies = (
@@ -415,9 +534,6 @@
 			dependencies = (
 				B97C74A92CB7D26F0073AC17 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				B98B3D6C2CAC176600EE7D92 /* kolkalk Watch App */,
-			);
 			name = "kolkalk Watch App";
 			packageProductDependencies = (
 			);
@@ -438,9 +554,6 @@
 			dependencies = (
 				B98B3D7C2CAC176700EE7D92 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				B98B3D7D2CAC176700EE7D92 /* kolkalk Watch AppTests */,
-			);
 			name = "kolkalk Watch AppTests";
 			packageProductDependencies = (
 			);
@@ -460,9 +573,6 @@
 			);
 			dependencies = (
 				B98B3D862CAC176700EE7D92 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				B98B3D872CAC176700EE7D92 /* kolkalk Watch AppUITests */,
 			);
 			name = "kolkalk Watch AppUITests";
 			packageProductDependencies = (
@@ -509,6 +619,7 @@
 				};
 			};
 			buildConfigurationList = B98B3D342CAC170200EE7D92 /* Build configuration list for PBXProject "Kolkalk" */;
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -517,7 +628,6 @@
 			);
 			mainGroup = B98B3D302CAC170200EE7D92;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			productRefGroup = B98B3D3A2CAC170200EE7D92 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -538,6 +648,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B97FFE0F2D88650500DD4DB6 /*  komplikation.entitlements in Resources */,
+				B97FFE102D88650500DD4DB6 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -545,6 +657,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B97FFDFD2D88650500DD4DB6 /* Preview Assets.xcassets in Resources */,
+				B97FFDFE2D88650500DD4DB6 /* Assets.xcassets in Resources */,
+				B97FFDFF2D88650500DD4DB6 /* code_copier_encoding_fix.py in Resources */,
+				B97FFE012D88650500DD4DB6 /* Kolkalk.entitlements in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -566,6 +682,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B97FFE332D88650500DD4DB6 /* Preview Assets.xcassets in Resources */,
+				B97FFE342D88650500DD4DB6 /* Assets.xcassets in Resources */,
+				B97FFE352D88650500DD4DB6 /* code_copier_encoding_fix.py in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -590,6 +709,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B97FFE052D88650500DD4DB6 /* FoodItem.swift in Sources */,
+				B97FFE062D88650500DD4DB6 /* HealthKitManager.swift in Sources */,
+				B97FFE122D88650500DD4DB6 /* AppIntent.swift in Sources */,
+				B97FFE132D88650500DD4DB6 /* komplikation.swift in Sources */,
+				B97FFE502D88650500DD4DB6 /* Plateklassen.swift in Sources */,
+				B97FFE072D88650500DD4DB6 /* Container.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -597,6 +722,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B97FFDF32D88650500DD4DB6 /* Container.swift in Sources */,
+				B97FFDF42D88650500DD4DB6 /* FoodItem.swift in Sources */,
+				B97FFDF52D88650500DD4DB6 /* HealthKitManager.swift in Sources */,
+				B97FFDF62D88650500DD4DB6 /* AddEditContainerView.swift in Sources */,
+				B97FFDF72D88650500DD4DB6 /* ContainerData.swift in Sources */,
+				B97FFDF82D88650500DD4DB6 /* ContainerListView.swift in Sources */,
+				B97FFDF92D88650500DD4DB6 /* ContentView.swift in Sources */,
+				B97FFDFA2D88650500DD4DB6 /* ImagePicker.swift in Sources */,
+				B97FFDFB2D88650500DD4DB6 /* KolkalkApp.swift in Sources */,
+				B97FFDFC2D88650500DD4DB6 /* ViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -604,6 +739,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B97FFE602D88650500DD4DB6 /* KolkalkTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -611,6 +747,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B97FFE572D88650500DD4DB6 /* KolkalkUITests.swift in Sources */,
+				B97FFE582D88650500DD4DB6 /* KolkalkUITestsLaunchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -618,6 +756,33 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B97FFE022D88650500DD4DB6 /* FoodItem.swift in Sources */,
+				B97FFE382D88650500DD4DB6 /* CalculatorView.swift in Sources */,
+				B97FFE392D88650500DD4DB6 /* ChooseContainerView.swift in Sources */,
+				B97FFE3A2D88650500DD4DB6 /* ContentView.swift in Sources */,
+				B97FFE3B2D88650500DD4DB6 /* CreateFoodFromPlateView.swift in Sources */,
+				B97FFE3C2D88650500DD4DB6 /* CreateNewFood.swift in Sources */,
+				B97FFE3D2D88650500DD4DB6 /* EditFoodItemView.swift in Sources */,
+				B97FFE3E2D88650500DD4DB6 /* EditFoodView.swift in Sources */,
+				B97FFE3F2D88650500DD4DB6 /* FoodData.swift in Sources */,
+				B97FFE402D88650500DD4DB6 /* FoodDetailView.swift in Sources */,
+				B97FFE412D88650500DD4DB6 /* FoodListView.swift in Sources */,
+				B97FFE422D88650500DD4DB6 /* ImportInstructionsView.swift in Sources */,
+				B97FFE432D88650500DD4DB6 /* InputValueDoubleView.swift in Sources */,
+				B97FFE442D88650500DD4DB6 /* InputValueView.swift in Sources */,
+				B97FFE452D88650500DD4DB6 /* InsulinLoggingView.swift in Sources */,
+				B97FFE462D88650500DD4DB6 /* kolhydratApp.swift in Sources */,
+				B97FFE472D88650500DD4DB6 /* kolkalkApp.swift in Sources */,
+				B97FFE482D88650500DD4DB6 /* NumpadView.swift in Sources */,
+				B97FFE492D88650500DD4DB6 /* Plateklassen.swift in Sources */,
+				B97FFE4A2D88650500DD4DB6 /* PlateView.swift in Sources */,
+				B97FFE4B2D88650500DD4DB6 /* SharedViews.swift in Sources */,
+				B97FFE4C2D88650500DD4DB6 /* SimpleNumpadDoubleView.swift in Sources */,
+				B97FFE4D2D88650500DD4DB6 /* SimpleNumpadView.swift in Sources */,
+				B97FFE4E2D88650500DD4DB6 /* WatchContainerData.swift in Sources */,
+				B97FFE4F2D88650500DD4DB6 /* WatchViewModel.swift in Sources */,
+				B97FFE032D88650500DD4DB6 /* HealthKitManager.swift in Sources */,
+				B97FFE042D88650500DD4DB6 /* Container.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -625,6 +790,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B97FFE532D88650500DD4DB6 /* kolkalk_Watch_AppTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -632,6 +798,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B97FFE5C2D88650500DD4DB6 /* kolkalk_Watch_AppUITests.swift in Sources */,
+				B97FFE5D2D88650500DD4DB6 /* kolkalk_Watch_AppUITestsLaunchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
