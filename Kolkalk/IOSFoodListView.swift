@@ -3,34 +3,38 @@
 import SwiftUI
 
 struct IOSFoodListView: View {
-    // FoodData skapas nu i ContentView och skickas hit
-    @ObservedObject var foodData: FoodData_iOS // Ändra från @StateObject om den skickas in
+    @ObservedObject var foodData: FoodData_iOS
     @State private var showingAddEditSheet = false
     @State private var foodToEdit: FoodItem? = nil
     @State private var searchText: String = ""
     @State private var showFavoritesOnly: Bool = UserDefaults.standard.bool(forKey: "showFavoritesOnly_iOS")
     @State private var showingDeleteConfirmation = false
 
+    // Formatter för tidvisning
+    private static var timeFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .none
+        formatter.timeStyle = .medium
+        return formatter
+    }()
+
     var filteredFoodList: [FoodItem] {
-        // Filtrering är oförändrad
         var list = foodData.foodList
         if showFavoritesOnly { list = list.filter { $0.isFavorite } }
         if !searchText.isEmpty { list = list.filter { $0.name.lowercased().contains(searchText.lowercased()) } }
-        // Sortering sker nu i FoodData
         return list
     }
 
     var body: some View {
-        // *** Använd ZStack eller Group för att visa laddningsindikator över listan ***
         ZStack {
-            // Visa listan normalt
             List {
-                 Toggle("Visa endast favoriter", isOn: $showFavoritesOnly)
-                     .onChange(of: showFavoritesOnly) { newValue in // Använd nya syntaxen om iOS 14+
+                Toggle("Visa endast favoriter", isOn: $showFavoritesOnly)
+                     .onChange(of: showFavoritesOnly) { newValue in
                          UserDefaults.standard.set(newValue, forKey: "showFavoritesOnly_iOS")
                      }
 
                 ForEach(filteredFoodList) { food in
+                    // ... (oförändrad item-visning) ...
                     HStack {
                         VStack(alignment: .leading) {
                             Text(food.name).font(.headline)
@@ -48,22 +52,62 @@ struct IOSFoodListView: View {
                          Button { foodToEdit = food; showingAddEditSheet = true } label: { Label("Redigera", systemImage: "pencil") }.tint(.blue)
                      }
                 }
-                // Knapp för att radera alla
-                 if !foodData.foodList.isEmpty {
-                      Button("Radera alla livsmedel", role: .destructive) { showingDeleteConfirmation = true }
-                 }
+
+                if !foodData.foodList.isEmpty {
+                     Button("Radera alla livsmedel", role: .destructive) { showingDeleteConfirmation = true }
+                }
+
+                // *** NY STATUSSEKTION ***
+                Section {
+                    HStack {
+                        if foodData.isLoading {
+                            ProgressView()
+                                .padding(.trailing, 5)
+                            Text("Synkroniserar...")
+                                .foregroundColor(.secondary)
+                        } else if let error = foodData.lastSyncError {
+                            Image(systemName: "exclamationmark.icloud.fill")
+                                .foregroundColor(.red)
+                            Text("Synkfel")
+                                .foregroundColor(.secondary)
+                                .onTapGesture { // Gör felet tappbart för att visa detaljer?
+                                     print("Sync Error Details: \(error.localizedDescription)")
+                                     // Du kan visa en Alert här om du vill
+                                 }
+                        } else if let syncTime = foodData.lastSyncTime {
+                            Image(systemName: "checkmark.icloud.fill")
+                                .foregroundColor(.green)
+                            Text("Synkad: \(syncTime, formatter: Self.timeFormatter)")
+                                .foregroundColor(.secondary)
+                        } else {
+                            Image(systemName: "icloud.slash")
+                                .foregroundColor(.gray)
+                            Text("Väntar på synk...")
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        Button {
+                           foodData.loadFoodListFromCloudKit() // Manuell refresh-knapp
+                        } label: {
+                           Image(systemName: "arrow.clockwise")
+                        }
+                        .disabled(foodData.isLoading) // Inaktivera vid synk
+                    }
+                    .font(.caption) // Gör texten mindre
+                }
+                // *** SLUT STATUSSEKTION ***
+
             } // Slut på List
 
-            // *** Visa ProgressView om listan är tom OCH data laddas från CloudKit ***
-             if foodData.isLoading && foodData.foodList.isEmpty {
-                 ProgressView()
-                     .scaleEffect(1.5) // Gör den lite större
-                     .progressViewStyle(CircularProgressViewStyle())
-                     .frame(maxWidth: .infinity, maxHeight: .infinity) // Centrera
-                     .background(Color(UIColor.systemBackground).opacity(0.6)) // Lätt bakgrund för synlighet
-             }
+            if foodData.isLoading && foodData.foodList.isEmpty {
+                ProgressView()
+                    .scaleEffect(1.5)
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(UIColor.systemBackground).opacity(0.6))
+            }
 
-        } // Slut på ZStack
+        }
         .searchable(text: $searchText, prompt: "Sök livsmedel")
         .navigationTitle("Livsmedel")
         .toolbar { /* Toolbar oförändrad */
@@ -73,7 +117,7 @@ struct IOSFoodListView: View {
             ToolbarItem(placement: .navigationBarLeading) { EditButton() }
         }
         .sheet(isPresented: $showingAddEditSheet) {
-            NavigationView { // Behåll NavigationView i sheet
+            NavigationView {
                  IOSAddEditFoodItemView(foodData: foodData, foodToEdit: foodToEdit)
             }
         }
@@ -87,6 +131,5 @@ struct IOSFoodListView: View {
          } message: {
              Text("Är du säker på att du vill radera alla livsmedel? Detta kan inte ångras och påverkar alla dina enheter.")
          }
-        // .onAppear behövs inte här för att ladda, FoodData sköter det i init
     }
 }
