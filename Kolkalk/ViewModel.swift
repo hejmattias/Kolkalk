@@ -1,202 +1,137 @@
 // Kolkalk/ViewModel.swift
 
 import Foundation
-import WatchConnectivity
+import WatchConnectivity // Behåll om den används för Container
 import SwiftUI
-import UniformTypeIdentifiers
+// Ta bort: import UniformTypeIdentifiers (om DocumentPicker flyttats till ContentView)
 import os.log
 
+// Säkerställ att WCSessionDelegate finns kvar om du synkar Container via WCSession
 class ViewModel: NSObject, ObservableObject, WCSessionDelegate {
     static let shared = ViewModel()
-    @Published var transferStatus: String = ""
-    @Published var receivedFoodList: [FoodItem] = []
+    @Published var transferStatus: String = "" // Kan användas för Container-status
 
+    // Behåll WCSession-initiering om den behövs för Container
     override private init() {
         super.init()
         if WCSession.isSupported() {
             let session = WCSession.default
             session.delegate = self
             session.activate()
-        }
-    }
-
-    // Funktion för att skicka CSV-filen till Apple Watch
-    func sendCSVFile(fileURL: URL) {
-        // Kontrollera att filen existerar och kan läsas
-        guard FileManager.default.isReadableFile(atPath: fileURL.path) else {
-            DispatchQueue.main.async {
-                self.transferStatus = "Kan inte läsa den valda filen."
-            }
-            return
-        }
-
-        if WCSession.default.activationState == .activated && WCSession.default.isPaired && WCSession.default.isWatchAppInstalled {
-            WCSession.default.transferFile(fileURL, metadata: ["replaceList": true])
-            DispatchQueue.main.async {
-                self.transferStatus = "CSV-filen skickas till Apple Watch..."
-            }
+            print("iOS ViewModel: WCSession activated.")
         } else {
-            DispatchQueue.main.async {
-                self.transferStatus = "Apple Watch är inte tillgänglig."
-            }
+             print("iOS ViewModel: WCSession not supported on this device.")
         }
     }
 
-    // Funktion för att begära livsmedelslistan från Apple Watch
-    func requestFoodListFromWatch() {
-        let message = ["requestFoodList": true]
-        if WCSession.default.isReachable {
-            WCSession.default.sendMessage(message, replyHandler: { response in
-                DispatchQueue.main.async {
-                    os_log("iOS: Received response: %@", response)
-                    if let foodListData = response["foodList"] as? [[String: Any]] {
-                        var foodList: [FoodItem] = []
-                        for foodDict in foodListData {
-                            let idString = foodDict["id"] as? String ?? UUID().uuidString
-                            let id = UUID(uuidString: idString) ?? UUID()
-                            let name = foodDict["name"] as? String ?? ""
-                            let carbsPer100g = foodDict["carbsPer100g"] as? Double ?? 0.0
-                            let gramsPerDl = foodDict["gramsPerDl"] as? Double
-                            let styckPerGram = foodDict["styckPerGram"] as? Double
-                            let isFavorite = foodDict["isFavorite"] as? Bool ?? false // Lägg till isFavorite
+    // --- WCSessionDelegate METODER (Obligatoriska för iOS) ---
 
-                            let foodItem = FoodItem(
-                                id: id,
-                                name: name,
-                                carbsPer100g: carbsPer100g,
-                                grams: 0.0,
-                                gramsPerDl: gramsPerDl,
-                                styckPerGram: styckPerGram,
-                                isFavorite: isFavorite // Sätt isFavorite
-                            )
-                            foodList.append(foodItem)
-                        }
-                        self.receivedFoodList = foodList
-                        self.transferStatus = "Livsmedelslista mottagen."
-                    }
-                }
-            }, errorHandler: { error in
-                DispatchQueue.main.async {
-                    os_log("iOS: Error sending message: %@", error.localizedDescription)
-                    self.transferStatus = "Fel vid begäran: \(error.localizedDescription)"
-                }
-            })
-            DispatchQueue.main.async {
-                self.transferStatus = "Begär livsmedelslista från Apple Watch..."
-                os_log("iOS: Sent request for food list via sendMessage")
-            }
-        } else {
-            DispatchQueue.main.async {
-                self.transferStatus = "Apple Watch är inte nåbar."
-                os_log("iOS: Apple Watch is not reachable")
-            }
-        }
-    }
-
-    // Funktion för att exportera mottagen livsmedelslista till CSV-fil
-    func exportFoodListToCSV() {
-        let fileName = "exported_food_list.csv"
-        let path = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
-
-        var csvText = "Name;CarbsPer100g;GramsPerDl;StyckPerGram;IsFavorite\n" // Uppdatera headern
-
-        for food in receivedFoodList {
-            let name = food.name
-            let carbsPer100g = String(format: "%.2f", food.carbsPer100g ?? 0.0).replacingOccurrences(of: ".", with: ",")
-            let gramsPerDl = food.gramsPerDl != nil ? String(format: "%.2f", food.gramsPerDl!).replacingOccurrences(of: ".", with: ",") : ""
-            let styckPerGram = food.styckPerGram != nil ? String(format: "%.2f", food.styckPerGram!).replacingOccurrences(of: ".", with: ",") : ""
-            let isFavorite = food.isFavorite ? "true" : "false" // Lägg till isFavorite
-            let newLine = "\(name);\(carbsPer100g);\(gramsPerDl);\(styckPerGram);\(isFavorite)\n" // Uppdatera raden
-            csvText.append(newLine)
-        }
-
-        do {
-            try csvText.write(to: path, atomically: true, encoding: .utf8)
-            // Presentera delningsbladet
-            DispatchQueue.main.async {
-                self.shareCSV(url: path)
-            }
-        } catch {
-            print("Misslyckades att skapa fil")
-            DispatchQueue.main.async {
-                self.transferStatus = "Misslyckades att skapa CSV-fil."
-            }
-        }
-    }
-
-    private func shareCSV(url: URL) {
-        let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-        activityVC.excludedActivityTypes = [.assignToContact]
-
-        // Hämta den översta visningskontrollern
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let rootVC = windowScene.windows.first?.rootViewController {
-            rootVC.present(activityVC, animated: true, completion: nil)
-        }
-    }
-
-    // MARK: - WCSessionDelegate-metoder
-
-    func session(_ session: WCSession, didFinish fileTransfer: WCSessionFileTransfer, error: Error?) {
+    // Obligatorisk: Anropas när sessionen har aktiverats (eller misslyckats)
+    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         DispatchQueue.main.async {
             if let error = error {
-                self.transferStatus = "Fel vid överföring: \(error.localizedDescription)"
-            } else {
-                self.transferStatus = "CSV-filen har skickats!"
-            }
-        }
-    }
-
-    // Mottagning av livsmedelslista från Apple Watch via sendMessage
-    func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
-        DispatchQueue.main.async {
-            os_log("iOS: Received message: %@", message)
-            if let foodListData = message["foodList"] as? [[String: Any]] {
-                var foodList: [FoodItem] = []
-                for foodDict in foodListData {
-                    let idString = foodDict["id"] as? String ?? UUID().uuidString
-                    let id = UUID(uuidString: idString) ?? UUID()
-                    let name = foodDict["name"] as? String ?? ""
-                    let carbsPer100g = foodDict["carbsPer100g"] as? Double ?? 0.0
-                    let gramsPerDl = foodDict["gramsPerDl"] as? Double
-                    let styckPerGram = foodDict["styckPerGram"] as? Double
-                    let isFavorite = foodDict["isFavorite"] as? Bool ?? false // Lägg till isFavorite
-
-                    let foodItem = FoodItem(
-                        id: id,
-                        name: name,
-                        carbsPer100g: carbsPer100g,
-                        grams: 0.0,
-                        gramsPerDl: gramsPerDl,
-                        styckPerGram: styckPerGram,
-                        isFavorite: isFavorite // Sätt isFavorite
-                    )
-                    foodList.append(foodItem)
-                }
-                self.receivedFoodList = foodList
-                self.transferStatus = "Livsmedelslista mottagen."
-            }
-        }
-    }
-
-    func sessionDidBecomeInactive(_ session: WCSession) { }
-
-    func sessionDidDeactivate(_ session: WCSession) {
-        session.activate()
-    }
-
-    func sessionWatchStateDidChange(_ session: WCSession) { }
-
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-        if let error = error {
-            DispatchQueue.main.async {
                 self.transferStatus = "WCSession aktivering misslyckades: \(error.localizedDescription)"
-            }
-        } else {
-            DispatchQueue.main.async {
-                self.transferStatus = "WCSession aktiverad."
+                print("iOS ViewModel: WCSession activation failed: \(error.localizedDescription)")
+            } else {
+                self.transferStatus = "WCSession redo (Status: \(activationState.rawValue))."
+                print("iOS ViewModel: WCSession activated with state: \(activationState.rawValue)")
+                 // Här kan du försöka skicka container-datan direkt om sessionen är aktiv
+                 self.sendContainersToWatch(containerData: ContainerData.shared) // Försök skicka vid aktivering
             }
         }
+    }
+
+    // Obligatorisk på iOS: Anropas när sessionen blir inaktiv (t.ex. byte av iWatch)
+    func sessionDidBecomeInactive(_ session: WCSession) {
+        print("iOS ViewModel: WCSession did become inactive.")
+        // Kan behöva hanteras om appen ska stödja byte av klocka medan den körs
+    }
+
+    // Obligatorisk på iOS: Anropas när sessionen har avaktiverats helt
+    func sessionDidDeactivate(_ session: WCSession) {
+        print("iOS ViewModel: WCSession did deactivate.")
+        // Försök återaktivera sessionen
+        WCSession.default.activate()
+    }
+
+    // --- Övriga WCSessionDelegate Metoder (Valfria men bra att ha) ---
+
+    // Anropas när Watch State ändras (t.ex. klockan paras/avparas, app installeras/avinstalleras)
+    func sessionWatchStateDidChange(_ session: WCSession) {
+         print("iOS ViewModel: Watch State Changed - isPaired: \(session.isPaired), isWatchAppInstalled: \(session.isWatchAppInstalled), isReachable: \(session.isReachable)")
+         // Uppdatera UI eller logik baserat på klockans status
+         // Försök skicka container-data om klockan precis blev nåbar/installerad
+         if session.isPaired && session.isWatchAppInstalled {
+              self.sendContainersToWatch(containerData: ContainerData.shared)
+         }
+     }
+
+
+    // Hantera mottagning av UserInfo (för Container-synkning)
+    // Denna behövs fortfarande om du synkar Container på detta sätt.
+    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
+         print("iOS ViewModel: Received user info: \(userInfo.keys)")
+         if let data = userInfo["containerList"] as? Data {
+             // Försök avkoda och uppdatera ContainerData
+             if let containers = try? JSONDecoder().decode([Container].self, from: data) {
+                 DispatchQueue.main.async {
+                     // Uppdatera den delade instansen (antar att ContainerData är en singleton eller liknande)
+                      ContainerData.shared.containerList = containers
+                      ContainerData.shared.saveToUserDefaults() // Spara lokalt på iOS också
+                      print("iOS ViewModel: Updated container list from Watch UserInfo.")
+                 }
+             } else {
+                 print("iOS ViewModel: Failed to decode container list from Watch UserInfo.")
+             }
+         }
+     }
+
+     // Hantera när överföring av UserInfo är klar (bra för felsökning)
+     func session(_ session: WCSession, didFinish userInfoTransfer: WCSessionUserInfoTransfer, error: Error?) {
+         DispatchQueue.main.async {
+             if let error = error {
+                 print("iOS ViewModel: UserInfo transfer failed: \(error.localizedDescription)")
+                 self.transferStatus = "Fel vid synkning av kärl: \(error.localizedDescription)"
+             } else {
+                 // *** KORRIGERING: Ta bort referensen till .transferIdentifier ***
+                 print("iOS ViewModel: UserInfo transfer finished successfully.")
+                 self.transferStatus = "Kärl synkroniserade." // Uppdatera status vid lyckad överföring
+             }
+         }
+     }
+
+
+    // --- Din specifika logik ---
+
+    // Behåll funktion för att skicka Container-data om den använder WCSession
+    func sendContainersToWatch(containerData: ContainerData) {
+        guard WCSession.default.activationState == .activated else {
+             print("iOS ViewModel: WCSession not active. Cannot send containers.")
+             self.transferStatus = "WCSession ej aktiv."
+             return
+         }
+         guard WCSession.default.isPaired else {
+             print("iOS ViewModel: Watch not paired. Cannot send containers.")
+             self.transferStatus = "Klocka ej parkopplad."
+             return
+         }
+         guard WCSession.default.isWatchAppInstalled else {
+             print("iOS ViewModel: Watch app not installed. Cannot send containers.")
+             self.transferStatus = "Klockapp ej installerad."
+             return
+         }
+
+         do {
+             let data = try JSONEncoder().encode(containerData.containerList)
+             let userInfo = ["containerList": data]
+             // Skicka som UserInfo för att hantera om klockan inte är nåbar direkt
+             let transfer = WCSession.default.transferUserInfo(userInfo)
+             // *** KORRIGERING: Ta bort referensen till .transferIdentifier ***
+             print("iOS ViewModel: Attempting to send containerList via transferUserInfo.")
+             self.transferStatus = "Synkroniserar kärl..." // Ge feedback till användaren
+         } catch {
+             print("iOS ViewModel: Failed to encode container list: \(error.localizedDescription)")
+             self.transferStatus = "Fel vid kodning av kärl."
+         }
     }
 }
-

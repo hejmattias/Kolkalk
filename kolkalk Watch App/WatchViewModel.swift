@@ -1,12 +1,15 @@
+// Kolkalk.zip/kolkalk Watch App/WatchViewModel.swift
+
 import Foundation
-import WatchConnectivity
+import WatchConnectivity // Behåll om den behövs för Container
 import SwiftUI
 import os.log
 
-class WatchViewModel: NSObject, ObservableObject, WCSessionDelegate {
+class WatchViewModel: NSObject, ObservableObject, WCSessionDelegate { // Behåll WCSessionDelegate om Container
     static let shared = WatchViewModel()
-    @Published var foodData = FoodData()
-    @Published var containerData = WatchContainerData.shared
+    // FoodData hämtas nu direkt i vyerna eller via @StateObject där det behövs
+    // Ta bort: @Published var foodData = FoodData()
+    @ObservedObject var containerData = WatchContainerData.shared // Behåll Container
 
     override private init() {
         super.init()
@@ -14,59 +17,32 @@ class WatchViewModel: NSObject, ObservableObject, WCSessionDelegate {
             let session = WCSession.default
             session.delegate = self
             session.activate()
-            print("WatchViewModel: WCSession activated")
+            print("WatchViewModel: WCSession activated (for Container sync if needed).")
         }
     }
 
-    // Implementera session(_:didReceiveUserInfo:)
-    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any]) {
-        print("WatchViewModel: Received user info: \(userInfo)")
+    // Behåll didReceiveUserInfo om Container skickas så
+     func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any]) {
+         print("WatchViewModel: Received user info: \(userInfo.keys)")
+         if let data = userInfo["containerList"] as? Data {
+             if let containers = try? JSONDecoder().decode([Container].self, from: data) {
+                 DispatchQueue.main.async {
+                     // Uppdatera containerData direkt här
+                     WatchContainerData.shared.containerList = containers
+                     WatchContainerData.shared.saveToUserDefaults() // Spara lokalt på klockan
+                     print("WatchViewModel: Updated container list with received data.")
+                 }
+             } else {
+                 print("WatchViewModel: Failed to decode container list.")
+             }
+         }
+     }
 
-        // Hantera mottagen containerList
-        if let data = userInfo["containerList"] as? Data {
-            if let containers = try? JSONDecoder().decode([Container].self, from: data) {
-                DispatchQueue.main.async {
-                    self.containerData.containerList = containers
-                    self.containerData.saveToUserDefaults()
-                    print("WatchViewModel: Updated container list with received data.")
-                }
-            } else {
-                print("WatchViewModel: Failed to decode container list.")
-            }
-        }
+    // --- Ta bort metoder relaterade till livsmedelsöverföring ---
+    // func session(_ session: WCSession, didReceive file: WCSessionFile) { ... }
+    // func getDocumentsDirectory() -> URL { ... } // Om den bara användes för CSV
 
-        // Hantera annan inkommande data om det behövs
-    }
-
-    // Implementera session(_:didReceiveFile:)
-    func session(_ session: WCSession, didReceive file: WCSessionFile) {
-        print("WatchViewModel: Received file: \(file.fileURL)")
-
-        // Hantera mottagen CSV-fil
-        let destinationURL = getDocumentsDirectory().appendingPathComponent("food_items.csv")
-
-        do {
-            // Ta bort eventuell tidigare fil
-            if FileManager.default.fileExists(atPath: destinationURL.path) {
-                try FileManager.default.removeItem(at: destinationURL)
-            }
-            try FileManager.default.copyItem(at: file.fileURL, to: destinationURL)
-            DispatchQueue.main.async {
-                self.foodData.importFromCSV(fileURL: destinationURL)
-                print("WatchViewModel: Imported food items from CSV.")
-            }
-        } catch {
-            print("WatchViewModel: Error copying file: \(error.localizedDescription)")
-        }
-    }
-
-    // Hjälpmetod för att få Documents Directory
-    func getDocumentsDirectory() -> URL {
-        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-    }
-
-    // MARK: - WCSessionDelegate
-
+    // --- Behåll WCSessionDelegate-metoder ---
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         if let error = error {
             print("WatchViewModel: WCSession activation failed with error: \(error.localizedDescription)")
@@ -75,5 +51,5 @@ class WatchViewModel: NSObject, ObservableObject, WCSessionDelegate {
         }
     }
 
-    // Om du har andra WCSessionDelegate-metoder, implementera dem här
+    // Implementera övriga WCSessionDelegate-metoder vid behov
 }

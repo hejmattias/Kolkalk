@@ -36,7 +36,7 @@
     <array>
         <dict>
             <key>CFBundleURLName</key>
-            <string>MG.Kolkalk.watchkitapp</string> <!-- Replace with your actual Bundle Identifier -->
+            <string>MG.Kolkalkylator.watchkitapp</string> <!-- Replace with your actual Bundle Identifier -->
             <key>CFBundleURLSchemes</key>
             <array>
                 <string>kolkalk</string>

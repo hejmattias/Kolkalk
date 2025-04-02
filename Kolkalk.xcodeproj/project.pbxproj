@@ -8,6 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		B91B19252D9C5E55003337D4 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B19242D9C5E55003337D4 /* SettingsView.swift */; };
+		B91B192C2D9C68F8003337D4 /* CloudKitFoodDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B192B2D9C68F8003337D4 /* CloudKitFoodDataStore.swift */; };
+		B91B192D2D9C68F8003337D4 /* CloudKitFoodDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B192B2D9C68F8003337D4 /* CloudKitFoodDataStore.swift */; };
+		B91B192E2D9C68F8003337D4 /* CloudKitFoodDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B192B2D9C68F8003337D4 /* CloudKitFoodDataStore.swift */; };
+		B91B19302D9C69D7003337D4 /* FoodData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B192F2D9C69D7003337D4 /* FoodData.swift */; };
+		B91B19322D9C69F4003337D4 /* IOSFoodListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B19312D9C69F4003337D4 /* IOSFoodListView.swift */; };
+		B91B19342D9C6A00003337D4 /* IOSAddEditFoodItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B19332D9C6A00003337D4 /* IOSAddEditFoodItemView.swift */; };
+		B91B19362D9C6AC5003337D4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B19352D9C6AC5003337D4 /* AppDelegate.swift */; };
+		B91B19382D9C6B17003337D4 /* ExtensionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B19372D9C6B17003337D4 /* ExtensionDelegate.swift */; };
 		B97C749D2CB7D26E0073AC17 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B97C749C2CB7D26E0073AC17 /* WidgetKit.framework */; };
 		B97C749F2CB7D26E0073AC17 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B97C749E2CB7D26E0073AC17 /* SwiftUI.framework */; };
 		B97C74AA2CB7D26F0073AC17 /* komplikationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B97C749B2CB7D26E0073AC17 /* komplikationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -71,6 +79,7 @@
 		B97FFE5D2D88650500DD4DB6 /* kolkalk_Watch_AppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE5A2D88650500DD4DB6 /* kolkalk_Watch_AppUITestsLaunchTests.swift */; };
 		B97FFE602D88650500DD4DB6 /* KolkalkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE5E2D88650500DD4DB6 /* KolkalkTests.swift */; };
 		B98B3D8E2CAC176700EE7D92 /* kolkalk Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B98B3D6B2CAC176600EE7D92 /* kolkalk Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B9B134612D9D1C7D00C88E0E /* komplikationExtension.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B97C74BD2CB7F2DB0073AC17 /* komplikationExtension.entitlements */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -145,6 +154,15 @@
 
 /* Begin PBXFileReference section */
 		B91B19242D9C5E55003337D4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B91B19262D9C6468003337D4 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.2.sdk/System/Library/Frameworks/CloudKit.framework; sourceTree = DEVELOPER_DIR; };
+		B91B19282D9C6475003337D4 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.2.sdk/System/Library/Frameworks/CloudKit.framework; sourceTree = DEVELOPER_DIR; };
+		B91B192A2D9C686C003337D4 /* kolkalk-Watch-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "kolkalk-Watch-App-Info.plist"; sourceTree = SOURCE_ROOT; };
+		B91B192B2D9C68F8003337D4 /* CloudKitFoodDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitFoodDataStore.swift; sourceTree = "<group>"; };
+		B91B192F2D9C69D7003337D4 /* FoodData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodData.swift; sourceTree = "<group>"; };
+		B91B19312D9C69F4003337D4 /* IOSFoodListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSFoodListView.swift; sourceTree = "<group>"; };
+		B91B19332D9C6A00003337D4 /* IOSAddEditFoodItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSAddEditFoodItemView.swift; sourceTree = "<group>"; };
+		B91B19352D9C6AC5003337D4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		B91B19372D9C6B17003337D4 /* ExtensionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionDelegate.swift; sourceTree = "<group>"; };
 		B97C749B2CB7D26E0073AC17 /* komplikationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = komplikationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B97C749C2CB7D26E0073AC17 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		B97C749E2CB7D26E0073AC17 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -273,6 +291,8 @@
 		B97E03FD2CAC84D100450835 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B91B19262D9C6468003337D4 /* CloudKit.framework */,
+				B91B19282D9C6475003337D4 /* CloudKit.framework */,
 				B97E03FE2CAC84D100450835 /* WatchConnectivity.framework */,
 				B97C749C2CB7D26E0073AC17 /* WidgetKit.framework */,
 				B97C749E2CB7D26E0073AC17 /* SwiftUI.framework */,
@@ -291,6 +311,7 @@
 		B97FFDE62D88650500DD4DB6 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				B91B192B2D9C68F8003337D4 /* CloudKitFoodDataStore.swift */,
 				B97FFDE32D88650500DD4DB6 /* Container.swift */,
 				B97FFDE42D88650500DD4DB6 /* FoodItem.swift */,
 				B97FFDE52D88650500DD4DB6 /* HealthKitManager.swift */,
@@ -301,6 +322,10 @@
 		B97FFDF22D88650500DD4DB6 /* Kolkalk */ = {
 			isa = PBXGroup;
 			children = (
+				B91B19352D9C6AC5003337D4 /* AppDelegate.swift */,
+				B91B19332D9C6A00003337D4 /* IOSAddEditFoodItemView.swift */,
+				B91B19312D9C69F4003337D4 /* IOSFoodListView.swift */,
+				B91B192F2D9C69D7003337D4 /* FoodData.swift */,
 				B97FFDE22D88650500DD4DB6 /* Preview Content */,
 				B97FFDE62D88650500DD4DB6 /* Shared */,
 				B97FFDE72D88650500DD4DB6 /* AddEditContainerView.swift */,
@@ -342,6 +367,8 @@
 		B97FFE322D88650500DD4DB6 /* kolkalk Watch App */ = {
 			isa = PBXGroup;
 			children = (
+				B91B19372D9C6B17003337D4 /* ExtensionDelegate.swift */,
+				B91B192A2D9C686C003337D4 /* kolkalk-Watch-App-Info.plist */,
 				B91B19242D9C5E55003337D4 /* SettingsView.swift */,
 				B97FFE152D88650500DD4DB6 /* Preview Content */,
 				B97FFE162D88650500DD4DB6 /* Assets.xcassets */,
@@ -653,6 +680,7 @@
 			files = (
 				B97FFE0F2D88650500DD4DB6 /*  komplikation.entitlements in Resources */,
 				B97FFE102D88650500DD4DB6 /* Assets.xcassets in Resources */,
+				B9B134612D9D1C7D00C88E0E /* komplikationExtension.entitlements in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -715,6 +743,7 @@
 				B97FFE052D88650500DD4DB6 /* FoodItem.swift in Sources */,
 				B97FFE062D88650500DD4DB6 /* HealthKitManager.swift in Sources */,
 				B97FFE122D88650500DD4DB6 /* AppIntent.swift in Sources */,
+				B91B192E2D9C68F8003337D4 /* CloudKitFoodDataStore.swift in Sources */,
 				B97FFE132D88650500DD4DB6 /* komplikation.swift in Sources */,
 				B97FFE502D88650500DD4DB6 /* Plateklassen.swift in Sources */,
 				B97FFE072D88650500DD4DB6 /* Container.swift in Sources */,
@@ -727,13 +756,18 @@
 			files = (
 				B97FFDF32D88650500DD4DB6 /* Container.swift in Sources */,
 				B97FFDF42D88650500DD4DB6 /* FoodItem.swift in Sources */,
+				B91B19322D9C69F4003337D4 /* IOSFoodListView.swift in Sources */,
+				B91B19362D9C6AC5003337D4 /* AppDelegate.swift in Sources */,
 				B97FFDF52D88650500DD4DB6 /* HealthKitManager.swift in Sources */,
+				B91B19302D9C69D7003337D4 /* FoodData.swift in Sources */,
 				B97FFDF62D88650500DD4DB6 /* AddEditContainerView.swift in Sources */,
 				B97FFDF72D88650500DD4DB6 /* ContainerData.swift in Sources */,
+				B91B19342D9C6A00003337D4 /* IOSAddEditFoodItemView.swift in Sources */,
 				B97FFDF82D88650500DD4DB6 /* ContainerListView.swift in Sources */,
 				B97FFDF92D88650500DD4DB6 /* ContentView.swift in Sources */,
 				B97FFDFA2D88650500DD4DB6 /* ImagePicker.swift in Sources */,
 				B97FFDFB2D88650500DD4DB6 /* KolkalkApp.swift in Sources */,
+				B91B192D2D9C68F8003337D4 /* CloudKitFoodDataStore.swift in Sources */,
 				B97FFDFC2D88650500DD4DB6 /* ViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -762,6 +796,7 @@
 				B97FFE022D88650500DD4DB6 /* FoodItem.swift in Sources */,
 				B97FFE382D88650500DD4DB6 /* CalculatorView.swift in Sources */,
 				B97FFE392D88650500DD4DB6 /* ChooseContainerView.swift in Sources */,
+				B91B192C2D9C68F8003337D4 /* CloudKitFoodDataStore.swift in Sources */,
 				B97FFE3A2D88650500DD4DB6 /* ContentView.swift in Sources */,
 				B97FFE3B2D88650500DD4DB6 /* CreateFoodFromPlateView.swift in Sources */,
 				B97FFE3C2D88650500DD4DB6 /* CreateNewFood.swift in Sources */,
@@ -778,6 +813,7 @@
 				B97FFE472D88650500DD4DB6 /* kolkalkApp.swift in Sources */,
 				B97FFE482D88650500DD4DB6 /* NumpadView.swift in Sources */,
 				B97FFE492D88650500DD4DB6 /* Plateklassen.swift in Sources */,
+				B91B19382D9C6B17003337D4 /* ExtensionDelegate.swift in Sources */,
 				B97FFE4A2D88650500DD4DB6 /* PlateView.swift in Sources */,
 				B97FFE4B2D88650500DD4DB6 /* SharedViews.swift in Sources */,
 				B91B19252D9C5E55003337D4 /* SettingsView.swift in Sources */,
@@ -863,7 +899,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = MG.Kolkalk.watchkitapp.komplikation;
+				PRODUCT_BUNDLE_IDENTIFIER = MG.kolkylator.watchkitapp.komplikation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -894,7 +930,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = MG.Kolkalk.watchkitapp.komplikation;
+				PRODUCT_BUNDLE_IDENTIFIER = MG.kolkylator.watchkitapp.komplikation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1028,6 +1064,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Kolkalk/Kolkalk.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
@@ -1037,6 +1074,9 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Kolkalk/Info.plist;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver läsa data från Apple Hälsa för att visa kolhydrater och insulin.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater och insulin.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Appen behöver åtkomst till ditt fotobibliotek för att välja bilder till kärl.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -1047,13 +1087,15 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = MG.Kolkalk;
+				PRODUCT_BUNDLE_IDENTIFIER = MG.kolkylator;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1069,6 +1111,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Kolkalk/Kolkalk.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
@@ -1078,6 +1121,9 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Kolkalk/Info.plist;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver läsa data från Apple Hälsa för att visa kolhydrater och insulin.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater och insulin.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Appen behöver åtkomst till ditt fotobibliotek för att välja bilder till kärl.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -1088,13 +1134,15 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = MG.Kolkalk;
+				PRODUCT_BUNDLE_IDENTIFIER = MG.kolkylator;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1211,18 +1259,19 @@
 				DEVELOPMENT_TEAM = ZD2P3P8L7B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "kolkalk-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = kolkalk;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = MG.Kolkalk;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = MG.kolkylator;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = MG.Kolkalk.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = MG.kolkylator.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1246,18 +1295,19 @@
 				DEVELOPMENT_TEAM = ZD2P3P8L7B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "kolkalk-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = kolkalk;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = MG.Kolkalk;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = MG.kolkylator;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = MG.Kolkalk.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = MG.kolkylator.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
