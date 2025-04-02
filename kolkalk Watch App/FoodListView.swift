@@ -4,181 +4,159 @@ import SwiftUI
 
 // List of available food items
 struct FoodListView: View {
-    @ObservedObject var plate: Plate // Behövs plate här? Troligen inte direkt.
-    // *** ÄNDRING: Ta emot FoodData som ObservedObject ***
-    @ObservedObject var foodData: FoodData
+    @ObservedObject var plate: Plate
+    @ObservedObject var foodData: FoodData // Använder nu den uppdaterade FoodData
     @Binding var navigationPath: NavigationPath
     var isEmptyAndAdd: Bool
 
     @State private var searchText: String = ""
     @State private var showDeleteConfirmation = false
-    // Initialize showFavoritesOnly from UserDefaults
-    @State private var showFavoritesOnly: Bool = UserDefaults.standard.bool(forKey: "showFavoritesOnly") // Behåll separat för klockan
+    @State private var showFavoritesOnly: Bool = UserDefaults.standard.bool(forKey: "showFavoritesOnly")
 
     var filteredFoodList: [FoodItem] {
+        // Filtreringslogiken är oförändrad, men använder den cachade/uppdaterade foodList
         var list = foodData.foodList
 
-        // Filter on favorites if the toggle is on
         if showFavoritesOnly {
             list = list.filter { $0.isFavorite }
         }
 
-        // Filter on search text
         if !searchText.isEmpty {
             list = list.filter { $0.name.lowercased().contains(searchText.lowercased()) }
         }
-         // Sortering sker nu i CloudKit-queryn eller i FoodData efter uppdatering
+        // Sortering sker nu i FoodData vid laddning/modifiering
         return list
     }
 
     var body: some View {
         // Använd ScrollViewReader för att kunna scrolla programmatiskt
          ScrollViewReader { scrollProxy in
-            List {
-                // Toggle button to show only favorites
-                Toggle(isOn: $showFavoritesOnly) {
-                    Text("Visa endast favoriter")
-                }
-                .id("favoritesToggle") // Ge ID för att kunna scrolla hit
-                // Save the toggle state when it changes
-                .onChange(of: showFavoritesOnly) { newValue in // Använd nya syntaxen
-                    UserDefaults.standard.set(newValue, forKey: "showFavoritesOnly")
-                }
+             // *** NYTT: Kontrollera isLoading ***
+             if foodData.isLoading && foodData.foodList.isEmpty {
+                 // Visa bara ProgressView om listan är helt tom OCH vi laddar från CloudKit
+                 ProgressView("Laddar livsmedel...")
+                     .navigationTitle("Laddar...")
+             } else {
+                 // *** Visa listan (antingen från cache eller uppdaterad) ***
+                 List {
+                     Toggle(isOn: $showFavoritesOnly) {
+                         Text("Visa endast favoriter")
+                     }
+                     .id("favoritesToggle")
+                     .onChange(of: showFavoritesOnly) { newValue in
+                         UserDefaults.standard.set(newValue, forKey: "showFavoritesOnly")
+                     }
 
-                // Search field
-                TextField("Sök", text: $searchText)
-                    .id("searchField") // Assign ID
+                     TextField("Sök", text: $searchText)
+                         .id("searchField")
 
-                // "Calculator" button under the search field
-                Button(action: {
-                    navigationPath.append(Route.calculator(shouldEmptyPlate: isEmptyAndAdd)) // Pass isEmptyAndAdd
-                }) {
-                    HStack {
-                        Spacer()
-                        Label("Kalkylator", systemImage: "plus.forwardslash.minus") // Ikon för kalkylator
-                            .foregroundColor(.blue)
-                        Spacer()
-                    }
-                }
-
-                // *** ÄNDRING: Använd indices för ForEach för att kunna ge ID till första ***
-                if !filteredFoodList.isEmpty {
-                    ForEach(filteredFoodList.indices, id: \.self) { index in
-                        let food = filteredFoodList[index]
-                        HStack {
-                            Text(food.name)
-                            Spacer()
-                            Text("\(food.carbsPer100g ?? 0, specifier: "%.1f") gk/100g") // Mer info
-                                .font(.caption) // Mindre text
-                                .foregroundColor(.gray)
-                            if food.isFavorite { // Visa hjärta för favoriter
-                                 Image(systemName: "heart.fill")
-                                     .foregroundColor(.pink)
-                             }
-                        }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            // Skicka med food-objektet till detaljvyn
-                            navigationPath.append(Route.foodDetailView(food, shouldEmptyPlate: isEmptyAndAdd))
-                        }
-                        .swipeActions(edge: .trailing) {
-                            Button(role: .destructive) {
-                                deleteFood(food) // Anropa korrigerad funktion
-                            } label: {
-                                Label("Ta bort", systemImage: "trash")
-                            }
-                        }
-                        .swipeActions(edge: .leading) {
-                            Button {
-                                navigationPath.append(Route.editFoodItem(food)) // Skicka med food-objektet
-                            } label: {
-                                Label("Redigera", systemImage: "pencil")
-                            }
-                            .tint(.blue)
-                        }
-                        .id(index == 0 ? "firstFood" : nil) // ID för första objektet
-                    }
-                } else {
-                    // Display message when the list is empty
-                    Text(searchText.isEmpty ? "Listan är tom. Lägg till via '+'." : "Inga träffar på \"\(searchText)\".")
-                        .foregroundColor(.gray)
-                        .padding()
-                }
-
-                // Buttons to add or delete food items
-                Button(action: {
-                    navigationPath.append(Route.createNewFoodItem)
-                }) {
-                    HStack {
-                        Spacer()
-                         Label("Lägg till nytt livsmedel", systemImage: "plus") // Bättre label
-                            .foregroundColor(.blue)
-                        Spacer()
-                    }
-                }
-
-                // Button to delete all food items
-                if !foodData.foodList.isEmpty { // Visa bara om listan inte är tom
                      Button(action: {
-                         showDeleteConfirmation = true
+                         navigationPath.append(Route.calculator(shouldEmptyPlate: isEmptyAndAdd))
                      }) {
                          HStack {
                              Spacer()
-                             Text("Radera alla livsmedel")
-                                 .foregroundColor(.red)
+                             Label("Kalkylator", systemImage: "plus.forwardslash.minus")
+                                 .foregroundColor(.blue)
                              Spacer()
                          }
                      }
-                     // Use confirmationDialog instead of alert
-                     .confirmationDialog(
-                         "Radera alla livsmedel?", // Tydligare titel
-                         isPresented: $showDeleteConfirmation,
-                         titleVisibility: .visible
-                     ) {
-                         Button("Radera alla", role: .destructive) { // Tydligare knapptext
-                             deleteAllFoodItems() // Anropa korrigerad funktion
+
+                     // Använd den filtrerade listan
+                     if !filteredFoodList.isEmpty {
+                         ForEach(filteredFoodList.indices, id: \.self) { index in
+                             let food = filteredFoodList[index]
+                             HStack {
+                                 Text(food.name)
+                                 Spacer()
+                                 Text("\(food.carbsPer100g ?? 0, specifier: "%.1f") gk/100g")
+                                     .font(.caption)
+                                     .foregroundColor(.gray)
+                                 if food.isFavorite {
+                                      Image(systemName: "heart.fill")
+                                          .foregroundColor(.pink)
+                                  }
+                             }
+                             .contentShape(Rectangle())
+                             .onTapGesture {
+                                 navigationPath.append(Route.foodDetailView(food, shouldEmptyPlate: isEmptyAndAdd))
+                             }
+                             .swipeActions(edge: .trailing) {
+                                 Button(role: .destructive) {
+                                     deleteFood(food) // Anropar nu den uppdaterade funktionen
+                                 } label: {
+                                     Label("Ta bort", systemImage: "trash")
+                                 }
+                             }
+                             .swipeActions(edge: .leading) {
+                                 Button {
+                                     navigationPath.append(Route.editFoodItem(food))
+                                 } label: {
+                                     Label("Redigera", systemImage: "pencil")
+                                 }
+                                 .tint(.blue)
+                             }
+                             .id(index == 0 ? "firstFood" : nil)
                          }
-                         Button("Avbryt", role: .cancel) {} // Ingen action behövs för cancel
-                     } message: {
-                         // Meddelande för att förklara konsekvenserna
-                         Text("Är du säker? Detta tar bort alla livsmedel från listan på alla dina enheter och kan inte ångras.")
+                     } else {
+                         // Visa meddelande när listan är tom *efter* laddning
+                         Text(searchText.isEmpty ? "Listan är tom. Lägg till via '+'." : "Inga träffar på \"\(searchText)\".")
+                             .foregroundColor(.gray)
+                             .padding()
                      }
-                 }
-            } // End List
-            // Kommentera bort onAppear om listan laddas via prenumeration i FoodData
-            // .onAppear {
-            //    foodData.loadFoodList()
-            // }
+
+                     // Knappar för att lägga till / radera
+                     Button(action: {
+                         navigationPath.append(Route.createNewFoodItem)
+                     }) {
+                         HStack {
+                             Spacer()
+                              Label("Lägg till nytt livsmedel", systemImage: "plus")
+                                 .foregroundColor(.blue)
+                             Spacer()
+                         }
+                     }
+
+                     if !foodData.foodList.isEmpty { // Använd foodData.foodList för att se om något finns alls
+                          Button(action: {
+                              showDeleteConfirmation = true
+                          }) {
+                              HStack {
+                                  Spacer()
+                                  Text("Radera alla livsmedel")
+                                      .foregroundColor(.red)
+                                  Spacer()
+                              }
+                          }
+                          .confirmationDialog(
+                              "Radera alla livsmedel?",
+                              isPresented: $showDeleteConfirmation,
+                              titleVisibility: .visible
+                          ) {
+                              Button("Radera alla", role: .destructive) {
+                                  deleteAllFoodItems() // Anropar nu den uppdaterade funktionen
+                              }
+                              Button("Avbryt", role: .cancel) {}
+                          } message: {
+                              Text("Är du säker? Detta tar bort alla livsmedel från listan på alla dina enheter och kan inte ångras.")
+                          }
+                      }
+                 } // End List
+                 // Sätt titeln när listan visas
+                 .navigationTitle(isEmptyAndAdd ? "-+ Livsmedel" : "Livsmedel")
+             } // End else (isLoading)
         } // End ScrollViewReader
-        .navigationTitle(isEmptyAndAdd ? "-+ Livsmedel" : "Livsmedel") // Anpassa titeln vid behov
+        // .onAppear behövs inte längre för att ladda listan här
     }
 
-    // *** ÄNDRING: Raderingsfunktioner anropar nu FoodData ***
+    // Dessa funktioner anropar nu de uppdaterade i FoodData
     private func deleteFood(_ food: FoodItem) {
-        foodData.deleteFoodItem(withId: food.id) // Anropa metoden i FoodData
-        // --- Borttaget ---
-        // if let index = foodData.foodList.firstIndex(where: { $0.id == food.id }) {
-        //     foodData.foodList.remove(at: index)
-        //     foodData.saveToUserDefaults() // Finns ej längre
-        // }
-        // --- Slut Borttaget ---
+        foodData.deleteFoodItem(withId: food.id)
     }
 
     private func deleteAllFoodItems() {
-        foodData.deleteAllFoodItems() // Anropa metoden i FoodData
-        // --- Borttaget ---
-        // DispatchQueue.main.async {
-        //     // Remove only user-created food items
-        //     foodData.foodList.removeAll(where: { $0.isDefault != true })
-        //     foodData.saveToUserDefaults() // Finns ej längre
-        //     searchText = ""
-        //     showDeleteConfirmation = false
-        // }
-        // --- Slut Borttaget ---
-
-         // Stäng bekräftelsedialogen (kan behöva flyttas in i FoodData om det tar tid)
-         showDeleteConfirmation = false
-         // Rensa sökfältet
-         searchText = ""
+        foodData.deleteAllFoodItems()
+        // Rensa sökfält etc. lokalt
+        searchText = ""
+        showDeleteConfirmation = false
     }
 }
