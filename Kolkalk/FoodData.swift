@@ -57,9 +57,7 @@ class FoodData_iOS: ObservableObject {
     }
 
     // --- Lokala Cache-funktioner ---
-
-    /// Laddar livsmedelslistan från den lokala JSON-cachefilen.
-    /// - Returns: `true` om laddningen lyckades, annars `false`.
+    // (Oförändrade - loadFoodListLocally, saveFoodListLocally)
     private func loadFoodListLocally() -> Bool {
         guard let url = localCacheURL else { return false }
         print("FoodData [iOS]: Attempting to load cache from: \(url.path)")
@@ -84,7 +82,6 @@ class FoodData_iOS: ObservableObject {
         }
     }
 
-    /// Sparar den aktuella `foodList` till den lokala JSON-cachefilen i en bakgrundstråd.
     private func saveFoodListLocally() {
         guard let url = localCacheURL else { return }
         let listToSave = self.foodList // Fånga aktuell lista
@@ -102,9 +99,9 @@ class FoodData_iOS: ObservableObject {
         }
     }
 
-    // --- CloudKit Fetch ---
 
-    /// Hämtar den senaste livsmedelslistan från CloudKit. Uppdaterar UI och lokal cache.
+    // --- CloudKit Fetch ---
+    // (Oförändrad - loadFoodListFromCloudKit)
     func loadFoodListFromCloudKit() {
          DispatchQueue.main.async {
             if self.foodList.isEmpty { // Visa bara om cachen var tom
@@ -141,9 +138,9 @@ class FoodData_iOS: ObservableObject {
         }
     }
 
-    // --- Modifieringsfunktioner ---
 
-    /// Lägger till ett nytt livsmedel lokalt och i CloudKit.
+    // --- Modifieringsfunktioner ---
+    // (Oförändrade - addFoodItem, updateFoodItem, deleteFoodItem, deleteAllFoodItems)
     func addFoodItem(_ foodItem: FoodItem) {
         DispatchQueue.main.async {
              if !self.foodList.contains(where: { $0.id == foodItem.id }) {
@@ -159,7 +156,6 @@ class FoodData_iOS: ObservableObject {
         }
     }
 
-    /// Uppdaterar ett befintligt livsmedel lokalt och i CloudKit.
     func updateFoodItem(_ foodItem: FoodItem) {
         DispatchQueue.main.async {
             if let index = self.foodList.firstIndex(where: { $0.id == foodItem.id }) {
@@ -175,7 +171,6 @@ class FoodData_iOS: ObservableObject {
         }
     }
 
-    /// Raderar ett livsmedel lokalt och från CloudKit.
     func deleteFoodItem(withId id: UUID) {
         DispatchQueue.main.async {
             let originalCount = self.foodList.count
@@ -191,7 +186,6 @@ class FoodData_iOS: ObservableObject {
         }
     }
 
-    /// Raderar alla livsmedel lokalt och från CloudKit.
     func deleteAllFoodItems() {
         let itemsToDelete = self.foodList
         guard !itemsToDelete.isEmpty else { return }
@@ -218,25 +212,27 @@ class FoodData_iOS: ObservableObject {
         CloudKitFoodDataStore.shared.database.add(operation)
     }
 
-    // --- CSV Funktioner (Behållna och korrigerade) ---
 
-    /// Importerar livsmedel från en CSV-fil till CloudKit och uppdaterar lokalt.
+    // --- CSV Funktioner (Importering modifierad igen för timing) ---
+
+    /// Importerar livsmedel från en CSV-fil till CloudKit och uppdaterar lokalt, **skippar dubbletter baserat på namn**.
     func importFromCSV(fileURL: URL, completion: @escaping (Result<Int, Error>) -> Void) {
         guard !isSavingCSV else {
-            print("FoodData [iOS]: Already saving CSV data.")
-            completion(.success(0)) // Gör inget om import redan pågår
+            print("FoodData [iOS]: Import already in progress.")
+            completion(.success(0))
             return
         }
-        isSavingCSV = true // Sätt flagga
+        isSavingCSV = true
         print("FoodData [iOS]: Starting CSV import from \(fileURL.lastPathComponent)...")
 
-        var importedCount = 0
-        var itemsToSave: [FoodItem] = []
-        let parsingGroup = DispatchGroup() // Använd DispatchGroup för att vänta på parsing
+        // *** ÄNDRING: Parsa först, kontrollera sen ***
+        var parsedItemsFromCSV: [FoodItem] = [] // Lagra alla parsade items här först
+        var parsingError: Error? = nil
+        let parsingGroup = DispatchGroup()
 
         parsingGroup.enter()
-        DispatchQueue.global(qos: .userInitiated).async { // Parsa i bakgrunden
-            defer { parsingGroup.leave() } // Körs alltid när blocket avslutas
+        DispatchQueue.global(qos: .userInitiated).async {
+            defer { parsingGroup.leave() }
             do {
                 let data = try String(contentsOf: fileURL, encoding: .utf8)
                 let rows = data.components(separatedBy: .newlines)
@@ -244,111 +240,132 @@ class FoodData_iOS: ObservableObject {
 
                 for (index, row) in rows.enumerated() where !row.isEmpty {
                     let columns = row.components(separatedBy: ";")
-                    // Trimma extra citattecken om de finns
                     let trimmedColumns = columns.map { $0.trimmingCharacters(in: CharacterSet(charactersIn: "\"")) }
-
 
                     if trimmedColumns.count >= 2 {
                         let name = trimmedColumns[0].trimmingCharacters(in: .whitespacesAndNewlines)
                         let carbsString = trimmedColumns[1].trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: ",", with: ".")
 
-                        // Kontrollera att namn inte är tomt och att kolhydrater är giltiga
                         if let carbsPer100g = Double(carbsString), !name.isEmpty {
-                             var gramsPerDl: Double? = nil
-                             if trimmedColumns.count > 2 {
-                                 let gramsPerDlString = trimmedColumns[2].trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: ",", with: ".")
-                                 if !gramsPerDlString.isEmpty { gramsPerDl = Double(gramsPerDlString) }
-                             }
-                             var styckPerGram: Double? = nil
-                             if trimmedColumns.count > 3 {
-                                 let styckPerGramString = trimmedColumns[3].trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: ",", with: ".")
-                                 if !styckPerGramString.isEmpty { styckPerGram = Double(styckPerGramString) }
-                             }
-                             var isFavorite: Bool = false
-                             if trimmedColumns.count > 4 {
-                                 isFavorite = trimmedColumns[4].trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "true"
-                             }
-                            // Skapa FoodItem direkt
-                             let newFoodItem = FoodItem(
-                                 name: name, carbsPer100g: carbsPer100g, grams: 0, // Grams är irrelevant för listan
-                                 gramsPerDl: gramsPerDl, styckPerGram: styckPerGram, isFavorite: isFavorite
-                             )
-                             itemsToSave.append(newFoodItem)
-                             importedCount += 1 // Räkna bara giltiga rader som faktiskt läggs till
+                            var gramsPerDl: Double? = nil
+                            if trimmedColumns.count > 2 {
+                                let gramsPerDlString = trimmedColumns[2].trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: ",", with: ".")
+                                if !gramsPerDlString.isEmpty { gramsPerDl = Double(gramsPerDlString) }
+                            }
+                            var styckPerGram: Double? = nil
+                            if trimmedColumns.count > 3 {
+                                let styckPerGramString = trimmedColumns[3].trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: ",", with: ".")
+                                if !styckPerGramString.isEmpty { styckPerGram = Double(styckPerGramString) }
+                            }
+                            var isFavorite: Bool = false
+                            if trimmedColumns.count > 4 {
+                                isFavorite = trimmedColumns[4].trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "true"
+                            }
+                            let newFoodItem = FoodItem(
+                                name: name, carbsPer100g: carbsPer100g, grams: 0,
+                                gramsPerDl: gramsPerDl, styckPerGram: styckPerGram, isFavorite: isFavorite
+                            )
+                            parsedItemsFromCSV.append(newFoodItem) // Lägg till i temporär lista
+
                         } else {
-                            // Logga om viktiga fält saknas eller är ogiltiga, men inte för helt tomma rader
                              if !(name.isEmpty && carbsString.isEmpty && trimmedColumns.count <= 2) {
-                                print("FoodData [iOS]: Skipping CSV row \(index + 1): Invalid carbs ('\(carbsString)') or empty name ('\(name)')")
+                                print("FoodData [iOS]: Skipping CSV row \(index + 1) during parse: Invalid carbs ('\(carbsString)') or empty name ('\(name)')")
                              }
                         }
                     } else if !row.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                        // Logga om raden inte är tom men har för få kolumner
-                        print("FoodData [iOS]: Skipping CSV row \(index + 1): Not enough columns (\(trimmedColumns.count))")
+                        print("FoodData [iOS]: Skipping CSV row \(index + 1) during parse: Not enough columns (\(trimmedColumns.count))")
                     }
-                } // Slut på for-loop
+                }
             } catch {
                 print("FoodData [iOS]: Error reading CSV file: \(error)")
-                // Anropa completion med fel på huvudtråden direkt
-                DispatchQueue.main.async {
-                    self.isSavingCSV = false // Återställ flagga
-                    completion(.failure(error))
-                }
-                return // Avsluta bakgrundstråden
+                parsingError = error // Spara felet
             }
-        } // Slut på DispatchQueue.global
+        }
 
-        // Detta körs när parsingGroup är klar (dvs. när parsing-tråden är färdig)
-        parsingGroup.notify(queue: .main) { // Växla till huvudtråden för CloudKit-operation
-            print("FoodData [iOS]: CSV parsing complete. Items parsed: \(importedCount). Items to save: \(itemsToSave.count)")
+        // Körs när parsing är klar (på huvudtråden)
+        parsingGroup.notify(queue: .main) { [weak self] in
+            guard let self = self else {
+                 completion(.failure(NSError(domain: "FoodData", code: -2, userInfo: [NSLocalizedDescriptionKey: "Self was deallocated"])))
+                 return
+             }
+
+            // Hantera eventuellt parsing-fel
+            if let error = parsingError {
+                self.isSavingCSV = false
+                completion(.failure(error))
+                return
+            }
+
+            print("FoodData [iOS]: CSV parsing complete. Parsed \(parsedItemsFromCSV.count) potential items.")
+
+            // *** NYTT: Dubblettkontroll mot aktuell foodList ***
+            let currentExistingItemNames = Set(self.foodList.map { $0.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() })
+            print("FoodData [iOS]: Checking against \(currentExistingItemNames.count) current item names.")
+
+            var itemsToSave: [FoodItem] = []
+            var skippedCount = 0
+
+            for item in parsedItemsFromCSV {
+                let trimmedLowercasedName = item.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+                if currentExistingItemNames.contains(trimmedLowercasedName) {
+                    print("FoodData [iOS]: Skipping duplicate item: '\(item.name)'")
+                    skippedCount += 1
+                } else {
+                    itemsToSave.append(item)
+                }
+            }
+
+            print("FoodData [iOS]: Filtering complete. Items to save: \(itemsToSave.count). Duplicates skipped: \(skippedCount).")
+
+            // Om inga nya items finns att spara
             guard !itemsToSave.isEmpty else {
-                print("FoodData [iOS]: No valid items found in CSV to save.")
-                self.isSavingCSV = false // Återställ flagga
+                print("FoodData [iOS]: No valid new items found in CSV to save.")
+                self.isSavingCSV = false
                 completion(.success(0)) // Rapportera 0 importerade
                 return
             }
 
-            // Skapa CKRecord-objekt och en batch-operation
+            // Skapa CloudKit-operation med de filtrerade itemsen
             let recordsToSave = itemsToSave.map { $0.toCKRecord() }
             let operation = CKModifyRecordsOperation(recordsToSave: recordsToSave, recordIDsToDelete: nil)
-            // Använd .allKeys för att skriva över befintliga med samma ID från CSV
-            operation.savePolicy = .allKeys
+            operation.savePolicy = .allKeys // Behåll .allKeys för att tillåta CSV att skriva över baserat på ID om det skulle uppstå (dock osannolikt med vår UUID-generering)
 
             var successfullySavedCount = 0
-            // Valfritt: Följ framsteg per post
-             operation.perRecordSaveBlock = { recordId, result in
-                  switch result {
-                  case .success(_):
-                      successfullySavedCount += 1
-                  case .failure(let error):
-                      print("Failed to save record \(recordId.recordName): \(error)")
-                  }
-              }
+            operation.perRecordSaveBlock = { recordId, result in
+                 switch result {
+                 case .success(_): successfullySavedCount += 1
+                 case .failure(let error): print("Failed to save record \(recordId.recordName): \(error)")
+                 }
+             }
 
-            // Denna körs när *hela* batch-operationen är klar
             operation.modifyRecordsResultBlock = { [weak self] result in
-                // Körs på en bakgrundstråd från CloudKit, växla till main
+                // Körs på bakgrundstråd från CloudKit, växla till main
                 DispatchQueue.main.async {
                     guard let self = self else { return }
-                    self.isSavingCSV = false // Återställ flagga
+                    self.isSavingCSV = false // Återställ flaggan oavsett resultat
 
                     switch result {
                     case .success():
-                        print("FoodData [iOS]: CSV Batch save completed. Successfully saved \(successfullySavedCount) of \(itemsToSave.count) items.")
-                        self.loadFoodListFromCloudKit() // Ladda om för att uppdatera lokalt och cache
-                        completion(.success(successfullySavedCount)) // Rapportera lyckat antal
+                        print("FoodData [iOS]: CSV Batch save completed. Successfully saved \(successfullySavedCount) of \(itemsToSave.count) new items.")
+                        self.loadFoodListFromCloudKit() // Ladda om för att uppdatera UI och cache
+                        completion(.success(successfullySavedCount))
                     case .failure(let error):
                         print("FoodData [iOS]: CSV Batch save failed: \(error)")
-                         self.loadFoodListFromCloudKit() // Ladda om för att se aktuellt läge
-                        completion(.failure(error)) // Rapportera felet
+                        // Ladda om ändå för att se om några poster sparades trots felet
+                        self.loadFoodListFromCloudKit()
+                        completion(.failure(error))
                     }
                 }
             }
+
             print("FoodData [iOS]: Adding CSV batch save operation to CloudKit database...")
             CloudKitFoodDataStore.shared.database.add(operation)
-        } // Slut på parsingGroup.notify
+        }
     }
 
+
     /// Exporterar den aktuella `foodList` till en CSV-fil.
+    // (Oförändrad - exportToCSV)
     func exportToCSV(completion: @escaping (Result<URL, Error>) -> Void) {
         // Kör exportlogiken i bakgrunden för att inte blockera UI
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
@@ -367,7 +384,6 @@ class FoodData_iOS: ObservableObject {
             let timestamp = dateFormatter.string(from: Date())
             let fileName = "kolkalk_livsmedel_\(timestamp).csv"
 
-            // *** KORRIGERING VAR HÄR - guard let borttagen ***
             let path = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
 
             var csvString = "Name;CarbsPer100g;GramsPerDl;StyckPerGram;IsFavorite\n" // CSV Header
@@ -406,6 +422,7 @@ class FoodData_iOS: ObservableObject {
 
     // --- Privat hjälpfunktion ---
     /// Sorterar den interna `foodList` i bokstavsordning (skiftlägesokänsligt).
+    // (Oförändrad - sortFoodList)
     private func sortFoodList() {
         self.foodList.sort { $0.name.lowercased() < $1.name.lowercased() }
     }
