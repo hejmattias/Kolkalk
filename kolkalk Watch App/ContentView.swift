@@ -3,7 +3,7 @@
 
 import SwiftUI
 
-// MARK: - Global Route Enum
+// MARK: - Global Route Enum (Oförändrad)
 enum Route: Hashable {
     case plateView
     case foodListView(isEmptyAndAdd: Bool)
@@ -12,93 +12,93 @@ enum Route: Hashable {
     case createNewFoodItem
     case editFoodItem(FoodItem)
     case editPlateItem(FoodItem)
-    case importInstructions // Verkar inte användas längre? Kan tas bort om CloudKit ersätter CSV-import på klockan.
+    case importInstructions
     case insulinLoggingView
     case calculator(shouldEmptyPlate: Bool)
     case settings
 }
 
 struct ContentView: View {
-    // Plate är fortfarande en singleton som hanteras separat
+    // StateObjects och ObservedObjects
     @ObservedObject var plate = Plate.shared
-    // *** ÄNDRING: Skapa FoodData här som StateObject ***
     @StateObject var foodData = FoodData()
     @State private var navigationPath = NavigationPath()
 
-    // Läs in inställningen för insulinloggning
     @AppStorage("enableInsulinLogging") private var enableInsulinLogging = true
 
+    // Beräkning av totalCarbs
     var totalCarbs: Double {
         plate.items.reduce(0) { $0 + $1.totalCarbs }
     }
 
     var body: some View {
+        // Använder NavigationStack
         NavigationStack(path: $navigationPath) {
+            // Rotvyn är en lista med länkar
             List {
+                // ***** FÖRSTA LÄNKEN MODIFIERAD (Specifik färg) *****
                 NavigationLink(value: Route.plateView) {
-                    Label("Visa tallriken", systemImage: "fork.knife.circle")
-                }
+                    HStack {
+                        Image(systemName: "fork.knife.circle")
+                            // *** Sätt rendering mode och specifik färg ***
+                            .renderingMode(.template) // Behandla som en mall
+                            .foregroundColor(.white) // Sätt färgen till vit
 
+                        VStack(alignment: .leading) {
+                            Text("Visa tallriken")
+                            Text("Totalt: \(totalCarbs, specifier: "%.1f") gk")
+                                .font(.caption)
+                                .foregroundColor(.secondary) // Behåll denna för lilla texten
+                        }
+                        Spacer()
+                    }
+                } // Slut på modifierad NavigationLink
+
+                // Övriga länkar (Oförändrade - använder standard Label)
                 NavigationLink(value: Route.foodListView(isEmptyAndAdd: false)) {
                     Label("Lägg till på tallriken", systemImage: "plus.circle")
                 }
-
                 NavigationLink(value: Route.foodListView(isEmptyAndAdd: true)) {
                     Label("Töm och lägg till", systemImage: "trash.circle")
                 }
-
                 NavigationLink(value: Route.createFoodFromPlateView) {
                     Label("Tallrik till livsmedel", systemImage: "scalemass")
                 }
-
-                // Dölj insulinlänken baserat på inställning
                 if enableInsulinLogging {
                     NavigationLink(value: Route.insulinLoggingView) {
                         Label("Logga insulin", systemImage: "syringe")
                     }
                 }
-
-                // Länk till inställningar
                 NavigationLink(value: Route.settings) {
                      Label("Inställningar", systemImage: "gearshape")
                 }
-            }
-            .onAppear {
-                // Ladda plate (den har egen UserDefaults/AppGroup)
+            } // Slut List
+            .onAppear { // onAppear
                  plate.loadFromUserDefaults()
-                 // FoodData laddar nu själv från CloudKit i sin init
-                 // Begär HealthKit-auktorisation vid start
                  requestAuthIfEnabled()
             }
-            .navigationDestination(for: Route.self) { route in
+            .navigationDestination(for: Route.self) { route in // NavigationDestination
+                // Switch-satsen som skapar destinationerna är oförändrad...
                 switch route {
                 case .plateView:
-                    // PlateView behöver bara plate och navigationPath
                     PlateView(plate: plate, navigationPath: $navigationPath)
                 case .foodListView(let isEmptyAndAdd):
-                    // *** ÄNDRING: Skicka med foodData ***
                     FoodListView(plate: plate, foodData: foodData, navigationPath: $navigationPath, isEmptyAndAdd: isEmptyAndAdd)
                 case .createFoodFromPlateView:
-                    // *** ÄNDRING: Skicka med foodData ***
                     CreateFoodFromPlateView(plate: plate, foodData: foodData, navigationPath: $navigationPath)
                 case .foodDetailView(let food, let shouldEmptyPlate):
-                    // FoodDetailView behöver bara plate och navigationPath
                     FoodDetailView(plate: plate, food: food, navigationPath: $navigationPath, shouldEmptyPlate: shouldEmptyPlate)
                 case .createNewFoodItem:
-                    // *** ÄNDRING: Skicka med foodData ***
                     CreateNewFoodItemView(foodData: foodData, navigationPath: $navigationPath)
                 case .editFoodItem(let food):
-                    // *** ÄNDRING: Skicka med foodData ***
                     EditFoodItemView(food: food, foodData: foodData, navigationPath: $navigationPath)
                 case .editPlateItem(let item):
-                    // EditFoodView och CalculatorView behöver bara plate och navigationPath
                     if item.isCalculatorItem {
                         CalculatorView(plate: plate, navigationPath: $navigationPath, initialCalculation: item.name, itemToEdit: item)
                     } else {
                         EditFoodView(plate: plate, item: item)
                     }
                 case .importInstructions:
-                     // Om denna vy inte längre behövs kan den tas bort från Route och här
                      ImportInstructionsView()
                 case .insulinLoggingView:
                     InsulinLoggingView()
@@ -108,15 +108,13 @@ struct ContentView: View {
                     SettingsView()
                 }
             }
-            .navigationTitle("Totalt: \(totalCarbs, specifier: "%.1f") gk")
-            .onOpenURL { url in
+            .onOpenURL { url in // onOpenURL
                 handleDeepLink(url: url)
             }
-        }
+        } // Slut NavigationStack
     }
 
-    // MARK: - Handle Deep Link
-
+    // handleDeepLink (Oförändrad)
     func handleDeepLink(url: URL) {
         switch url.host {
         case "addFood":
@@ -126,24 +124,21 @@ struct ContentView: View {
         case "FoodPlate":
             navigationPath = NavigationPath([Route.plateView])
         default:
+            navigationPath = NavigationPath()
             break
         }
     }
 
-    // Funktion för att begära auktorisering vid start
+    // requestAuthIfEnabled (Oförändrad)
     private func requestAuthIfEnabled() {
-         // Läs in den andra inställningen här också för att kolla båda
-         let enableCarbLogging = UserDefaults.standard.bool(forKey: "enableCarbLogging")
-         // Standardvärdet om nyckeln inte finns är false, men vi vill ha true som standard.
-         // Om nyckeln *aldrig* har satts (första gången), använd true.
-         let carbLoggingSettingExists = UserDefaults.standard.object(forKey: "enableCarbLogging") != nil
-         let shouldRequestCarb = carbLoggingSettingExists ? enableCarbLogging : true
+        let enableCarbLogging = UserDefaults.standard.bool(forKey: "enableCarbLogging")
+        let carbLoggingSettingExists = UserDefaults.standard.object(forKey: "enableCarbLogging") != nil
+        let shouldRequestCarb = carbLoggingSettingExists ? enableCarbLogging : true
 
-         let insulinLoggingSettingExists = UserDefaults.standard.object(forKey: "enableInsulinLogging") != nil
-         let shouldRequestInsulin = insulinLoggingSettingExists ? enableInsulinLogging : true
+        let insulinLoggingSettingExists = UserDefaults.standard.object(forKey: "enableInsulinLogging") != nil
+        let shouldRequestInsulin = insulinLoggingSettingExists ? enableInsulinLogging : true
 
-
-         if shouldRequestCarb || shouldRequestInsulin {
+        if shouldRequestCarb || shouldRequestInsulin {
              HealthKitManager.shared.requestAuthorization { success, error in
                  if !success {
                      print("HealthKit authorization was not granted on app start.")
