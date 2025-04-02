@@ -16,6 +16,9 @@
 		B91B19342D9C6A00003337D4 /* IOSAddEditFoodItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B19332D9C6A00003337D4 /* IOSAddEditFoodItemView.swift */; };
 		B91B19362D9C6AC5003337D4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B19352D9C6AC5003337D4 /* AppDelegate.swift */; };
 		B91B19382D9C6B17003337D4 /* ExtensionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B19372D9C6B17003337D4 /* ExtensionDelegate.swift */; };
+		B960858A2D9D36FE00294BC9 /* CloudKitContainerDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B96085892D9D36FE00294BC9 /* CloudKitContainerDataStore.swift */; };
+		B960858B2D9D36FE00294BC9 /* CloudKitContainerDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B96085892D9D36FE00294BC9 /* CloudKitContainerDataStore.swift */; };
+		B960858C2D9D36FE00294BC9 /* CloudKitContainerDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B96085892D9D36FE00294BC9 /* CloudKitContainerDataStore.swift */; };
 		B97C749D2CB7D26E0073AC17 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B97C749C2CB7D26E0073AC17 /* WidgetKit.framework */; };
 		B97C749F2CB7D26E0073AC17 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B97C749E2CB7D26E0073AC17 /* SwiftUI.framework */; };
 		B97C74AA2CB7D26F0073AC17 /* komplikationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B97C749B2CB7D26E0073AC17 /* komplikationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -163,6 +166,7 @@
 		B91B19332D9C6A00003337D4 /* IOSAddEditFoodItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSAddEditFoodItemView.swift; sourceTree = "<group>"; };
 		B91B19352D9C6AC5003337D4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B91B19372D9C6B17003337D4 /* ExtensionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionDelegate.swift; sourceTree = "<group>"; };
+		B96085892D9D36FE00294BC9 /* CloudKitContainerDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitContainerDataStore.swift; sourceTree = "<group>"; };
 		B97C749B2CB7D26E0073AC17 /* komplikationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = komplikationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B97C749C2CB7D26E0073AC17 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		B97C749E2CB7D26E0073AC17 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -311,6 +315,7 @@
 		B97FFDE62D88650500DD4DB6 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				B96085892D9D36FE00294BC9 /* CloudKitContainerDataStore.swift */,
 				B91B192B2D9C68F8003337D4 /* CloudKitFoodDataStore.swift */,
 				B97FFDE32D88650500DD4DB6 /* Container.swift */,
 				B97FFDE42D88650500DD4DB6 /* FoodItem.swift */,
@@ -740,6 +745,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B960858B2D9D36FE00294BC9 /* CloudKitContainerDataStore.swift in Sources */,
 				B97FFE052D88650500DD4DB6 /* FoodItem.swift in Sources */,
 				B97FFE062D88650500DD4DB6 /* HealthKitManager.swift in Sources */,
 				B97FFE122D88650500DD4DB6 /* AppIntent.swift in Sources */,
@@ -762,6 +768,7 @@
 				B91B19302D9C69D7003337D4 /* FoodData.swift in Sources */,
 				B97FFDF62D88650500DD4DB6 /* AddEditContainerView.swift in Sources */,
 				B97FFDF72D88650500DD4DB6 /* ContainerData.swift in Sources */,
+				B960858C2D9D36FE00294BC9 /* CloudKitContainerDataStore.swift in Sources */,
 				B91B19342D9C6A00003337D4 /* IOSAddEditFoodItemView.swift in Sources */,
 				B97FFDF82D88650500DD4DB6 /* ContainerListView.swift in Sources */,
 				B97FFDF92D88650500DD4DB6 /* ContentView.swift in Sources */,
@@ -811,6 +818,7 @@
 				B97FFE452D88650500DD4DB6 /* InsulinLoggingView.swift in Sources */,
 				B97FFE462D88650500DD4DB6 /* kolhydratApp.swift in Sources */,
 				B97FFE472D88650500DD4DB6 /* kolkalkApp.swift in Sources */,
+				B960858A2D9D36FE00294BC9 /* CloudKitContainerDataStore.swift in Sources */,
 				B97FFE482D88650500DD4DB6 /* NumpadView.swift in Sources */,
 				B97FFE492D88650500DD4DB6 /* Plateklassen.swift in Sources */,
 				B91B19382D9C6B17003337D4 /* ExtensionDelegate.swift in Sources */,

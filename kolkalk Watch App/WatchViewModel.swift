@@ -1,55 +1,36 @@
 // Kolkalk.zip/kolkalk Watch App/WatchViewModel.swift
 
 import Foundation
-import WatchConnectivity // Behåll om den behövs för Container
+// Ta bort WatchConnectivity om det inte används alls längre
+// import WatchConnectivity
 import SwiftUI
 import os.log
 
-class WatchViewModel: NSObject, ObservableObject, WCSessionDelegate { // Behåll WCSessionDelegate om Container
+// Om WCSession inte behövs alls: class WatchViewModel: NSObject, ObservableObject {
+// Om den KANSKE behövs för annat: class WatchViewModel: NSObject, ObservableObject, WCSessionDelegate {
+class WatchViewModel: NSObject, ObservableObject { // Ta bort WCSessionDelegate om onödigt
     static let shared = WatchViewModel()
-    // FoodData hämtas nu direkt i vyerna eller via @StateObject där det behövs
-    // Ta bort: @Published var foodData = FoodData()
-    @ObservedObject var containerData = WatchContainerData.shared // Behåll Container
+    // Ta bort referens till containerData om den inte behövs här längre
+    // @ObservedObject var containerData = WatchContainerData.shared
 
     override private init() {
         super.init()
+        // Ta bort WCSession-aktivering om onödigt
+        /*
         if WCSession.isSupported() {
             let session = WCSession.default
-            session.delegate = self
+            session.delegate = self // Kräver WCSessionDelegate ovan
             session.activate()
-            print("WatchViewModel: WCSession activated (for Container sync if needed).")
+            print("WatchViewModel: WCSession activated (If needed).")
         }
+        */
+         print("WatchViewModel initialized (WCSession removed/commented).")
     }
 
-    // Behåll didReceiveUserInfo om Container skickas så
-     func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any]) {
-         print("WatchViewModel: Received user info: \(userInfo.keys)")
-         if let data = userInfo["containerList"] as? Data {
-             if let containers = try? JSONDecoder().decode([Container].self, from: data) {
-                 DispatchQueue.main.async {
-                     // Uppdatera containerData direkt här
-                     WatchContainerData.shared.containerList = containers
-                     WatchContainerData.shared.saveToUserDefaults() // Spara lokalt på klockan
-                     print("WatchViewModel: Updated container list with received data.")
-                 }
-             } else {
-                 print("WatchViewModel: Failed to decode container list.")
-             }
-         }
-     }
-
-    // --- Ta bort metoder relaterade till livsmedelsöverföring ---
-    // func session(_ session: WCSession, didReceive file: WCSessionFile) { ... }
-    // func getDocumentsDirectory() -> URL { ... } // Om den bara användes för CSV
-
-    // --- Behåll WCSessionDelegate-metoder ---
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-        if let error = error {
-            print("WatchViewModel: WCSession activation failed with error: \(error.localizedDescription)")
-        } else {
-            print("WatchViewModel: WCSession activated with state: \(activationState.rawValue)")
-        }
-    }
-
+    // --- Ta bort WCSessionDelegate-metoder ---
+    /*
+     func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any]) { ... } // Ta bort om bara för kärl
+     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) { ... }
     // Implementera övriga WCSessionDelegate-metoder vid behov
+    */
 }
