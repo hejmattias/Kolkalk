@@ -1,3 +1,13 @@
+//
+//  CreateNewFoodItemView.swift
+//  Kolkalk
+//
+//  Created by Mattias Göransson on 2025-04-03.
+//
+
+
+// Kolkalk.zip/kolkalk Watch App/CreateNewFood.swift
+// OBS: Filnamnet i projektet bör vara CreateNewFoodItemView.swift för att matcha struct-namnet
 import SwiftUI
 
 struct CreateNewFoodItemView: View {
@@ -8,7 +18,7 @@ struct CreateNewFoodItemView: View {
     @State private var carbsPer100gString: String = ""
     @State private var gramsPerDlString: String = ""
     @State private var styckPerGramString: String = ""
-    @State private var isFavorite: Bool = false // Ny State-variabel
+    @State private var isFavorite: Bool = false
 
     @State private var showingCarbsNumpad = false
     @State private var showingGramsPerDlNumpad = false
@@ -24,8 +34,11 @@ struct CreateNewFoodItemView: View {
                 Button(action: {
                     showingCarbsNumpad = true
                 }) {
+                    // <<< CHANGE START >>>
+                    // Visa värdet eller platshållare
                     Text(carbsPer100gString.isEmpty ? "Ange värde" : carbsPer100gString)
-                        .foregroundColor(.blue)
+                        .foregroundColor(carbsPer100gString.isEmpty ? .gray : .primary)
+                    // <<< CHANGE END >>>
                 }
             }
 
@@ -33,8 +46,10 @@ struct CreateNewFoodItemView: View {
                 Button(action: {
                     showingGramsPerDlNumpad = true
                 }) {
-                    Text(gramsPerDlString.isEmpty ? "Ange värde" : gramsPerDlString)
-                        .foregroundColor(.blue)
+                     // <<< CHANGE START >>>
+                     Text(gramsPerDlString.isEmpty ? "Ange värde" : gramsPerDlString)
+                         .foregroundColor(gramsPerDlString.isEmpty ? .gray : .primary)
+                     // <<< CHANGE END >>>
                 }
             }
 
@@ -42,12 +57,13 @@ struct CreateNewFoodItemView: View {
                 Button(action: {
                     showingStyckPerGramNumpad = true
                 }) {
-                    Text(styckPerGramString.isEmpty ? "Ange värde" : styckPerGramString)
-                        .foregroundColor(.blue)
+                     // <<< CHANGE START >>>
+                     Text(styckPerGramString.isEmpty ? "Ange värde" : styckPerGramString)
+                         .foregroundColor(styckPerGramString.isEmpty ? .gray : .primary)
+                     // <<< CHANGE END >>>
                 }
             }
 
-            // Ny sektion för favoritmarkering
             Section {
                 Toggle(isOn: $isFavorite) {
                     Text("Favorit")
@@ -62,41 +78,42 @@ struct CreateNewFoodItemView: View {
             }
         }
         .navigationTitle("Lägg till livsmedel")
+        // <<< CHANGE START >>>
+        // Använd NumpadView i numericValue-läge i .sheet
         .sheet(isPresented: $showingCarbsNumpad) {
-            InputValueDoubleView(value: $carbsPer100gString, title: "Ange gk per 100g")
+            NumpadView(valueString: $carbsPer100gString, title: "Ange gk per 100g", mode: .numericValue)
         }
         .sheet(isPresented: $showingGramsPerDlNumpad) {
-            InputValueDoubleView(value: $gramsPerDlString, title: "Ange g per dl")
+            NumpadView(valueString: $gramsPerDlString, title: "Ange g per dl", mode: .numericValue)
         }
         .sheet(isPresented: $showingStyckPerGramNumpad) {
-            InputValueDoubleView(value: $styckPerGramString, title: "Ange g per styck")
+            NumpadView(valueString: $styckPerGramString, title: "Ange g per styck", mode: .numericValue)
         }
+         // <<< CHANGE END >>>
     }
 
     func saveNewFoodItem() {
-        guard let carbsPer100g = Double(carbsPer100gString.replacingOccurrences(of: ",", with: ".")) else { return }
-
-        var gramsPerDl: Double? = nil
-        if !gramsPerDlString.isEmpty, let gramsPerDlValue = Double(gramsPerDlString.replacingOccurrences(of: ",", with: ".")) {
-            gramsPerDl = gramsPerDlValue
+        // Konvertera strängar till Double (oförändrat)
+        guard let carbsPer100g = Double(carbsPer100gString.replacingOccurrences(of: ",", with: ".")) else {
+            print("Error: Invalid carbs value")
+            return
         }
 
-        var styckPerGram: Double? = nil
-        if !styckPerGramString.isEmpty, let styckPerGramValue = Double(styckPerGramString.replacingOccurrences(of: ",", with: ".")) {
-            styckPerGram = styckPerGramValue
-        }
+        let gramsPerDl = Double(gramsPerDlString.replacingOccurrences(of: ",", with: "."))
+        let styckPerGram = Double(styckPerGramString.replacingOccurrences(of: ",", with: "."))
 
         let newFoodItem = FoodItem(
             name: foodName,
             carbsPer100g: carbsPer100g,
-            grams: 0,
+            grams: 0, // Gram sätts när det läggs på tallriken
             gramsPerDl: gramsPerDl,
             styckPerGram: styckPerGram,
-            isFavorite: isFavorite // Sätt favoritstatus
+            isFavorite: isFavorite
         )
         foodData.addFoodItem(newFoodItem)
 
-        navigationPath.removeLast() // Återgå till livsmedelslistan
+        if navigationPath.count > 0 {
+            navigationPath.removeLast() // Återgå
+        }
     }
 }
-
