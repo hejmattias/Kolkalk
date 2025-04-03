@@ -1,5 +1,4 @@
 // Kolkalk.zip/kolkalk Watch App/PlateView.swift
-// PlateView.swift
 
 import SwiftUI
 import HealthKit
@@ -7,26 +6,19 @@ import HealthKit
 struct PlateView: View {
     @ObservedObject var plate: Plate
     @Binding var navigationPath: NavigationPath
-    @State private var showDetailsForItemId: UUID?
+    // State private var showDetailsForItemId: UUID? // BORTTAGEN
 
-    // State variables for HealthKit logging
     @State private var isLogging = false
     @State private var logAlert: LogAlert?
-
-    // State variable for confirmation alert
     @State private var showEmptyConfirmation = false
 
-    // *** NYTT: Läs in inställningen för kolhydratloggning ***
     @AppStorage("enableCarbLogging") private var enableCarbLogging = true
-    // *** NYTT: Läs in inställningen för insulinloggning (för att dölja knappen) ***
     @AppStorage("enableInsulinLogging") private var enableInsulinLogging = true
-
 
     var totalCarbs: Double {
         plate.items.reduce(0) { $0 + $1.totalCarbs }
     }
 
-    // Structure to handle alerts
     struct LogAlert: Identifiable {
         var id = UUID()
         var title: String
@@ -35,19 +27,33 @@ struct PlateView: View {
 
     var body: some View {
         List {
-            // MARK: - Existing List Content (Items, Empty Plate, Log to Health, Log Insulin)
-
+            // MARK: - List Items
             ForEach(plate.items) { item in
                 VStack(alignment: .leading) {
                     HStack {
-                        NavigationLink(value: Route.editPlateItem(item)) {
+                        // Länk för att redigera (om inte kalkylator)
+                        if item.isCalculatorItem {
+                            // Gör kalkylator-rader icke-klickbara för redigering
                             HStack {
                                 Text(item.name)
                                     .font(.body)
                                     .foregroundColor(.primary)
-                                if item.hasBeenLogged && enableCarbLogging { // Visa bara bocken om loggning är på
+                                if item.hasBeenLogged && enableCarbLogging {
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundColor(.green)
+                                }
+                            }
+                        } else {
+                            // Länk för vanliga livsmedel
+                            NavigationLink(value: Route.editPlateItem(item)) {
+                                HStack {
+                                    Text(item.name)
+                                        .font(.body)
+                                        .foregroundColor(.primary)
+                                    if item.hasBeenLogged && enableCarbLogging {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundColor(.green)
+                                    }
                                 }
                             }
                         }
@@ -55,25 +61,15 @@ struct PlateView: View {
                         Text("\(item.totalCarbs, specifier: "%.1f") gk")
                     }
 
-                    // Show details when the user swipes
-                    if showDetailsForItemId == item.id {
-                        Text(itemDetailString(for: item))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
+                    // *** ÄNDRING: Visa alltid detaljer ***
+                    Text(itemDetailString(for: item))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .padding(.top, 1) // Lite extra luft
+                    // *** SLUT ÄNDRING ***
                 }
                 .contentShape(Rectangle())
-                .gesture(
-                    DragGesture(minimumDistance: 50, coordinateSpace: .local)
-                        .onEnded { value in
-                            if value.translation.width > 0 {
-                                // Swipe from left to right to show information
-                                showDetailsForItemId = item.id
-                            } else if value.translation.width < 0 {
-                                showDetailsForItemId = nil
-                            }
-                        }
-                )
+                // .gesture(...) // BORTTAGEN
                 .swipeActions(edge: .trailing) {
                     Button(role: .destructive) {
                         deleteItem(item: item)
@@ -81,11 +77,36 @@ struct PlateView: View {
                         Label("Ta bort", systemImage: "trash")
                     }
                 }
-            }
+                // Låt swipe-edit finnas kvar även om klick-edit tas bort för kalkylator
+                 .swipeActions(edge: .leading) {
+                     Button {
+                         navigationPath.append(Route.editPlateItem(item)) // Navigera till redigering
+                     } label: {
+                         Label("Redigera", systemImage: "pencil")
+                     }
+                     .tint(.blue)
+                 }
+            } // End ForEach
 
+            // MARK: - Buttons Below Items
             if !plate.items.isEmpty {
+
+                // *** NY PLATS FÖR "+"-KNAPPEN ***
+                Button {
+                    navigationPath.append(Route.foodListView(isEmptyAndAdd: false))
+                } label: {
+                    HStack {
+                        Spacer()
+                        Label("Lägg till", systemImage: "plus")
+                             .foregroundColor(.blue)
+                        Spacer()
+                    }
+                }
+                // *** SLUT NY PLATS ***
+
+                // "Töm tallriken" button
                 Button(action: {
-                    showEmptyConfirmation = true // Show confirmation alert
+                    showEmptyConfirmation = true
                 }) {
                     HStack {
                         Spacer()
@@ -95,64 +116,60 @@ struct PlateView: View {
                     }
                 }
                 .alert("Bekräfta Töm Tallriken", isPresented: $showEmptyConfirmation) {
-                    Button("Ja", role: .destructive) {
-                        plate.emptyPlate()
-                    }
+                    Button("Ja", role: .destructive) { plate.emptyPlate() }
                     Button("Avbryt", role: .cancel) { }
-                } message: {
-                    Text("Är du säker på att du vill tömma tallriken?")
-                }
+                } message: { Text("Är du säker på att du vill tömma tallriken?") }
 
-                // *** NYTT: Dölj kolhydratloggningsknappen baserat på inställning ***
+                // "Logga kolhydrater" button
                 if enableCarbLogging {
-                    // "Log to Apple Health" button
-                    Button(action: {
-                        logToHealth()
-                    }) {
+                    Button(action: { logToHealth() }) {
                         HStack {
                             Spacer()
-                            Text("Logga kolhydrater") // Ändrad text
+                            Text("Logga kolhydrater")
                                 .foregroundColor(.blue)
                             Spacer()
                         }
                     }
                     .disabled(isLogging || plate.items.allSatisfy { $0.hasBeenLogged })
                 }
+
+                // "Logga insulin" button
+                 if enableInsulinLogging {
+                     Button(action: {
+                         navigationPath.append(Route.insulinLoggingView)
+                     }) {
+                         HStack {
+                             Spacer()
+                             Text("Logga insulin")
+                                 .foregroundColor(.blue)
+                             Spacer()
+                         }
+                     }
+                 }
+
             } else {
-                // Display message when the plate is empty
-                Text("Tallriken är tom. Tryck på '+' för att lägga till.")
+                // Meddelande när tallriken är tom
+                // *** LÄGG TILL "+"-KNAPPEN ÄVEN HÄR ***
+                Button {
+                     navigationPath.append(Route.foodListView(isEmptyAndAdd: false))
+                 } label: {
+                     HStack {
+                         Spacer()
+                         Label("Lägg till", systemImage: "plus")
+                              .foregroundColor(.blue)
+                         Spacer()
+                     }
+                 }
+
+                Text("Tallriken är tom.")
                     .foregroundColor(.gray)
-                    .padding()
+                    .padding(.top) // Lite utrymme från knappen ovan
             }
 
-            // *** NYTT: Dölj insulinloggningsknappen baserat på inställning ***
-            if enableInsulinLogging {
-                // Button to log insulin to Apple Health
-                Button(action: {
-                    navigationPath.append(Route.insulinLoggingView)
-                }) {
-                    HStack {
-                        Spacer()
-                        Text("Logga insulin") // Ändrad text
-                            .foregroundColor(.blue)
-                        Spacer()
-                    }
-                }
-            }
-        }
+        } // End List
         .navigationTitle("Totalt: \(totalCarbs, specifier: "%.1f") gk")
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    navigationPath.append(Route.foodListView(isEmptyAndAdd: false))
-                } label: {
-                    Image(systemName: "plus")
-                }
-            }
-        }
-        .onDisappear {
-            showDetailsForItemId = nil
-        }
+        // .toolbar { } // Toolbar borttagen då knappen flyttats
+        // .onDisappear { showDetailsForItemId = nil } // BORTTAGEN
         .alert(item: $logAlert) { alert in
             Alert(
                 title: Text(alert.title),
@@ -162,7 +179,7 @@ struct PlateView: View {
         }
     }
 
-    // MARK: - Helper Methods
+    // MARK: - Helper Methods (deleteItem, itemDetailString, logToHealth) - Oförändrade
 
     private func deleteItem(item: FoodItem) {
         if let index = plate.items.firstIndex(where: { $0.id == item.id }) {
@@ -172,10 +189,15 @@ struct PlateView: View {
     }
 
     private func itemDetailString(for item: FoodItem) -> String {
+        // Om det är ett kalkylatorobjekt, visa bara gram
+        if item.isCalculatorItem {
+            return "\(String(format: "%.1f", item.grams))g (kalkyl)"
+        }
+
         let gramsString = "\(String(format: "%.1f", item.grams))g"
 
         guard let inputUnit = item.inputUnit else {
-            return gramsString
+            return gramsString // Fallback om enhet saknas
         }
 
         let inputValue: Double
@@ -190,6 +212,7 @@ struct PlateView: View {
                 inputValue = item.grams / gramsPerDl
                 unitString = "dl"
             } else {
+                // Om gramsPerDl saknas eller är 0, visa bara gram
                 return gramsString
             }
         case "st":
@@ -197,24 +220,26 @@ struct PlateView: View {
                 inputValue = item.grams / styckPerGram
                 unitString = "st"
             } else {
+                 // Om styckPerGram saknas eller är 0, visa bara gram
                 return gramsString
             }
         default:
+             // Om okänd enhet, visa bara gram
             return gramsString
         }
 
+        // Om enheten är gram, visa bara det
         if unitString == "g" {
             return "\(String(format: "%.1f", inputValue))\(unitString)"
         } else {
+            // Annars, visa t.ex. "1.5dl (150g)"
             return "\(String(format: "%.1f", inputValue))\(unitString) (\(gramsString))"
         }
     }
 
-    // Function to log to HealthKit
     private func logToHealth() {
         isLogging = true
 
-        // Filter out food items that haven't been logged
         let itemsToLog = plate.items.filter { !$0.hasBeenLogged }
 
         guard !itemsToLog.isEmpty else {
@@ -225,9 +250,13 @@ struct PlateView: View {
 
         let totalCarbsToLog = itemsToLog.reduce(0) { $0 + $1.totalCarbs }
 
-        // Create metadata with food items and quantities
         let foodDetails = itemsToLog.map { item in
-            "\(item.name): \(item.formattedDetail())"
+            // Anpassa metadata baserat på om det är kalkylator eller vanligt
+            if item.isCalculatorItem {
+                return "\(item.name): \(String(format: "%.1f", item.grams))g" // Visa uträkning och resultat i gram
+            } else {
+                 return "\(item.name): \(item.formattedDetail())" // Använd befintlig formatering
+            }
         }.joined(separator: "; ")
 
         let metadata = [
@@ -239,16 +268,15 @@ struct PlateView: View {
                 self.isLogging = false
 
                 if success {
-                    // Update hasBeenLogged for the logged food items
-                    for index in plate.items.indices {
-                        if !plate.items[index].hasBeenLogged {
-                            plate.items[index].hasBeenLogged = true
+                    for index in self.plate.items.indices {
+                        if itemsToLog.contains(where: { $0.id == self.plate.items[index].id }) {
+                            self.plate.items[index].hasBeenLogged = true
                         }
                     }
-                    plate.saveToUserDefaults()
-                    self.logAlert = LogAlert(title: "Lyckades", message: "Kolhydrater har loggats till Apple Hälsa.") // Ändrad text
+                    self.plate.saveToUserDefaults()
+                    self.logAlert = LogAlert(title: "Lyckades", message: "Kolhydrater har loggats till Apple Hälsa.")
                 } else {
-                    self.logAlert = LogAlert(title: "Fel", message: "Kunde inte logga kolhydrater till Apple Hälsa.") // Ändrad text
+                    self.logAlert = LogAlert(title: "Fel", message: "Kunde inte logga kolhydrater till Apple Hälsa.")
                 }
 
                 if let error = error {
