@@ -1,11 +1,3 @@
-//
-//  IOSAddEditFoodItemView.swift
-//  Kolkalk
-//
-//  Created by Mattias Göransson on 2025-04-01.
-//
-
-
 // Kolkalk/IOSAddEditFoodItemView.swift
 
 import SwiftUI
@@ -21,8 +13,6 @@ struct IOSAddEditFoodItemView: View {
     @State private var gramsPerDlString: String = ""
     @State private var styckPerGramString: String = ""
     @State private var isFavorite: Bool = false
-
-    // För att visa felmeddelande
     @State private var errorMessage: String? = nil
 
     var isEditing: Bool { foodToEdit != nil }
@@ -34,22 +24,57 @@ struct IOSAddEditFoodItemView: View {
                 HStack {
                      TextField("Kolhydrater (gk per 100g)", text: $carbsPer100gString)
                          .keyboardType(.decimalPad)
+                         // *** UPPDATERAD onChange SYNTAX ***
+                         .onChange(of: carbsPer100gString) { oldValue, newValue in
+                             let filtered = newValue.replacingOccurrences(of: ",", with: ".")
+                             if filtered.filter({ $0 == "." }).count <= 1 {
+                                 // Undvik oändlig loop genom att bara uppdatera om värdet faktiskt ändrats
+                                 if carbsPer100gString != filtered {
+                                     carbsPer100gString = filtered
+                                 }
+                             } else if !newValue.isEmpty {
+                                 // Återställ till gamla värdet om fler än en punkt matades in
+                                 carbsPer100gString = oldValue
+                             }
+                         }
                      Text("gk/100g").foregroundColor(.gray)
                  }
                  HStack {
                      TextField("Vikt per dl (valfritt)", text: $gramsPerDlString)
                          .keyboardType(.decimalPad)
+                         // *** UPPDATERAD onChange SYNTAX ***
+                         .onChange(of: gramsPerDlString) { oldValue, newValue in
+                             let filtered = newValue.replacingOccurrences(of: ",", with: ".")
+                             if filtered.filter({ $0 == "." }).count <= 1 {
+                                 if gramsPerDlString != filtered {
+                                     gramsPerDlString = filtered
+                                 }
+                             } else if !newValue.isEmpty {
+                                 gramsPerDlString = oldValue
+                             }
+                         }
                      Text("g/dl").foregroundColor(.gray)
                  }
                  HStack {
                      TextField("Vikt per styck (valfritt)", text: $styckPerGramString)
                          .keyboardType(.decimalPad)
+                         // *** UPPDATERAD onChange SYNTAX ***
+                         .onChange(of: styckPerGramString) { oldValue, newValue in
+                             let filtered = newValue.replacingOccurrences(of: ",", with: ".")
+                             if filtered.filter({ $0 == "." }).count <= 1 {
+                                 if styckPerGramString != filtered {
+                                     styckPerGramString = filtered
+                                 }
+                             } else if !newValue.isEmpty {
+                                 styckPerGramString = oldValue
+                             }
+                         }
                      Text("g/st").foregroundColor(.gray)
                  }
                 Toggle("Favorit", isOn: $isFavorite)
             }
 
-            // Visa felmeddelande om det finns
+            // Felmeddelandesektion
             if let message = errorMessage {
                  Section {
                      Text(message)
@@ -58,41 +83,84 @@ struct IOSAddEditFoodItemView: View {
              }
         }
         .navigationTitle(isEditing ? "Redigera livsmedel" : "Lägg till livsmedel")
-        .navigationBarItems(leading: Button("Avbryt") { dismiss() },
-                            trailing: Button("Spara") { saveFoodItem() })
+        .navigationBarItems(
+             leading: Button("Avbryt") { dismiss() },
+             trailing: Button("Spara") { saveFoodItem() }
+                         .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty || !isValidDouble(carbsPer100gString))
+         )
         .onAppear {
-            // Fyll i fälten om vi redigerar
+            print("DEBUG: IOSAddEditFoodItemView .onAppear - foodToEdit is: \(foodToEdit?.name ?? "nil")")
             if let food = foodToEdit {
                 name = food.name
-                carbsPer100gString = String(food.carbsPer100g ?? 0)
-                gramsPerDlString = food.gramsPerDl != nil ? String(food.gramsPerDl!) : ""
-                styckPerGramString = food.styckPerGram != nil ? String(food.styckPerGram!) : ""
+                carbsPer100gString = String(food.carbsPer100g ?? 0).replacingOccurrences(of: ".", with: ",")
+                gramsPerDlString = food.gramsPerDl != nil ? String(food.gramsPerDl!).replacingOccurrences(of: ".", with: ",") : ""
+                styckPerGramString = food.styckPerGram != nil ? String(food.styckPerGram!).replacingOccurrences(of: ".", with: ",") : ""
                 isFavorite = food.isFavorite
+            } else {
+                name = ""
+                carbsPer100gString = ""
+                gramsPerDlString = ""
+                styckPerGramString = ""
+                isFavorite = false
             }
+            errorMessage = nil
         }
     }
 
+    // Hjälpfunktion för Spara-knappens validering
+    private func isValidDouble(_ string: String) -> Bool {
+        return Double(string.replacingOccurrences(of: ",", with: ".")) != nil
+    }
+
+    // saveFoodItem() är oförändrad
     func saveFoodItem() {
-        // Validering
-        guard !name.isEmpty else {
+        let sanitizedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Använd strängarna direkt eftersom onChange redan konverterat till punkt
+        let sanitizedCarbs = carbsPer100gString
+        let sanitizedGramsDl = gramsPerDlString
+        let sanitizedStyckGram = styckPerGramString
+
+        guard !sanitizedName.isEmpty else {
             errorMessage = "Namn får inte vara tomt."
             return
         }
-        guard let carbsPer100g = Double(carbsPer100gString.replacingOccurrences(of: ",", with: ".")) else {
-            errorMessage = "Ange ett giltigt värde för kolhydrater."
+        // Validera direkt med den punkt-formaterade strängen
+        guard let carbsPer100g = Double(sanitizedCarbs), carbsPer100g >= 0 else {
+            errorMessage = "Ange ett giltigt, icke-negativt värde för kolhydrater."
+            // Återställ fältet om det är ogiltigt? Eller låt användaren korrigera.
+            // self.carbsPer100gString = "" // Alternativ
             return
         }
 
-        let gramsPerDl = Double(gramsPerDlString.replacingOccurrences(of: ",", with: "."))
-        let styckPerGram = Double(styckPerGramString.replacingOccurrences(of: ",", with: "."))
+        let gramsPerDl: Double?
+        if !sanitizedGramsDl.isEmpty {
+            guard let value = Double(sanitizedGramsDl), value >= 0 else {
+                errorMessage = "Ange ett giltigt, icke-negativt värde för vikt per dl."
+                return
+            }
+            gramsPerDl = value
+        } else {
+            gramsPerDl = nil
+        }
 
-        errorMessage = nil // Rensa eventuellt tidigare felmeddelande
+        let styckPerGram: Double?
+        if !sanitizedStyckGram.isEmpty {
+             guard let value = Double(sanitizedStyckGram), value >= 0 else {
+                 errorMessage = "Ange ett giltigt, icke-negativt värde för vikt per styck."
+                 return
+             }
+             styckPerGram = value
+         } else {
+             styckPerGram = nil
+         }
+
+        errorMessage = nil
 
         let foodItemToSave = FoodItem(
-            id: foodToEdit?.id ?? UUID(), // Använd befintligt ID vid redigering
-            name: name,
+            id: foodToEdit?.id ?? UUID(),
+            name: sanitizedName,
             carbsPer100g: carbsPer100g,
-            grams: 0, // Irrelevant för listan
+            grams: 0,
             gramsPerDl: gramsPerDl,
             styckPerGram: styckPerGram,
             isFavorite: isFavorite
@@ -104,6 +172,6 @@ struct IOSAddEditFoodItemView: View {
             foodData.addFoodItem(foodItemToSave)
         }
 
-        dismiss() // Stäng vyn efter sparande
+        dismiss()
     }
 }

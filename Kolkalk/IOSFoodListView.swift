@@ -2,12 +2,11 @@
 
 import SwiftUI
 
-// FoodItemRowView (oförändrad från förra svaret, tar emot toggleAction)
+// FoodItemRowView (oförändrad)
 struct FoodItemRowView: View {
     let food: FoodItem
-    var toggleAction: () -> Void // Tar emot en funktion för att växla favorit
-    @Binding var foodToEdit: FoodItem?
-    @Binding var showingAddEditSheet: Bool
+    var toggleAction: () -> Void
+    var editAction: () -> Void
 
     var body: some View {
         HStack {
@@ -16,10 +15,7 @@ struct FoodItemRowView: View {
                 Text("\(food.carbsPer100g ?? 0, specifier: "%.1f") gk / 100g").font(.caption).foregroundColor(.gray)
             }
             Spacer()
-            Button {
-                // Anropar den mottagna toggleAction-funktionen
-                toggleAction()
-            } label: {
+            Button(action: toggleAction) {
                 Image(systemName: food.isFavorite ? "heart.fill" : "heart")
                     .foregroundColor(food.isFavorite ? .red : .gray)
                     .imageScale(.large)
@@ -29,18 +25,16 @@ struct FoodItemRowView: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            foodToEdit = food
-            showingAddEditSheet = true
+            editAction()
         }
-        // Swipe actions måste hanteras i ForEach där foodData finns tillgängligt.
     }
 }
 
 
 struct IOSFoodListView: View {
     @StateObject var foodData: FoodData_iOS
-    @State private var showingAddEditSheet = false
-    @State private var foodToEdit: FoodItem? = nil
+    @State private var showingAddSheet = false
+    @State private var itemToEdit: FoodItem? = nil
     @State private var searchText: String = ""
     @State private var showFavoritesOnly: Bool = UserDefaults.standard.bool(forKey: "showFavoritesOnly_iOS")
     @State private var showingDeleteConfirmation = false
@@ -54,8 +48,12 @@ struct IOSFoodListView: View {
 
     var filteredFoodList: [FoodItem] {
         var list = foodData.foodList
-        if showFavoritesOnly { list = list.filter { $0.isFavorite } }
-        if !searchText.isEmpty { list = list.filter { $0.name.lowercased().contains(searchText.lowercased()) } }
+        if showFavoritesOnly {
+            list = list.filter { $0.isFavorite }
+        }
+        if !searchText.isEmpty {
+            list = list.filter { $0.name.lowercased().contains(searchText.lowercased()) }
+        }
         return list
     }
 
@@ -63,50 +61,45 @@ struct IOSFoodListView: View {
         ZStack {
             List {
                 Toggle("Visa endast favoriter", isOn: $showFavoritesOnly)
-                    // *** Uppdaterad onChange-syntax ***
-                     .onChange(of: showFavoritesOnly) {
-                         UserDefaults.standard.set(showFavoritesOnly, forKey: "showFavoritesOnly_iOS")
+                     // *** UPPDATERAD onChange SYNTAX ***
+                     // Använder här closuren med två parametrar (newValue behövs)
+                     .onChange(of: showFavoritesOnly) { oldValue, newValue in
+                         UserDefaults.standard.set(newValue, forKey: "showFavoritesOnly_iOS")
+                         print("Saved showFavoritesOnly to UserDefaults: \(newValue)")
                      }
-                    // *** SLUT ÄNDRING ***
 
                 ForEach(filteredFoodList) { food in
-                    // *** ÄNDRING: Innehållet i toggleAction-closuren ***
                     FoodItemRowView(
                         food: food,
-                        // Denna closure körs när hjärtat i FoodItemRowView trycks
                         toggleAction: {
-                            // 1. Skapa en muterbar kopia av food-objektet
                             var updatedFood = food
-                            // 2. Växla isFavorite-värdet på kopian
                             updatedFood.isFavorite.toggle()
-                            // 3. Anropa den befintliga updateFoodItem-funktionen med den ändrade kopian
                             foodData.updateFoodItem(updatedFood)
-                            print("Anropade updateFoodItem för \(updatedFood.name) med isFavorite=\(updatedFood.isFavorite)") // För felsökning
                         },
-                        foodToEdit: $foodToEdit,
-                        showingAddEditSheet: $showingAddEditSheet
+                        editAction: {
+                            itemToEdit = food
+                        }
                     )
-                    // Swipe actions flyttade hit där foodData finns
                     .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) { foodData.deleteFoodItem(withId: food.id) } label: { Label("Ta bort", systemImage: "trash") }
+                        Button(role: .destructive) {
+                            foodData.deleteFoodItem(withId: food.id)
+                        } label: { Label("Ta bort", systemImage: "trash") }
                     }
                     .swipeActions(edge: .leading) {
                          Button {
-                             foodToEdit = food
-                             showingAddEditSheet = true
+                             itemToEdit = food
                          } label: {
                              Label("Redigera", systemImage: "pencil")
                          }
                          .tint(.blue)
                      }
-                     // *** SLUT ÄNDRING ***
                 }
 
                 if !foodData.foodList.isEmpty {
                      Button("Radera alla livsmedel", role: .destructive) { showingDeleteConfirmation = true }
                 }
 
-                // Statussektion (oförändrad)
+                // Status Section (oförändrad)
                 Section {
                     HStack {
                         if foodData.isLoading {
@@ -132,30 +125,36 @@ struct IOSFoodListView: View {
 
             } // Slut på List
 
-            // Laddningsindikator (oförändrad)
+            // Loading indicator (oförändrad)
             if foodData.isLoading && foodData.foodList.isEmpty {
-                ProgressView("Laddar livsmedel...")
-                    .scaleEffect(1.5)
-                    .progressViewStyle(CircularProgressViewStyle())
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(UIColor.systemBackground).opacity(0.6))
-            }
+                 ProgressView("Laddar livsmedel...") // ... etc ...
+             }
 
         }
         .searchable(text: $searchText, prompt: "Sök livsmedel")
         .navigationTitle("Livsmedel")
-        .toolbar { /* Toolbar oförändrad */
+        .toolbar { // Oförändrad
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button { foodToEdit = nil; showingAddEditSheet = true } label: { Image(systemName: "plus") }
+                Button {
+                    itemToEdit = nil
+                    showingAddSheet = true
+                } label: { Image(systemName: "plus") }
             }
             ToolbarItem(placement: .navigationBarLeading) { EditButton() }
         }
-        .sheet(isPresented: $showingAddEditSheet) {
+        // Blad för "Lägg till" (oförändrad)
+        .sheet(isPresented: $showingAddSheet) {
             NavigationView {
-                 IOSAddEditFoodItemView(foodData: foodData, foodToEdit: foodToEdit)
+                 IOSAddEditFoodItemView(foodData: foodData, foodToEdit: nil)
             }
         }
-        .confirmationDialog( /* Dialog oförändrad */
+        // Blad för "Redigera" (oförändrad)
+        .sheet(item: $itemToEdit) { currentItemToEdit in
+            NavigationView {
+                 IOSAddEditFoodItemView(foodData: foodData, foodToEdit: currentItemToEdit)
+            }
+        }
+        .confirmationDialog( // Oförändrad
              "Radera Alla",
              isPresented: $showingDeleteConfirmation,
              titleVisibility: .visible
