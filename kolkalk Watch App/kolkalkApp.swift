@@ -14,16 +14,23 @@ struct MyApp: App {
     init() {
         HealthKitManager.shared.requestAuthorization { success, error in
             // ... befintlig kod ...
+            // Ingen ändring här behövs
+             if let error = error {
+                  print("HealthKitManager auth error: \(error.localizedDescription)")
+             } else if success {
+                  print("HealthKitManager auth success.")
+             } else {
+                  print("HealthKitManager auth denied.")
+             }
         }
     }
 
     var body: some Scene {
         WindowGroup {
-            // Omslut ContentView med NavigationView om den inte redan har det
-            // för att säkerställa att titlar etc. fungerar korrekt.
-            NavigationView {
-                 ContentView()
-            }
+            // ***** ÄNDRING: Ta bort NavigationView härifrån *****
+            // NavigationView { // <--- DENNA RAD TAS BORT
+                 ContentView() // ContentView använder redan NavigationStack internt
+            // } // <--- DENNA RAD TAS BORT
              .onAppear {
                   // Begär notisbehörighet när appen startar/visas
                    requestWatchNotificationAuthorization()
