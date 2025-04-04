@@ -5,9 +5,6 @@
 //  Created by Mattias Göransson on 2025-04-02.
 //
 
-
-// Shared/CloudKitContainerDataStore.swift
-
 import Foundation
 import CloudKit
 import Combine
@@ -81,19 +78,30 @@ class CloudKitContainerDataStore {
     func saveContainer(_ container: Container, completion: @escaping (Error?) -> Void) {
          let record = container.toCKRecord()
          print("CloudKitContainerStore: Saving record \(record.recordID.recordName)...")
-         database.save(record) { savedRecord, error in
-             if let error = error {
-                 print("CloudKitContainerStore Error: Failed to save container \(container.id): \(error)")
-             } else {
-                print("CloudKitContainerStore: Successfully saved container \(container.id).")
+
+         // *** ÄNDRAD: Använder CKModifyRecordsOperation ***
+         let operation = CKModifyRecordsOperation(recordsToSave: [record], recordIDsToDelete: nil)
+         operation.savePolicy = .changedKeys // Försöker bara uppdatera ändrade fält
+
+         operation.modifyRecordsResultBlock = { result in
+             DispatchQueue.main.async { // Säkerställ main thread
+                 switch result {
+                 case .success():
+                     print("CloudKitContainerStore: CK save success (update) ID \(container.id)")
+                     completion(nil)
+                 case .failure(let error):
+                     print("CloudKitContainerStore Error: CK save failed (update) ID \(container.id): \(error)")
+                     // Hantera "Server Record Changed" specifikt
+                     if let ckError = error as? CKError, ckError.code == .serverRecordChanged {
+                         print("CloudKitContainerStore Error: Conflict detected (Server Record Changed). Consider fetching before update or conflict resolution logic.")
+                         // Här kan du lägga till mer avancerad konflikthantering om det behövs
+                     }
+                     completion(error)
+                 }
              }
-            // Ta bort temporär fil för CKAsset efter att save är klar (eller misslyckats)
-             if let asset = record["image"] as? CKAsset, let tempURL = asset.fileURL {
-                // print("Attempting to remove temp asset file: \(tempURL.path)")
-                try? FileManager.default.removeItem(at: tempURL)
-             }
-             completion(error)
          }
+         database.add(operation)
+         // *** SLUT ÄNDRING ***
     }
 
     /// Raderar ett Container-objekt från CloudKit baserat på ID.
