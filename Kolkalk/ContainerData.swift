@@ -11,6 +11,10 @@ class ContainerData: ObservableObject {
 
     @Published var containerList: [Container] = []
     @Published var isLoading: Bool = true // För laddningsindikator
+    // *** NYTT: För att spåra synkstatus ***
+    @Published var lastSyncTime: Date? = nil
+    @Published var lastSyncError: Error? = nil
+    // *** SLUT NYTT ***
     private var cancellables = Set<AnyCancellable>()
 
     // URL till lokal cache-fil för iOS
@@ -85,19 +89,27 @@ class ContainerData: ObservableObject {
         }
     }
 
-    // --- CloudKit Fetch --- (Oförändrad)
+    // --- CloudKit Fetch --- (UPPDATERAD med synkstatus)
     func loadContainersFromCloudKit() {
-         DispatchQueue.main.async { if self.containerList.isEmpty { self.isLoading = true } }
+        DispatchQueue.main.async {
+            if !self.isLoading { self.isLoading = true } // Starta bara om vi inte redan laddar
+            self.lastSyncError = nil // Nollställ fel inför ny hämtning
+        }
         print("ContainerData [iOS]: loadContainersFromCloudKit called.")
         CloudKitContainerDataStore.shared.fetchContainers { [weak self] (items, error) in
             guard let self = self else { return }
             print("ContainerData [iOS]: CloudKit fetch completion handler started.")
             DispatchQueue.main.async {
-                 self.isLoading = false
+                 self.isLoading = false // Sluta ladda (alltid)
                  if let error = error {
                      print("ContainerData [iOS]: Error fetching containers from CloudKit: \(error)")
+                     self.lastSyncError = error // *** SPARA FELET ***
                      return
                  }
+                 // *** SÄTT TID OCH NOLLSTÄLL FEL VID LYCKAD HÄMTNING ***
+                 self.lastSyncTime = Date()
+                 self.lastSyncError = nil
+
                  let receivedItems = items ?? []
                  print("ContainerData [iOS]: CloudKit fetch successful. Received \(receivedItems.count) containers.")
                  let sortedReceivedItems = receivedItems.sorted { $0.name.lowercased() < $1.name.lowercased() }
@@ -112,8 +124,9 @@ class ContainerData: ObservableObject {
         }
     }
 
-    // --- Modifieringsfunktioner (iOS) --- (Oförändrade)
+    // --- Modifieringsfunktioner (iOS) --- (UPPDATERADE med synkstatus)
     func addContainer(_ container: Container) {
+        // Optimistisk UI-uppdatering (oförändrad)
         DispatchQueue.main.async {
             if !self.containerList.contains(where: { $0.id == container.id }) {
                 self.containerList.append(container)
@@ -122,12 +135,25 @@ class ContainerData: ObservableObject {
                 print("ContainerData [iOS]: Added container locally & saved cache. ID: \(container.id)")
             } else { return }
         }
-        CloudKitContainerDataStore.shared.saveContainer(container) { error in
-             if let error = error { print("ContainerData Error: CK save failed (add) ID \(container.id): \(error)") }
-             else { print("ContainerData [iOS]: CK save success (add) ID \(container.id)") }
+        // CloudKit save
+        CloudKitContainerDataStore.shared.saveContainer(container) { [weak self] error in
+            // *** ÄNDRING: Uppdatera lastSyncTime/Error vid lyckad/misslyckad save ***
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                 if let error = error {
+                     print("ContainerData Error: CK save failed (add) ID \(container.id): \(error)")
+                     self.lastSyncError = error // Spara felet
+                 } else {
+                     print("ContainerData [iOS]: CK save success (add) ID \(container.id)")
+                     self.lastSyncTime = Date() // Sätt tiden
+                     self.lastSyncError = nil // Nollställ felet
+                 }
+             }
+            // *** SLUT ÄNDRING ***
         }
     }
     func updateContainer(_ container: Container) {
+        // Optimistisk UI-uppdatering (oförändrad)
         DispatchQueue.main.async {
             if let index = self.containerList.firstIndex(where: { $0.id == container.id }) {
                 self.containerList[index] = container
@@ -136,12 +162,25 @@ class ContainerData: ObservableObject {
                 print("ContainerData [iOS]: Updated container locally & saved cache. ID: \(container.id)")
             } else { return }
         }
-        CloudKitContainerDataStore.shared.saveContainer(container) { error in
-            if let error = error { print("ContainerData Error: CK save failed (update) ID \(container.id): \(error)") }
-             else { print("ContainerData [iOS]: CK save success (update) ID \(container.id)") }
+        // CloudKit save
+        CloudKitContainerDataStore.shared.saveContainer(container) { [weak self] error in
+             // *** ÄNDRING: Uppdatera lastSyncTime/Error vid lyckad/misslyckad save ***
+             DispatchQueue.main.async {
+                guard let self = self else { return }
+                 if let error = error {
+                     print("ContainerData Error: CK save failed (update) ID \(container.id): \(error)")
+                     self.lastSyncError = error // Spara felet
+                 } else {
+                     print("ContainerData [iOS]: CK save success (update) ID \(container.id)")
+                     self.lastSyncTime = Date() // Sätt tiden
+                     self.lastSyncError = nil // Nollställ felet
+                 }
+             }
+            // *** SLUT ÄNDRING ***
         }
     }
     func deleteContainer(_ container: Container) {
+        // Optimistisk UI-uppdatering (oförändrad)
         DispatchQueue.main.async {
             let originalCount = self.containerList.count
             self.containerList.removeAll { $0.id == container.id }
@@ -150,44 +189,67 @@ class ContainerData: ObservableObject {
                 print("ContainerData [iOS]: Deleted container locally & saved cache. ID: \(container.id)")
             } else { return }
         }
-        CloudKitContainerDataStore.shared.deleteContainer(withId: container.id) { error in
-             if let error = error { print("ContainerData Error: CK delete failed ID \(container.id): \(error)") }
-             else { print("ContainerData [iOS]: CK delete success ID \(container.id)") }
+        // CloudKit delete
+        CloudKitContainerDataStore.shared.deleteContainer(withId: container.id) { [weak self] error in
+             // *** ÄNDRING: Uppdatera lastSyncTime/Error vid lyckad/misslyckad delete ***
+             DispatchQueue.main.async {
+                guard let self = self else { return }
+                 if let error = error {
+                     print("ContainerData Error: CK delete failed ID \(container.id): \(error)")
+                     self.lastSyncError = error // Spara felet
+                     // Återställ genom att ladda om vid fel?
+                     self.loadContainersFromCloudKit()
+                 } else {
+                     print("ContainerData [iOS]: CK delete success ID \(container.id)")
+                     self.lastSyncTime = Date() // Sätt tiden
+                     self.lastSyncError = nil // Nollställ felet
+                 }
+             }
+            // *** SLUT ÄNDRING ***
         }
     }
 
-    // Radera alla kärl (om det behövs en sådan funktion)
+    // Radera alla kärl (UPPDATERAD med synkstatus)
     func deleteAllContainers() {
         let containersToDelete = self.containerList
         guard !containersToDelete.isEmpty else { return }
-        // *** FIX: Behöver CKRecord ***
         let recordIDsToDelete = containersToDelete.map { CKRecord.ID(recordName: $0.id.uuidString) }
 
+        // Optimistisk UI-uppdatering (oförändrad)
         DispatchQueue.main.async {
             self.containerList.removeAll()
             self.saveContainersLocally()
             print("ContainerData [iOS]: Deleted all containers locally & saved cache.")
         }
 
-        // *** FIX: Behöver CKModifyRecordsOperation och korrekt nil-typning ***
+        // CloudKit delete all
         let operation = CKModifyRecordsOperation(recordsToSave: nil as [CKRecord]?, recordIDsToDelete: recordIDsToDelete)
-        // *** FIX: Behöver full typ för savePolicy ***
-        operation.savePolicy = CKModifyRecordsOperation.RecordSavePolicy.allKeys
-        // *** FIX: Result kan behöva explicit typ om import inte räcker ***
-        operation.modifyRecordsResultBlock = { [weak self] (result: Result<Void, Error>) in // Explicit typ
-            switch result {
-            case .success():
-                print("ContainerData [iOS]: Successfully deleted all containers from CloudKit.")
-            case .failure(let error):
-                print("ContainerData Error: Failed to delete all containers from CloudKit: \(error)")
-                DispatchQueue.main.async { self?.loadContainersFromCloudKit() } // Ladda om vid fel
+        operation.savePolicy = .allKeys // Irrelevant för delete
+        operation.modifyRecordsResultBlock = { [weak self] (result: Result<Void, Error>) in
+            // *** ÄNDRING: Uppdatera lastSyncTime/Error vid lyckad/misslyckad delete all ***
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                switch result {
+                case .success():
+                    print("ContainerData [iOS]: Successfully deleted all containers from CloudKit.")
+                    self.lastSyncTime = Date() // Sätt tiden
+                    self.lastSyncError = nil // Nollställ felet
+                case .failure(let error):
+                    print("ContainerData Error: Failed to delete all containers from CloudKit: \(error)")
+                    self.lastSyncError = error // Spara felet
+                    self.loadContainersFromCloudKit() // Ladda om vid fel
+                }
             }
+            // *** SLUT ÄNDRING ***
         }
         CloudKitContainerDataStore.shared.database.add(operation)
     }
 
     // Privat sorteringsfunktion (Oförändrad)
     private func sortContainerList() {
-        self.containerList.sort { $0.name.lowercased() < $1.name.lowercased() }
+        // Körs på main thread eftersom den muterar @Published property
+        DispatchQueue.main.async {
+            self.containerList.sort { $0.name.lowercased() < $1.name.lowercased() }
+        }
     }
 }

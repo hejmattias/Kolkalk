@@ -10,6 +10,10 @@ class WatchContainerData: ObservableObject {
 
     @Published var containerList: [Container] = []
     @Published var isLoading: Bool = true
+    // *** NYTT: För att spåra synkstatus ***
+    @Published var lastSyncTime: Date? = nil
+    @Published var lastSyncError: Error? = nil
+    // *** SLUT NYTT ***
     private var cancellables = Set<AnyCancellable>()
 
     // URL till lokal cache-fil för WatchApp
@@ -54,7 +58,7 @@ class WatchContainerData: ObservableObject {
         loadContainersFromCloudKit()
     }
 
-    // --- Lokala Cache-funktioner ---
+    // --- Lokala Cache-funktioner --- (Oförändrade)
 
     private func loadContainersLocally() -> Bool {
         guard let url = localCacheURL else { return false }
@@ -92,10 +96,13 @@ class WatchContainerData: ObservableObject {
         }
     }
 
-    // --- CloudKit Fetch ---
+    // --- CloudKit Fetch --- (UPPDATERAD med synkstatus)
 
     func loadContainersFromCloudKit() {
-         DispatchQueue.main.async { if self.containerList.isEmpty { self.isLoading = true } }
+         DispatchQueue.main.async {
+             if !self.isLoading { self.isLoading = true } // Starta bara om vi inte redan laddar
+             self.lastSyncError = nil // Nollställ fel inför ny hämtning
+         }
         print("WatchContainerData [Watch]: loadContainersFromCloudKit called.")
 
         CloudKitContainerDataStore.shared.fetchContainers { [weak self] (items, error) in
@@ -103,11 +110,16 @@ class WatchContainerData: ObservableObject {
             print("WatchContainerData [Watch]: CloudKit fetch completion handler started.")
 
             DispatchQueue.main.async { // Uppdatera UI på huvudtråden
-                 self.isLoading = false
+                 self.isLoading = false // Sluta ladda (alltid)
                  if let error = error {
                      print("WatchContainerData [Watch]: Error fetching containers from CloudKit: \(error)")
+                     self.lastSyncError = error // *** SPARA FELET ***
                      return
                  }
+                 // *** SÄTT TID OCH NOLLSTÄLL FEL VID LYCKAD HÄMTNING ***
+                 self.lastSyncTime = Date()
+                 self.lastSyncError = nil
+
                  let receivedItems = items ?? []
                  print("WatchContainerData [Watch]: CloudKit fetch successful. Received \(receivedItems.count) containers.")
                  let sortedReceivedItems = receivedItems.sorted { $0.name.lowercased() < $1.name.lowercased() }
@@ -124,5 +136,6 @@ class WatchContainerData: ObservableObject {
     }
 
     // Inga funktioner för att lägga till/ändra/ta bort kärl från klockan i detta exempel.
-    // Om det behövs, lägg till dem här på samma sätt som i ContainerData (iOS).
+    // Om det behövs, lägg till dem här på samma sätt som i ContainerData (iOS)
+    // och se till att uppdatera lastSyncTime/lastSyncError i deras completion handlers.
 }
