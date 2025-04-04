@@ -32,30 +32,26 @@ struct PlateView: View {
                     // Huvudraden med Länk och kolhydratsvärde
                     HStack {
                         NavigationLink(value: Route.editPlateItem(item)) {
-                            HStack { // Innehållet för länken (det som visas till vänster)
-                                // *** ÄNDRING 1: Visa "Kalkylator" eller livsmedelsnamn ***
+                            HStack { // Innehållet för länken
                                 if item.isCalculatorItem {
-                                    Text("Kalkylator") // Visa "Kalkylator"
+                                    Text("Kalkylator")
                                         .font(.body)
                                         .foregroundColor(.primary)
                                 } else {
-                                    Text(item.name) // Visa vanliga namnet
+                                    Text(item.name)
                                         .font(.body)
                                         .foregroundColor(.primary)
                                 }
-                                // *** SLUT ÄNDRING 1 ***
-
-                                // Checkmark (oförändrad)
                                 if item.hasBeenLogged && enableCarbLogging {
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundColor(.green)
                                 }
                             }
-                            .contentShape(Rectangle()) // Gör textytan klickbar
+                            .contentShape(Rectangle())
                         }
-                        .buttonStyle(.plain) // Undvik att texten blir blå
+                        .buttonStyle(.plain)
 
-                        Spacer() // Flyttar kolhydratvärdet till höger
+                        Spacer()
                         Text("\(item.totalCarbs, specifier: "%.1f") gk") // Kolhydratvärdet (oförändrat)
                     }
 
@@ -63,9 +59,8 @@ struct PlateView: View {
                     Text(itemDetailString(for: item)) // Använder hjälpfunktionen nedan
                         .font(.caption)
                         .foregroundColor(.secondary)
-                        .padding(.top, 1) // Lite extra luft
+                        .padding(.top, 1)
                 }
-                // Swipe actions (oförändrade)
                 .swipeActions(edge: .trailing) {
                     Button(role: .destructive) {
                         deleteItem(item: item)
@@ -85,86 +80,39 @@ struct PlateView: View {
 
             // MARK: - Buttons Below Items (Oförändrad sektion)
             if !plate.items.isEmpty {
-                // "+"-KNAPPEN
-                Button {
-                    navigationPath.append(Route.foodListView(isEmptyAndAdd: false))
-                } label: {
-                    HStack {
-                        Spacer()
-                        Label("Lägg till", systemImage: "plus")
-                             .foregroundColor(.blue)
-                        Spacer()
-                    }
+                Button { navigationPath.append(Route.foodListView(isEmptyAndAdd: false)) } label: {
+                    HStack { Spacer(); Label("Lägg till", systemImage: "plus").foregroundColor(.blue); Spacer() }
                 }
-
-                // "Töm tallriken" button
-                Button(action: {
-                    showEmptyConfirmation = true
-                }) {
-                    HStack {
-                        Spacer()
-                        Text("Töm tallriken")
-                            .foregroundColor(.red)
-                        Spacer()
-                    }
+                Button(action: { showEmptyConfirmation = true }) {
+                    HStack { Spacer(); Text("Töm tallriken").foregroundColor(.red); Spacer() }
                 }
                 .alert("Bekräfta Töm Tallriken", isPresented: $showEmptyConfirmation) {
                     Button("Ja", role: .destructive) { plate.emptyPlate() }
                     Button("Avbryt", role: .cancel) { }
                 } message: { Text("Är du säker på att du vill tömma tallriken?") }
-
-                // "Logga kolhydrater" button
                 if enableCarbLogging {
                     Button(action: { logToHealth() }) {
-                        HStack {
-                            Spacer()
-                            Text("Logga kolhydrater")
-                                .foregroundColor(.blue)
-                            Spacer()
-                        }
+                        HStack { Spacer(); Text("Logga kolhydrater").foregroundColor(.blue); Spacer() }
                     }
                     .disabled(isLogging || plate.items.allSatisfy { $0.hasBeenLogged })
                 }
-
-                // "Logga insulin" button
                  if enableInsulinLogging {
-                     Button(action: {
-                         navigationPath.append(Route.insulinLoggingView)
-                     }) {
-                         HStack {
-                             Spacer()
-                             Text("Logga insulin")
-                                 .foregroundColor(.blue)
-                             Spacer()
-                         }
+                     Button(action: { navigationPath.append(Route.insulinLoggingView) }) {
+                         HStack { Spacer(); Text("Logga insulin").foregroundColor(.blue); Spacer() }
                      }
                  }
-
             } else {
-                // Meddelande när tallriken är tom
-                Button {
-                     navigationPath.append(Route.foodListView(isEmptyAndAdd: false))
-                 } label: {
-                     HStack {
-                         Spacer()
-                         Label("Lägg till", systemImage: "plus")
-                              .foregroundColor(.blue)
-                         Spacer()
-                     }
+                Button { navigationPath.append(Route.foodListView(isEmptyAndAdd: false)) } label: {
+                     HStack { Spacer(); Label("Lägg till", systemImage: "plus").foregroundColor(.blue); Spacer() }
                  }
                 Text("Tallriken är tom.")
                     .foregroundColor(.gray)
                     .padding(.top)
             }
-
         } // End List
         .navigationTitle("Totalt: \(totalCarbs, specifier: "%.1f") gk")
         .alert(item: $logAlert) { alert in
-            Alert(
-                title: Text(alert.title),
-                message: Text(alert.message),
-                dismissButton: .default(Text("OK"))
-            )
+            Alert(title: Text(alert.title), message: Text(alert.message), dismissButton: .default(Text("OK")))
         }
     }
 
@@ -177,20 +125,12 @@ struct PlateView: View {
         }
     }
 
-    // *** ÄNDRING 2: Justerad itemDetailString ***
+    // *** ÄNDRING: Justerad itemDetailString för högre precision ***
     private func itemDetailString(for item: FoodItem) -> String {
-        // Om det är ett kalkylatorobjekt, visa bara uträkningen (som finns i item.name)
-        if item.isCalculatorItem {
-            return item.name // Returnera uträkningen
-        }
-        // *** SLUT ÄNDRING 2 ***
+        if item.isCalculatorItem { return item.name }
 
-        // Logik för vanliga livsmedel (oförändrad)
         let gramsString = "\(String(format: "%.1f", item.grams))g"
-
-        guard let inputUnit = item.inputUnit else {
-            return gramsString // Fallback om enhet saknas
-        }
+        guard let inputUnit = item.inputUnit else { return gramsString }
 
         let inputValue: Double
         let unitString: String
@@ -203,28 +143,29 @@ struct PlateView: View {
             if let gramsPerDl = item.gramsPerDl, gramsPerDl > 0 {
                 inputValue = item.grams / gramsPerDl
                 unitString = "dl"
-            } else {
-                return gramsString
-            }
+            } else { return gramsString }
         case "st":
             if let styckPerGram = item.styckPerGram, styckPerGram > 0 {
                 inputValue = item.grams / styckPerGram
                 unitString = "st"
-            } else {
-                return gramsString
-            }
+            } else { return gramsString }
         default:
             return gramsString
         }
 
+        // --- ÄNDRING HÄR: Använd %.2f för högre precision ---
+        let formattedInputValue = String(format: "%.2f", inputValue)
+        // --- SLUT ÄNDRING ---
+
         if unitString == "g" {
-            return "\(String(format: "%.1f", inputValue))\(unitString)"
+             return "\(formattedInputValue)\(unitString)"
         } else {
-            return "\(String(format: "%.1f", inputValue))\(unitString) (\(gramsString))"
+            return "\(formattedInputValue)\(unitString) (\(gramsString))"
         }
     }
 
-    // logToHealth (oförändrad från förra steget)
+
+    // logToHealth (oförändrad)
     private func logToHealth() {
         isLogging = true
         let itemsToLog = plate.items.filter { !$0.hasBeenLogged }
