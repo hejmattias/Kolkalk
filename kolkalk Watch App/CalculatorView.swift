@@ -1,4 +1,4 @@
-// CalculatorView.swift
+// Kolkalk/kolkalk Watch App/CalculatorView.swift
 
 import SwiftUI
 
@@ -14,6 +14,10 @@ struct CalculatorView: View {
 
     var itemToEdit: FoodItem?
     var shouldEmptyPlate: Bool = false // Existing property
+
+    // --- NYA KONSTANTER FÖR OPERATORER ---
+    private let operators = ["+", "-", "×", "÷"]
+    // --- SLUT NYA KONSTANTER ---
 
     init(plate: Plate, navigationPath: Binding<NavigationPath>, initialCalculation: String = "", itemToEdit: FoodItem? = nil, shouldEmptyPlate: Bool = false) {
         self._plate = ObservedObject(initialValue: plate)
@@ -123,6 +127,12 @@ struct CalculatorView: View {
                         CalculatorButton(label: "OK", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: .blue) {
                             if let value = result {
                                 addResultToPlate(value: value)
+                            } else if !calculation.isEmpty {
+                                // Försök beräkna igen om resultatet var nil men calculation inte är tom
+                                calculateResult(finalAttempt: true)
+                                if let finalValue = result {
+                                     addResultToPlate(value: finalValue)
+                                }
                             }
                         }
                     }
@@ -157,50 +167,53 @@ struct CalculatorView: View {
     // MARK: - Calculator Functions
 
     func appendToCalculation(_ value: String) {
+        // *** ÄNDRING START: Lägg till kontroller för operatorer och kommatecken ***
+        let lastChar = calculation.last
+
+        // 1. Förhindra att lägga till operator om sista tecknet är en operator eller tomt
+        if operators.contains(value) && (calculation.isEmpty || (lastChar != nil && operators.contains(String(lastChar!)))) {
+             return // Gör ingenting
+        }
+
+        // 2. Förhindra att lägga till operator om sista tecknet är ett kommatecken
+        if operators.contains(value) && lastChar == "," {
+             return // Gör ingenting
+        }
+        // *** ÄNDRING SLUT ***
+
         calculation += value
     }
 
+
     func appendComma() {
-        let operators = ["+", "-", "×", "÷"]
-
-        // Prevent comma from being added directly after an operator
-        if let lastChar = calculation.last, operators.contains(String(lastChar)) {
-            // Add "0," if the last character is an operator
-            calculation += "0,"
-            return
+        // *** ÄNDRING START: Förenklad logik för kommatecken ***
+        guard !calculation.isEmpty else {
+             calculation = "0," // Om tomt, börja med "0,"
+             return
         }
 
-        // Find the last operator in the expression
-        var lastOperatorIndex: String.Index? = nil
-        for op in operators {
-            if let range = calculation.range(of: op, options: .backwards) {
-                if let currentLast = lastOperatorIndex {
-                    if range.lowerBound > currentLast {
-                        lastOperatorIndex = range.lowerBound
-                    }
-                } else {
-                    lastOperatorIndex = range.lowerBound
-                }
+        let lastChar = calculation.last! // Vi vet att den inte är tom här
+
+        // Om sista tecknet är en operator, lägg till "0,"
+        if operators.contains(String(lastChar)) {
+             calculation += "0,"
+             return
+        }
+
+        // Hitta sista nummersegmentet
+        var lastNumberSegment = ""
+        for char in calculation.reversed() {
+            if operators.contains(String(char)) {
+                break // Sluta när vi hittar en operator
             }
+            lastNumberSegment.insert(char, at: lastNumberSegment.startIndex)
         }
 
-        // Extract the last part of the expression after the last operator
-        let lastNumber: String
-        if let index = lastOperatorIndex {
-            let afterOpIndex = calculation.index(after: index)
-            if afterOpIndex < calculation.endIndex {
-                lastNumber = String(calculation[afterOpIndex...])
-            } else {
-                lastNumber = ""
-            }
-        } else {
-            lastNumber = calculation
+        // Lägg bara till kommatecken om sista nummersegmentet inte redan har ett
+        if !lastNumberSegment.contains(",") {
+             calculation += ","
         }
-
-        // Check if the last number already contains a comma
-        if !lastNumber.contains(",") {
-            calculation += ","
-        }
+        // *** ÄNDRING SLUT ***
     }
 
     func backspace() {
@@ -209,42 +222,61 @@ struct CalculatorView: View {
         }
     }
 
-    func calculateResult() {
+    // *** ÄNDRING: Modifierad calculateResult för att hantera ofullständiga uttryck bättre ***
+    func calculateResult(finalAttempt: Bool = false) {
         guard !calculation.isEmpty else {
             result = nil
             return
         }
 
-        // Replace special characters with standard operators and handle decimal separator
-        let expressionString = calculation
+        var expressionString = calculation
             .replacingOccurrences(of: "×", with: "*")
             .replacingOccurrences(of: "÷", with: "/")
-            .replacingOccurrences(of: ",", with: ".") // Handle comma as decimal separator
+            .replacingOccurrences(of: ",", with: ".") // Hantera komma som decimal
 
-        // Check that the expression doesn't end with an operator or decimal point
-        let operators = ["+", "-", "*", "/"]
-        if let lastChar = expressionString.last, operators.contains(String(lastChar)) || lastChar == "." {
-            // Do not evaluate incomplete expressions
+        // 1. Ta bort eventuell avslutande operator eller punkt
+        let operatorsAndDot = CharacterSet(charactersIn: "+-*/.")
+        while let lastChar = expressionString.last, operatorsAndDot.contains(lastChar.unicodeScalars.first!) {
+             // Om vi inte är i ett sista försök (OK-knappen), sätt result till nil
+             if !finalAttempt {
+                 result = nil
+                 return // Utvärdera inte om den slutar med operator/punkt (förutom vid OK)
+             }
+             // Annars (vid OK), ta bort det sista tecknet och fortsätt
+             expressionString.removeLast()
+             // Om strängen blir tom efter borttagning
+             if expressionString.isEmpty {
+                 result = nil
+                 return
+             }
+        }
+
+        // --- Förenklad utvärdering, litar mer på NSExpression ---
+        // Kontrollera bara om strängen är tom efter eventuell sanering
+        guard !expressionString.isEmpty else {
             result = nil
             return
         }
 
-        // Check that the expression contains only allowed characters (numbers and operators)
-        let allowedCharacters = CharacterSet(charactersIn: "0123456789+-*/().")
-        if expressionString.rangeOfCharacter(from: allowedCharacters.inverted) != nil {
-            // Expression contains invalid characters
-            result = nil
-            return
-        }
-
-        // Use NSExpression to evaluate the expression
+        // 2. Försök utvärdera med NSExpression
         let expression = NSExpression(format: expressionString)
-        if let value = expression.expressionValue(with: nil, context: nil) as? NSNumber {
-            result = value.doubleValue
-        } else {
-            result = nil
+        // Använd do-catch för att fånga eventuella fel från NSExpression
+        do {
+            if let value = try expression.expressionValue(with: nil, context: nil) as? NSNumber {
+                result = value.doubleValue
+            } else {
+                 // Detta kan hända om uttrycket är giltigt men inte resulterar i ett tal (ovanligt här)
+                 print("Calculator Error: Expression did not evaluate to a number: \(expressionString)")
+                 result = nil
+            }
+        } catch {
+             // NSExpression kastade ett fel (t.ex. ogiltig syntax som inte fångades ovan)
+             print("Calculator Error: NSExpression evaluation failed for '\(expressionString)': \(error)")
+             result = nil
         }
+        // --- Slut förenklad utvärdering ---
     }
+    // *** SLUT ÄNDRING calculateResult ***
 
     func addResultToPlate(value: Double) {
         if shouldEmptyPlate {
@@ -253,13 +285,15 @@ struct CalculatorView: View {
 
         if var item = itemToEdit {
             // Update existing food item
-            item.name = calculation
+            // *** ÄNDRING: Spara den *sanerade* calculation om resultatet användes ***
+             item.name = calculation.trimmingCharacters(in: CharacterSet(charactersIn: "+-*/.,×÷")) // Spara den "rena" beräkningen
             item.grams = value
             plate.updateItem(item)
         } else {
             // Create new food item and mark it as a calculator item
             let foodItem = FoodItem(
-                name: calculation,
+                // *** ÄNDRING: Spara den *sanerade* calculation om resultatet användes ***
+                name: calculation.trimmingCharacters(in: CharacterSet(charactersIn: "+-*/.,×÷")), // Spara den "rena" beräkningen
                 carbsPer100g: 100,
                 grams: value,
                 gramsPerDl: nil,
@@ -278,11 +312,13 @@ struct CalculatorView: View {
 
     func formatResult(_ value: Double?) -> String {
         if let value = value {
-            if value.truncatingRemainder(dividingBy: 1) == 0 {
-                return String(format: "%.0f", value)
-            } else {
-                return String(format: "%.2f", value)
-            }
+            // Använd NumberFormatter för att hantera lokal decimalavskiljare (komma)
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .decimal
+            formatter.minimumFractionDigits = 0 // Inga decimaler om heltal
+            formatter.maximumFractionDigits = 2 // Max 2 decimaler
+            //formatter.decimalSeparator = "," // Kan behövas om systemets locale inte är svensk
+            return formatter.string(from: NSNumber(value: value)) ?? ""
         } else {
             return ""
         }
@@ -333,7 +369,7 @@ struct CalculatorButton: View {
     let width: CGFloat
     let height: CGFloat
     let fontSize: CGFloat
-    var backgroundColor: Color = Color.gray
+    var backgroundColor: Color = Color(white: 0.3) // Ändrad till mörkare grå som standard
     let action: () -> Void
 
     var body: some View {
