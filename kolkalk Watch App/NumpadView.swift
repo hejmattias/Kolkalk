@@ -1,234 +1,208 @@
 // Kolkalk.zip/kolkalk Watch App/NumpadView.swift
 import SwiftUI
 
-// Enum för att definiera Numpadens läge
+// Enum (oförändrad)
 enum NumpadMode {
-    case foodItem // För att mata in gram/dl/st för ett livsmedel
-    case numericValue // För att mata in ett generellt numeriskt värde (som Double/String)
+    case foodItem
+    case numericValue
 }
 
-// Custom button styles (oförändrade)
-struct MinimalButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .padding(.horizontal, 10)
-            .padding(.vertical, 5)
-            .background(Color.clear)
-            .foregroundColor(.gray)
-            .cornerRadius(4)
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-    }
-}
-
-struct CustomButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .padding()
-            .background(Color.gray)
-            .foregroundColor(.white)
-            .cornerRadius(6)
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-            .shadow(color: .clear, radius: 0)
-    }
-}
-
-struct CustomNumpadButton: View {
+// Knappvy (oförändrad)
+struct NumpadStyledButton: View {
     let label: String
     let width: CGFloat
     let height: CGFloat
+    let fontSize: CGFloat
+    var backgroundColor: Color = Color(white: 0.3)
+    var foregroundColor: Color = .white
+    var isHighlighted: Bool = false
+    var isDisabled: Bool = false
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             Text(label)
-                .font(.title3)
+                .font(.system(size: fontSize))
                 .frame(width: width, height: height)
+                .foregroundColor(isDisabled ? .gray : (isHighlighted ? .black : foregroundColor))
+                .background(isDisabled ? Color(white: 0.2) : (isHighlighted ? .orange : backgroundColor))
+                .cornerRadius(5)
         }
-        .buttonStyle(CustomButtonStyle())
+        .buttonStyle(.plain)
+        .disabled(isDisabled)
     }
 }
 
-struct CustomNumpadButtonWithLongPress: View {
-    let label: String
-    let width: CGFloat
-    let height: CGFloat
-    let shortPressAction: () -> Void
-    let longPressAction: () -> Void
-    @State private var isLongPressActive = false
-
-    var body: some View {
-        Button(action: {
-            if !isLongPressActive { shortPressAction() }
-            isLongPressActive = false
-        }) {
-            Text(label)
-                .font(.title3)
-                .multilineTextAlignment(.center)
-                .frame(width: width, height: height)
-        }
-        .simultaneousGesture(
-            LongPressGesture(minimumDuration: 0.5)
-                .onEnded { _ in
-                    longPressAction()
-                    isLongPressActive = true
-                }
-        )
-        .buttonStyle(CustomButtonStyle())
-    }
-}
 
 struct NumpadView: View {
-    // Använder Binding<String> för generell inmatning
+    // Binding etc. (oförändrade)
     @Binding var valueString: String
-    var title: String // Titel för vyn
-    var mode: NumpadMode // Läge för numpaden
-
-    // Parametrar specifika för foodItem-läget (optionella)
+    var title: String
+    var mode: NumpadMode
     var foodName: String?
     var carbsPer100g: Double?
     var gramsPerDl: Double?
     var styckPerGram: Double?
-    // Closure för foodItem-läget (optionell)
     var onConfirmFoodItem: ((Double, String) -> Void)?
 
     @Environment(\.presentationMode) var presentationMode
-    @State private var inputString: String = "0" // Behålls för intern hantering
-    @State private var unit: String = "g" // Endast relevant i foodItem-läge
+    @State private var inputString: String = "0"
+    @State private var unit: String = "g"
     let maxInputLength = 7
+
+    // Färger (oförändrade)
+    let unitButtonColor = Color.orange
+    let unitButtonHighlightedColor = Color.orange.opacity(0.6)
+    let disabledUnitButtonColor = Color(white: 0.2)
+    let defaultButtonColor = Color(white: 0.3)
+    let backspaceButtonColor = Color(white: 0.4)
+    let okButtonColor = Color.blue
+
+    func isUnitAvailable(_ targetUnit: String) -> Bool {
+        guard mode == .foodItem else { return false }
+        switch targetUnit {
+        case "g": return true
+        case "dl": return gramsPerDl != nil && gramsPerDl! > 0
+        case "st": return styckPerGram != nil && styckPerGram! > 0
+        default: return false
+        }
+    }
 
     var body: some View {
         GeometryReader { geometry in
+            // Exakta kopieringar av konstanter och beräkningar från CalculatorView
+            let screenWidth = geometry.size.width
+            let screenHeight = geometry.size.height
+            let spacing: CGFloat = 1
+            let columns: CGFloat = 4
+            let rows: CGFloat = 4
+            let totalSpacingWidth = spacing * (columns + 1)
+            let totalSpacingHeight = spacing * (rows + 1)
+
             // <<< CHANGE START >>>
-            // Ändrade spacing i huvud-VStack till 4 för lite mer luft mellan fält och knappar
-            VStack(spacing: 4) {
+            // Återgå till exakt samma beräkning som CalculatorView
+            let inputFontSize = screenHeight * 0.1
             // <<< CHANGE END >>>
-                // Dynamiskt inmatningsfält baserat på mode
+            let inputFieldHeight = screenHeight * 0.1 // Använd FIXED height
+
+            let availableWidth = screenWidth - totalSpacingWidth
+            let availableHeight = screenHeight - totalSpacingHeight
+            let buttonWidth = availableWidth / columns
+            let buttonHeight = availableHeight / rows
+
+            let buttonFontSize = buttonHeight * 0.4
+
+
+             VStack(spacing: spacing) { // Använd exakt spacing
+
+                // Inmatningsfält
                 Group {
                     if mode == .foodItem {
-                        HStack {
+                        HStack(spacing: 0) {
                             Text("\(inputString)\(unit)")
-                                .font(.system(size: 20))
-                                .frame(maxWidth: geometry.size.width * 0.5, alignment: .leading)
-                                .foregroundColor(.white)
-                                .onTapGesture {
-                                    toggleUnit() // Tillåt bara enhetsbyte i foodItem-läge
-                                }
+                                .font(.system(size: inputFontSize))
                                 .lineLimit(1)
-                                .minimumScaleFactor(0.5)
-
+                                //.minimumScaleFactor(0.5) // <<< BORTTAGEN FÖR ATT MATCHA CALC VIEW
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             Spacer()
-
                             Text("\(calculatedCarbs(), specifier: "%.1f")gk")
-                                .font(.system(size: 20))
-                                .foregroundColor(.white)
-                                .frame(maxWidth: geometry.size.width * 0.5, alignment: .trailing)
+                                .font(.system(size: inputFontSize))
                                 .lineLimit(1)
-                                .minimumScaleFactor(0.5)
+                                //.minimumScaleFactor(0.5) // <<< BORTTAGEN FÖR ATT MATCHA CALC VIEW
+                                .foregroundColor(.gray)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
                         }
-                         // Lägg till lite horisontell padding här istället om det behövs
-                         .padding(.horizontal, 4)
-
+                        .padding(.horizontal, 5)
                     } else { // mode == .numericValue
                         Text(inputString)
-                            .font(.system(size: 20))
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .font(.system(size: inputFontSize))
                             .foregroundColor(.white)
-                            .padding(.horizontal) // Behåll horisontell padding för numericValue
                             .lineLimit(1)
-                            .minimumScaleFactor(0.5)
+                            //.minimumScaleFactor(0.5) // <<< BORTTAGEN FÖR ATT MATCHA CALC VIEW
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .padding(.horizontal, 5)
                     }
                 }
-                // <<< CHANGE START >>>
-                // Ta bort .padding(.vertical, 10) härifrån
-                // Lägg till en liten padding under fältet om det behövs
-                 .padding(.bottom, 4)
-                // <<< CHANGE END >>>
+                 .frame(height: inputFieldHeight) // Använd FIXERAD höjd
+                 .padding(.bottom, spacing)
 
 
-                // Numpad-knappar (layout oförändrad)
-                // Justera knapparnas höjd något om det fortfarande är trångt
-                let buttonWidth = geometry.size.width / 5
-                // Prova att minska höjden lite till om det behövs, t.ex. / 10.5 eller / 11
-                let buttonHeight = geometry.size.height / 10.5
-
-                VStack(spacing: 4) { // Mellanrum mellan knapprader
-                    HStack(spacing: 4) { // Mellanrum mellan knappar i en rad
-                        CustomNumpadButton(label: "1", width: buttonWidth, height: buttonHeight, action: { appendNumber("1") })
-                        CustomNumpadButton(label: "2", width: buttonWidth, height: buttonHeight, action: { appendNumber("2") })
-                        CustomNumpadButton(label: "3", width: buttonWidth, height: buttonHeight, action: { appendNumber("3") })
-                    }
-                    HStack(spacing: 4) {
-                        CustomNumpadButton(label: "4", width: buttonWidth, height: buttonHeight, action: { appendNumber("4") })
-                        CustomNumpadButton(label: "5", width: buttonWidth, height: buttonHeight, action: { appendNumber("5") })
-                        CustomNumpadButton(label: "6", width: buttonWidth, height: buttonHeight, action: { appendNumber("6") })
-                    }
-                    HStack(spacing: 4) {
-                        CustomNumpadButton(label: "7", width: buttonWidth, height: buttonHeight, action: { appendNumber("7") })
-                        CustomNumpadButton(label: "8", width: buttonWidth, height: buttonHeight, action: { appendNumber("8") })
-                        CustomNumpadButton(label: "9", width: buttonWidth, height: buttonHeight, action: { appendNumber("9") })
-                    }
-                    HStack(spacing: 4) {
-                        CustomNumpadButton(label: "⌫", width: buttonWidth, height: buttonHeight, action: { backspace() })
-                        CustomNumpadButtonWithLongPress(label: "0/,", width: buttonWidth, height: buttonHeight, shortPressAction: { appendNumber("0") }, longPressAction: { appendComma() })
-                        CustomNumpadButton(label: "OK", width: buttonWidth, height: buttonHeight, action: { confirm() })
-                    }
-                }
-                // Denna frame gör att knapp-VStacken försöker ta upp resten av utrymmet.
-                // Om du vill att knapparna ska ligga tätare mot botten kan du ta bort maxHeight.
-                // Men detta bör fungera nu när paddingen ovanför är borta.
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                 // Knapparna (oförändrade från förra gången)
+                 VStack(spacing: spacing) {
+                      // Rad 1: 7, 8, 9, g
+                     HStack(spacing: spacing) {
+                         NumpadStyledButton(label: "7", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendNumber("7") })
+                         NumpadStyledButton(label: "8", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendNumber("8") })
+                         NumpadStyledButton(label: "9", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendNumber("9") })
+                         NumpadStyledButton(label: "g", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize,
+                                            backgroundColor: unitButtonColor,
+                                            isHighlighted: unit == "g" && mode == .foodItem,
+                                            isDisabled: mode != .foodItem,
+                                            action: { setUnit("g") })
+                     }
+                      // Rad 2: 4, 5, 6, dl
+                     HStack(spacing: spacing) {
+                         NumpadStyledButton(label: "4", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendNumber("4") })
+                         NumpadStyledButton(label: "5", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendNumber("5") })
+                         NumpadStyledButton(label: "6", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendNumber("6") })
+                         NumpadStyledButton(label: "dl", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize,
+                                            backgroundColor: unitButtonColor,
+                                            isHighlighted: unit == "dl" && mode == .foodItem,
+                                            isDisabled: !isUnitAvailable("dl"),
+                                            action: { setUnit("dl") })
+                     }
+                     // Rad 3: 1, 2, 3, st
+                     HStack(spacing: spacing) {
+                         NumpadStyledButton(label: "1", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendNumber("1") })
+                         NumpadStyledButton(label: "2", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendNumber("2") })
+                         NumpadStyledButton(label: "3", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendNumber("3") })
+                         NumpadStyledButton(label: "st", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize,
+                                            backgroundColor: unitButtonColor,
+                                            isHighlighted: unit == "st" && mode == .foodItem,
+                                            isDisabled: !isUnitAvailable("st"),
+                                            action: { setUnit("st") })
+                     }
+                      // Rad 4: ,, 0, ⌫, OK
+                     HStack(spacing: spacing) {
+                         NumpadStyledButton(label: ",", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendComma() })
+                         NumpadStyledButton(label: "0", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendNumber("0") })
+                         NumpadStyledButton(label: "⌫", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: backspaceButtonColor, action: { backspace() })
+                         NumpadStyledButton(label: "OK", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: okButtonColor, action: { confirm() })
+                     }
+                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .background(Color.black)
+        .background(Color.black.edgesIgnoringSafeArea(.all))
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
+             // Initieringslogik (oförändrad)
+            if mode == .foodItem { unit = "g" }
             let initialValue = valueString.replacingOccurrences(of: ",", with: ".")
             if !initialValue.isEmpty && Double(initialValue) != nil {
                  inputString = valueString.isEmpty ? "0" : valueString
             } else {
                  inputString = "0"
             }
-            if mode == .foodItem, let currentUnit = extractUnit(from: valueString) {
-                 unit = currentUnit
-                 inputString = valueString.replacingOccurrences(of: currentUnit, with: "")
-                 if inputString.isEmpty { inputString = "0" }
-            }
-             else if valueString == "0" {
+             if valueString == "0" {
                  inputString = "0"
              }
         }
     }
 
-    // MARK: - Funktioner (oförändrade från förra korrigeringen)
-
-    func extractUnit(from string: String) -> String? {
-        if string.hasSuffix("dl") { return "dl" }
-        if string.hasSuffix("st") { return "st" }
-        if string.hasSuffix("g") { return "g" }
-        return nil
-    }
-
-    func toggleUnit() {
-        guard mode == .foodItem else { return }
-        if unit == "g" {
-            if let grams = gramsPerDl, grams != 0 { unit = "dl" }
-            else if let styck = styckPerGram, styck != 0 { unit = "st" }
-        } else if unit == "dl" {
-            if let styck = styckPerGram, styck != 0 { unit = "st" }
-            else { unit = "g" }
-        } else {
-            unit = "g"
-        }
+    // MARK: - Funktioner (oförändrade)
+    // ... (setUnit, calculatedCarbs, appendNumber, appendComma, backspace, confirm) ...
+    func setUnit(_ newUnit: String) {
+        guard mode == .foodItem && isUnitAvailable(newUnit) else { return }
+        unit = newUnit
     }
 
     func calculatedCarbs() -> Double {
         guard mode == .foodItem, let carbs100 = carbsPer100g else { return 0.0 }
         let inputValue = Double(inputString.replacingOccurrences(of: ",", with: ".")) ?? 0
         switch unit {
-        case "g":
-            return (carbs100 / 100.0) * inputValue
+        case "g": return (carbs100 / 100.0) * inputValue
         case "dl":
             guard let gramsDl = gramsPerDl, gramsDl > 0 else { return 0.0 }
             return (carbs100 / 100.0) * gramsDl * inputValue
@@ -243,9 +217,8 @@ struct NumpadView: View {
 
     func appendNumber(_ number: String) {
         if inputString.count < maxInputLength {
-            if inputString == "0" && number != "," {
-                 inputString = number
-             } else {
+            if inputString == "0" && number != "," { inputString = number }
+            else {
                 if inputString == "0" && number == "0" { return }
                 inputString += number
             }
@@ -254,7 +227,8 @@ struct NumpadView: View {
 
     func appendComma() {
         if !inputString.contains(",") && inputString.count < maxInputLength {
-            inputString += ","
+             if inputString == "0" { inputString = "0," }
+             else { inputString += "," }
         }
     }
 
@@ -263,6 +237,7 @@ struct NumpadView: View {
             inputString.removeLast()
             if inputString.isEmpty { inputString = "0" }
              else if inputString == "-" { inputString = "0" }
+             else if inputString == "0," && !inputString.contains(".") { inputString = "0" }
         }
          else if inputString == "0" { return }
     }
@@ -277,10 +252,10 @@ struct NumpadView: View {
                 print("NumpadView Error: Invalid double value for food item mode.")
             }
         } else { // mode == .numericValue
-             if finalInput.isEmpty || finalInput == "-" {
+             if finalInput.isEmpty || finalInput == "-" || finalInput == "," || finalInput == "0," {
                  valueString = "0"
              } else {
-                 valueString = finalInput
+                 valueString = finalInput.last == "," ? String(finalInput.dropLast()) : finalInput
              }
         }
         presentationMode.wrappedValue.dismiss()
