@@ -127,25 +127,29 @@ struct AddFoodEntryView: View {
     var body: some View {
         switch family {
         case .accessoryCircular:
-            Image(systemName: "plus")
+            // Använd SF Symbol med en cirkel (ej fylld)
+            Image(systemName: "plus.circle")
+                .font(.system(size: 24, weight: .thin)) // Justera storlek och vikt
                 .widgetURL(URL(string: "kolkalk://addFood"))
-                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+                .containerBackground(.fill, for: .widget)
         case .accessoryCorner:
-            Image(systemName: "plus")
+            // Använd SF Symbol med en cirkel (ej fylld)
+            Image(systemName: "plus.circle")
+                .font(.system(size: 24, weight: .thin)) // Justera storlek och vikt
                 .widgetLabel("Lägg till")
                 .widgetURL(URL(string: "kolkalk://addFood"))
-                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+                .containerBackground(.fill, for: .widget)
         case .accessoryInline:
             Text("Lägg till livsmedel")
                 .widgetURL(URL(string: "kolkalk://addFood"))
-                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+                .containerBackground(.fill, for: .widget)
         case .accessoryRectangular:
             Text("Lägg till livsmedel")
                 .widgetURL(URL(string: "kolkalk://addFood"))
-                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+                .containerBackground(.fill, for: .widget)
         default:
             Text("Unsupported")
-                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+                .containerBackground(.fill, for: .widget)
         }
     }
 }
@@ -188,25 +192,37 @@ struct EmptyAndAddFoodEntryView: View {
     var body: some View {
         switch family {
         case .accessoryCircular:
-            Image(systemName: "trash")
-                .widgetURL(URL(string: "kolkalk://emptyAndAddFood"))
-                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+            // Använd SF Symbol med en cirkel (ej fylld) och soptunna
+             ZStack {
+                 Image(systemName: "circle")
+                     .font(.system(size: 24, weight: .thin)) // Justera storlek och vikt
+                 Image(systemName: "trash")
+                     .font(.system(size: 12, weight: .thin)) // Justera storlek och vikt
+             }
+             .widgetURL(URL(string: "kolkalk://emptyAndAddFood"))
+             .containerBackground(.fill, for: .widget)
         case .accessoryCorner:
-            Image(systemName: "trash")
-                .widgetLabel("Töm & Lägg")
-                .widgetURL(URL(string: "kolkalk://emptyAndAddFood"))
-                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+            // Använd SF Symbol med en cirkel (ej fylld) och soptunna
+            ZStack {
+                Image(systemName: "circle")
+                    .font(.system(size: 24, weight: .thin)) // Justera storlek och vikt
+                Image(systemName: "trash")
+                    .font(.system(size: 12, weight: .thin)) // Justera storlek och vikt
+            }
+            .widgetLabel("Töm & Lägg")
+            .widgetURL(URL(string: "kolkalk://emptyAndAddFood"))
+            .containerBackground(.fill, for: .widget)
         case .accessoryInline:
             Text("Töm & Lägg till")
                 .widgetURL(URL(string: "kolkalk://emptyAndAddFood"))
-                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+                .containerBackground(.fill, for: .widget)
         case .accessoryRectangular:
             Text("Töm tallriken och lägg till livsmedel")
                 .widgetURL(URL(string: "kolkalk://emptyAndAddFood"))
-                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+                .containerBackground(.fill, for: .widget)
         default:
             Text("Unsupported")
-                .containerBackground(.fill, for: .widget) // Uppdaterad rad
+                .containerBackground(.fill, for: .widget)
         }
     }
 }
