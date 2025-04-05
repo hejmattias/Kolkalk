@@ -1,4 +1,4 @@
-// Kolkalk.zip/kolkalk Watch App/PlateView.swift
+// Kolkalk/kolkalk Watch App/PlateView.swift
 
 import SwiftUI
 import HealthKit
@@ -9,9 +9,6 @@ struct PlateView: View {
 
     @State private var isLogging = false
     @State private var logAlert: LogAlert?
-    // <<< ÄNDRING START: showEmptyConfirmation tas bort då den inte längre används >>>
-    // @State private var showEmptyConfirmation = false
-    // <<< ÄNDRING SLUT >>>
 
     @AppStorage("enableCarbLogging") private var enableCarbLogging = true
     @AppStorage("enableInsulinLogging") private var enableInsulinLogging = true
@@ -82,22 +79,15 @@ struct PlateView: View {
 
             // MARK: - Buttons Below Items
             if !plate.items.isEmpty {
-                // Knappar när tallriken INTE är tom
+                // Knappar när tallriken INTE är tom (oförändrade)
                 Button { navigationPath.append(Route.foodListView(isEmptyAndAdd: false)) } label: {
                     HStack { Spacer(); Label("Lägg till", systemImage: "plus").foregroundColor(.blue); Spacer() }
                 }
-                // <<< ÄNDRING START: Ändra "Töm tallriken" till genväg "Töm & Lägg till" >>>
                 Button(action: {
-                    // Navigera direkt till "Töm och lägg till"-vyn
                     navigationPath.append(Route.foodListView(isEmptyAndAdd: true))
                 }) {
-                    // Uppdaterad text och ikon, blå färg
                     HStack { Spacer(); Label("Töm & Lägg till", systemImage: "trash.circle").foregroundColor(.blue); Spacer() }
                 }
-                // Ta bort den gamla alert-modifieraren för tömning
-                // .alert("Bekräfta Töm Tallriken", isPresented: $showEmptyConfirmation) { ... }
-                // <<< ÄNDRING SLUT >>>
-
 
                 if enableCarbLogging {
                     Button(action: { logToHealth() }) {
@@ -105,26 +95,33 @@ struct PlateView: View {
                     }
                     .disabled(isLogging || plate.items.allSatisfy { $0.hasBeenLogged })
                 }
-                // Logga insulin (oförändrat)
                 if enableInsulinLogging {
                      Button(action: { navigationPath.append(Route.insulinLoggingView) }) {
                          HStack { Spacer(); Text("Logga insulin").foregroundColor(.blue); Spacer() }
                      }
                  }
             } else {
-                // Knappar när tallriken ÄR tom
+                // Knappar när tallriken ÄR tom (oförändrade)
                 Button { navigationPath.append(Route.foodListView(isEmptyAndAdd: false)) } label: {
                      HStack { Spacer(); Label("Lägg till", systemImage: "plus").foregroundColor(.blue); Spacer() }
                  }
-                // Logga insulin (oförändrat)
                 if enableInsulinLogging {
                      Button(action: { navigationPath.append(Route.insulinLoggingView) }) {
                          HStack { Spacer(); Text("Logga insulin").foregroundColor(.blue); Spacer() }
                      }
-                }
-                Text("Tallriken är tom.")
-                    .foregroundColor(.gray)
-                    .padding(.top)
+                 }
+
+                 // <<< ÄNDRING START: Centrera texten i egen sektion >>>
+                 Section { // Lägg texten i en egen sektion
+                      HStack { // Använd HStack för att centrera horisontellt
+                          Spacer()
+                          Text("Tallriken är tom.")
+                              .foregroundColor(.gray)
+                          Spacer()
+                      }
+                      .listRowBackground(Color.clear) // Gör radbakgrunden osynlig
+                  }
+                  // <<< ÄNDRING SLUT >>>
             }
         } // End List
         .navigationTitle("Totalt: \(totalCarbs, specifier: "%.1f") gk")
@@ -134,7 +131,6 @@ struct PlateView: View {
     }
 
     // MARK: - Helper Methods (Oförändrade)
-
     private func deleteItem(item: FoodItem) {
         if let index = plate.items.firstIndex(where: { $0.id == item.id }) {
             plate.items.remove(at: index)

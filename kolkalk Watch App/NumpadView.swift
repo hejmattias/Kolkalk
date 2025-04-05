@@ -7,7 +7,7 @@ enum NumpadMode {
     case numericValue
 }
 
-// Knappvy (oförändrad från förra versionen med understrykning)
+// Knappvy (oförändrad)
 struct NumpadStyledButton: View {
     let label: String
     let width: CGFloat
@@ -15,7 +15,7 @@ struct NumpadStyledButton: View {
     let fontSize: CGFloat
     var backgroundColor: Color = Color(white: 0.3)
     var foregroundColor: Color = .white
-    var isHighlighted: Bool = false // Parameter för understrykning
+    var isHighlighted: Bool = false
     var isDisabled: Bool = false
     let action: () -> Void
 
@@ -57,10 +57,10 @@ struct NumpadView: View {
     var carbsPer100g: Double?
     var gramsPerDl: Double?
     var styckPerGram: Double?
-    // --- initialUnit är kvar för att EditFoodView ska kunna sätta rätt enhet ---
     var initialUnit: String?
-    // ---
     var onConfirmFoodItem: ((Double, String) -> Void)?
+    // Parameter för att signalera navigering efter dismiss
+    var onDismissAndNavigate: (() -> Void)? = nil
 
     @Environment(\.presentationMode) var presentationMode
     @State private var inputString: String = "0"
@@ -134,21 +134,18 @@ struct NumpadView: View {
                  .padding(.bottom, spacing)
 
 
-                 // Knapparna
+                 // Knapparna (oförändrade)
                  VStack(spacing: spacing) {
-                      // Rad 1: 7, 8, 9, g
                      HStack(spacing: spacing) {
                          NumpadStyledButton(label: "7", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendNumber("7") })
                          NumpadStyledButton(label: "8", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendNumber("8") })
                          NumpadStyledButton(label: "9", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendNumber("9") })
-                         // --- ÄNDRING: 'g'-knappen är aldrig disabled ---
                          NumpadStyledButton(label: "g", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize,
                                             backgroundColor: unitButtonColor,
-                                            isHighlighted: unit == "g" && mode == .foodItem, // Highlightas bara i foodItem-läge
-                                            isDisabled: false, // Aldrig disabled
-                                            action: { setUnit("g") }) // setUnit hanterar mode
+                                            isHighlighted: unit == "g" && mode == .foodItem,
+                                            isDisabled: false,
+                                            action: { setUnit("g") })
                      }
-                      // Rad 2: 4, 5, 6, dl (oförändrad)
                      HStack(spacing: spacing) {
                          NumpadStyledButton(label: "4", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendNumber("4") })
                          NumpadStyledButton(label: "5", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendNumber("5") })
@@ -159,7 +156,6 @@ struct NumpadView: View {
                                             isDisabled: !isUnitAvailable("dl"),
                                             action: { setUnit("dl") })
                      }
-                     // Rad 3: 1, 2, 3, st (oförändrad)
                      HStack(spacing: spacing) {
                          NumpadStyledButton(label: "1", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendNumber("1") })
                          NumpadStyledButton(label: "2", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendNumber("2") })
@@ -170,12 +166,11 @@ struct NumpadView: View {
                                             isDisabled: !isUnitAvailable("st"),
                                             action: { setUnit("st") })
                      }
-                      // Rad 4: ,, 0, ⌫, OK (oförändrad)
                      HStack(spacing: spacing) {
                          NumpadStyledButton(label: ",", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendComma() })
                          NumpadStyledButton(label: "0", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: defaultButtonColor, action: { appendNumber("0") })
                          NumpadStyledButton(label: "⌫", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: backspaceButtonColor, action: { backspace() })
-                         NumpadStyledButton(label: "OK", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: okButtonColor, action: { confirm() })
+                         NumpadStyledButton(label: "OK", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: okButtonColor, action: { confirm() }) // Anropar confirm()
                      }
                  }
             }
@@ -184,17 +179,14 @@ struct NumpadView: View {
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            // Sätt initial enhet från parameter (om möjligt och relevant)
+            // Sätt initial enhet (oförändrat)
             if mode == .foodItem {
                 if let initUnit = initialUnit, isUnitAvailable(initUnit) {
                     unit = initUnit
                 } else {
-                    unit = "g" // Fallback till gram om ingen/ogiltig enhet angavs
+                    unit = "g"
                 }
             }
-            // Om mode != .foodItem, behåller `unit` sitt defaultvärde "g",
-            // men `isHighlighted` kommer vara false för alla enhetsknappar.
-
             // Nollställningslogik (oförändrad)
             let initialNumericValue = Double(valueString.replacingOccurrences(of: ",", with: "."))
             if let val = initialNumericValue, val == 0.0 {
@@ -207,10 +199,8 @@ struct NumpadView: View {
         }
     }
 
-    // MARK: - Funktioner (setUnit, calculatedCarbs, appendNumber, appendComma, backspace, confirm - oförändrade från förra)
-
+    // MARK: - Funktioner (oförändrade utom confirm)
     func setUnit(_ newUnit: String) {
-        // Tillåt bara att ändra enhet i foodItem-läge OCH om enheten är tillgänglig
         guard mode == .foodItem && isUnitAvailable(newUnit) else { return }
         unit = newUnit
     }
@@ -254,18 +244,34 @@ struct NumpadView: View {
         }
     }
 
+    // Modifierad confirm()
     func confirm() {
         let finalInput = inputString
+        let shouldNavigate = mode == .foodItem // Vi vill bara navigera efter att ha lagt till mat
+
         if mode == .foodItem {
             let sanitizedInput = finalInput.replacingOccurrences(of: ",", with: ".")
             if let doubleValue = Double(sanitizedInput) {
-                onConfirmFoodItem?(doubleValue, unit)
-            } else { onConfirmFoodItem?(0.0, unit) }
+                onConfirmFoodItem?(doubleValue, unit) // Anropa befintlig closure för att uppdatera plate
+            } else {
+                onConfirmFoodItem?(0.0, unit)
+            }
         } else {
              let cleanedInput = finalInput.last == "," ? String(finalInput.dropLast()) : finalInput
              if cleanedInput.isEmpty || cleanedInput == "-" { valueString = "0" }
              else { valueString = cleanedInput }
         }
+
+        // Stäng sheeten FÖRST
         presentationMode.wrappedValue.dismiss()
+
+        // Om vi ska navigera, anropa den nya closuren EFTER dismiss
+        if shouldNavigate {
+            // Använd en kort asynkron fördröjning för att låta sheet-animationen slutföras
+            // innan navigeringsclosuren körs. Detta kan hjälpa NavigationStack.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                 onDismissAndNavigate?()
+            }
+        }
     }
 }

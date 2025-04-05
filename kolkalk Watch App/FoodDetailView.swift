@@ -1,4 +1,4 @@
-// Kolkalk.zip/kolkalk Watch App/FoodDetailView.swift
+// Kolkalk/kolkalk Watch App/FoodDetailView.swift
 import SwiftUI
 import Foundation
 
@@ -6,61 +6,63 @@ struct FoodDetailView: View {
     @ObservedObject var plate: Plate
     var food: FoodItem
     @Binding var navigationPath: NavigationPath
-    // <<< CHANGE START >>>
-    // Ta bort @State private var selectedGrams: Int = 0, behövs inte längre här
-    // <<< CHANGE END >>>
     var shouldEmptyPlate: Bool
 
-    // <<< CHANGE START >>>
-    // State för att hålla värdet som ska bindas till NumpadView
     @State private var currentInputString: String = "0"
-    // <<< CHANGE END >>>
 
     var body: some View {
-        // <<< CHANGE START >>>
-        // Anropa den nya NumpadView
         NumpadView(
-            valueString: $currentInputString, // Bind till den nya state-variabeln
-            title: (shouldEmptyPlate ? "-+ " : "") + food.name, // Behåll titeln som den var
-            mode: .foodItem, // Sätt läget till foodItem
-            foodName: food.name, // Skicka med foodName (används inte för titel, men kan vara bra att ha)
+            valueString: $currentInputString,
+            title: (shouldEmptyPlate ? "-+ " : "") + food.name,
+            mode: .foodItem,
+            foodName: food.name,
             carbsPer100g: food.carbsPer100g,
             gramsPerDl: food.gramsPerDl,
             styckPerGram: food.styckPerGram,
-            onConfirmFoodItem: { value, unit in // Använd den specifika closuren
+            onConfirmFoodItem: { value, unit in
+                // Uppdatera plate-modellen
                 if shouldEmptyPlate {
                     plate.emptyPlate()
                 }
-
                 var newFood = food
-                newFood.id = UUID() // Skapa nytt id
-
-                // Uppdatera gram baserat på enhet (som tidigare)
+                newFood.id = UUID()
                 switch unit {
-                case "g":
-                    newFood.grams = value
+                case "g": newFood.grams = value
                 case "dl":
-                    if let gramsPerDl = food.gramsPerDl, gramsPerDl > 0 {
-                        newFood.grams = value * gramsPerDl
-                    } else { newFood.grams = 0 } // Fallback
+                    if let gramsPerDl = food.gramsPerDl, gramsPerDl > 0 { newFood.grams = value * gramsPerDl }
+                    else { newFood.grams = 0 }
                 case "st":
-                    if let styckPerGram = food.styckPerGram, styckPerGram > 0 {
-                        newFood.grams = value * styckPerGram
-                    } else { newFood.grams = 0 } // Fallback
-                default:
-                    newFood.grams = value // Fallback om enhet är okänd, antar gram
+                    if let styckPerGram = food.styckPerGram, styckPerGram > 0 { newFood.grams = value * styckPerGram }
+                    else { newFood.grams = 0 }
+                default: newFood.grams = value
                 }
-
                 newFood.inputUnit = unit
                 plate.addItem(newFood)
+            },
+            // <<< ÄNDRING: Logik för att manuellt poppa och pusha >>>
+            onDismissAndNavigate: {
+                // Denna kod körs EFTER att NumpadView (.sheet) har stängts (med liten fördröjning från NumpadView)
 
-                navigationPath = NavigationPath([Route.plateView]) // Gå till tallriken
+                // Kontrollera om stacken har minst de två vyer vi förväntar oss
+                // (FoodListView följt av FoodDetailView)
+                if navigationPath.count >= 2 {
+                    print("NavPath count before pop: \(navigationPath.count)")
+                    // Ta bort de två sista (FoodDetailView och FoodListView)
+                    navigationPath.removeLast(2)
+                    print("NavPath count after pop: \(navigationPath.count)")
+                    // Lägg till PlateView
+                    navigationPath.append(Route.plateView)
+                    print("NavPath count after append: \(navigationPath.count)")
+                } else {
+                    // Fallback: Om stacken är oväntat kort, ersätt den helt
+                    print("NavPath count was < 2, resetting to PlateView.")
+                    navigationPath = NavigationPath([Route.plateView])
+                }
             }
+            // <<< SLUT ÄNDRING >>>
         )
         .onAppear {
-            // Sätt ett initialvärde om det behövs, t.ex. "0"
             currentInputString = "0"
         }
-        // <<< CHANGE END >>>
     }
 }
