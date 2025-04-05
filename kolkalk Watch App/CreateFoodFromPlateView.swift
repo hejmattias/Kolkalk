@@ -1,9 +1,9 @@
-// Kolkalk.zip/kolkalk Watch App/CreateFoodFromPlateView.swift
+// Kolkalk/kolkalk Watch App/CreateFoodFromPlateView.swift
 import Foundation
 import SwiftUI
 
 struct CreateFoodFromPlateView: View {
-    @ObservedObject var plate: Plate
+    @ObservedObject var plate: Plate // Behövs för CalculatorView init
     @ObservedObject var foodData: FoodData
     @Binding var navigationPath: NavigationPath
     @Environment(\.dismiss) var dismiss
@@ -12,9 +12,12 @@ struct CreateFoodFromPlateView: View {
     @State private var totalWeightString: String = ""
     @State private var containerWeightString: String = ""
     @State private var calculatedCarbsPer100g: Double?
-    @State private var showingTotalWeightInput = false
-    @State private var showingContainerWeightInput = false
-    @State private var showingChooseContainer = false
+
+    // <<< ÄNDRING: Byt State-variabler för sheet-presentation >>>
+    @State private var showingTotalWeightCalculator = false
+    @State private var showingContainerWeightCalculator = false
+    // <<< --- >>>
+    @State private var showingChooseContainer = false // Behåll denna
 
     var totalWeight: Double { Double(totalWeightString.replacingOccurrences(of: ",", with: ".")) ?? 0 }
     var containerWeight: Double { Double(containerWeightString.replacingOccurrences(of: ",", with: ".")) ?? 0 }
@@ -26,22 +29,19 @@ struct CreateFoodFromPlateView: View {
                     TextField("Livsmedelsnamn", text: $foodName)
 
                     HStack {
-                         // <<< CHANGE START >>>
-                         // Visa värdet eller platshållare
                          Text("Total vikt (g): \(totalWeightString.isEmpty ? "Ange" : totalWeightString)")
                              .foregroundColor(totalWeightString.isEmpty ? .gray : .primary)
-                         // <<< CHANGE END >>>
-                        Spacer()
-                        Button("Ange") { showingTotalWeightInput = true }
+                         Spacer()
+                         // <<< ÄNDRING: Ändra knapptext och action >>>
+                         Button("Ange/Ändra") { showingTotalWeightCalculator = true }
                     }
 
                     HStack {
-                         // <<< CHANGE START >>>
                          Text("Kärlets vikt (g): \(containerWeightString.isEmpty ? "Ange" : containerWeightString)")
                              .foregroundColor(containerWeightString.isEmpty ? .gray : .primary)
-                         // <<< CHANGE END >>>
-                        Spacer()
-                        Button("Ange") { showingContainerWeightInput = true }
+                         Spacer()
+                         // <<< ÄNDRING: Ändra knapptext och action >>>
+                         Button("Ange/Ändra") { showingContainerWeightCalculator = true }
                     }
 
                     HStack {
@@ -61,21 +61,38 @@ struct CreateFoodFromPlateView: View {
                 Button("Beräkna och spara") {
                     calculateAndSave()
                 }
-                .disabled(foodName.isEmpty || totalWeightString.isEmpty) // Ändrat till string check
+                .disabled(foodName.isEmpty || totalWeightString.isEmpty)
             }
         }
         .navigationTitle("Skapa livsmedel")
-        // <<< CHANGE START >>>
-        // Använd NumpadView i numericValue-läge i .sheet
-        .sheet(isPresented: $showingTotalWeightInput) {
-            NumpadView(valueString: $totalWeightString, title: "Ange total vikt", mode: .numericValue)
+        // <<< ÄNDRING START: Använd CalculatorView i numericInput-läge >>>
+        .sheet(isPresented: $showingTotalWeightCalculator) {
+            CalculatorView(
+                plate: plate,
+                navigationPath: $navigationPath,
+                mode: .numericInput,
+                outputString: $totalWeightString,
+                initialCalculation: totalWeightString,
+                inputTitle: "Ange total vikt"
+            )
         }
-        .sheet(isPresented: $showingContainerWeightInput) {
-            NumpadView(valueString: $containerWeightString, title: "Ange kärlets vikt", mode: .numericValue)
+        .sheet(isPresented: $showingContainerWeightCalculator) {
+            CalculatorView(
+                plate: plate,
+                navigationPath: $navigationPath,
+                mode: .numericInput,
+                outputString: $containerWeightString,
+                initialCalculation: containerWeightString,
+                inputTitle: "Ange kärlets vikt"
+            )
         }
-        // <<< CHANGE END >>>
+        // <<< ÄNDRING SLUT >>>
         .sheet(isPresented: $showingChooseContainer) { // ChooseContainer är oförändrad
             ChooseContainerView(selectedWeight: $containerWeightString)
+        }
+        .onAppear {
+            // Nollställ vid start eller ladda sparade värden?
+            // Låt det vara som det är nu.
         }
     }
 
@@ -84,24 +101,30 @@ struct CreateFoodFromPlateView: View {
         let netWeight = totalWeight - containerWeight
         guard netWeight > 0 else {
             print("Net weight must be positive")
-            // Kanske visa felmeddelande för användaren
+            // Visa felmeddelande?
             return
         }
 
-        let totalCarbs = plate.items.reduce(0) { $0 + $1.totalCarbs }
-        let carbsPer100g = (totalCarbs / netWeight) * 100
+        let totalCarbsOnPlate = plate.items.reduce(0) { $0 + $1.totalCarbs }
+        guard totalCarbsOnPlate > 0 else {
+             print("Cannot create food item with zero carbs on plate.")
+             // Visa felmeddelande?
+             return
+        }
 
-        calculatedCarbsPer100g = carbsPer100g
+        let carbsPer100g = (totalCarbsOnPlate / netWeight) * 100
+        calculatedCarbsPer100g = carbsPer100g // Uppdatera state för visning
 
-        let newFoodItem = FoodItem(name: foodName, carbsPer100g: carbsPer100g, grams: 0, gramsPerDl: nil)
+        let newFoodItem = FoodItem(
+            name: foodName,
+            carbsPer100g: carbsPer100g,
+            grams: 0 // Gram sätts inte här
+        )
         foodData.addFoodItem(newFoodItem)
 
-        plate.emptyPlate()
+        plate.emptyPlate() // Töm tallriken efteråt
 
         // Återgå till rotvyn
-         navigationPath = NavigationPath() // Nollställ stacken
-         // Om dismiss() behövs beror på hur denna vy presenteras. Om den är i en NavigationStack,
-         // kommer ovanstående rad att ta användaren till rotvyn.
-         // dismiss() // Tas bort om den är i stacken
+         navigationPath = NavigationPath()
     }
 }
