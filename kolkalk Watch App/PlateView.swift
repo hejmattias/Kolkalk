@@ -78,8 +78,9 @@ struct PlateView: View {
                  }
             } // End ForEach
 
-            // MARK: - Buttons Below Items (Oförändrad sektion)
+            // MARK: - Buttons Below Items
             if !plate.items.isEmpty {
+                // Knappar när tallriken INTE är tom
                 Button { navigationPath.append(Route.foodListView(isEmptyAndAdd: false)) } label: {
                     HStack { Spacer(); Label("Lägg till", systemImage: "plus").foregroundColor(.blue); Spacer() }
                 }
@@ -90,21 +91,34 @@ struct PlateView: View {
                     Button("Ja", role: .destructive) { plate.emptyPlate() }
                     Button("Avbryt", role: .cancel) { }
                 } message: { Text("Är du säker på att du vill tömma tallriken?") }
+
                 if enableCarbLogging {
                     Button(action: { logToHealth() }) {
                         HStack { Spacer(); Text("Logga kolhydrater").foregroundColor(.blue); Spacer() }
                     }
                     .disabled(isLogging || plate.items.allSatisfy { $0.hasBeenLogged })
                 }
-                 if enableInsulinLogging {
+                // <<< ÄNDRING START >>>
+                // Ta bort villkoret !plate.items.isEmpty
+                if enableInsulinLogging {
                      Button(action: { navigationPath.append(Route.insulinLoggingView) }) {
                          HStack { Spacer(); Text("Logga insulin").foregroundColor(.blue); Spacer() }
                      }
                  }
+                 // <<< ÄNDRING SLUT >>>
             } else {
+                // Knappar när tallriken ÄR tom
                 Button { navigationPath.append(Route.foodListView(isEmptyAndAdd: false)) } label: {
                      HStack { Spacer(); Label("Lägg till", systemImage: "plus").foregroundColor(.blue); Spacer() }
                  }
+                // <<< ÄNDRING START >>>
+                // Lägg till "Logga insulin"-knappen även här, om aktiverad
+                if enableInsulinLogging {
+                     Button(action: { navigationPath.append(Route.insulinLoggingView) }) {
+                         HStack { Spacer(); Text("Logga insulin").foregroundColor(.blue); Spacer() }
+                     }
+                }
+                // <<< ÄNDRING SLUT >>>
                 Text("Tallriken är tom.")
                     .foregroundColor(.gray)
                     .padding(.top)
@@ -125,7 +139,6 @@ struct PlateView: View {
         }
     }
 
-    // *** ÄNDRING: Justerad itemDetailString för högre precision ***
     private func itemDetailString(for item: FoodItem) -> String {
         if item.isCalculatorItem { return item.name }
 
@@ -153,9 +166,7 @@ struct PlateView: View {
             return gramsString
         }
 
-        // --- ÄNDRING HÄR: Använd %.2f för högre precision ---
         let formattedInputValue = String(format: "%.2f", inputValue)
-        // --- SLUT ÄNDRING ---
 
         if unitString == "g" {
              return "\(formattedInputValue)\(unitString)"
@@ -164,8 +175,6 @@ struct PlateView: View {
         }
     }
 
-
-    // logToHealth (oförändrad)
     private func logToHealth() {
         isLogging = true
         let itemsToLog = plate.items.filter { !$0.hasBeenLogged }

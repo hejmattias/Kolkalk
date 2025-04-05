@@ -20,7 +20,7 @@ struct SettingsView: View {
     var body: some View {
         Form {
             Section(header: Text("Apple Hälsa")) {
-                Toggle("Logga kolhydrater", isOn: $enableCarbLogging)
+                Toggle("Visa Logga kolhydrater", isOn: $enableCarbLogging)
                 Toggle("Visa Logga Insulin", isOn: $enableInsulinLogging)
             }
 
