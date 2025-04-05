@@ -9,7 +9,9 @@ struct PlateView: View {
 
     @State private var isLogging = false
     @State private var logAlert: LogAlert?
-    @State private var showEmptyConfirmation = false
+    // <<< ÄNDRING START: showEmptyConfirmation tas bort då den inte längre används >>>
+    // @State private var showEmptyConfirmation = false
+    // <<< ÄNDRING SLUT >>>
 
     @AppStorage("enableCarbLogging") private var enableCarbLogging = true
     @AppStorage("enableInsulinLogging") private var enableInsulinLogging = true
@@ -84,13 +86,18 @@ struct PlateView: View {
                 Button { navigationPath.append(Route.foodListView(isEmptyAndAdd: false)) } label: {
                     HStack { Spacer(); Label("Lägg till", systemImage: "plus").foregroundColor(.blue); Spacer() }
                 }
-                Button(action: { showEmptyConfirmation = true }) {
-                    HStack { Spacer(); Text("Töm tallriken").foregroundColor(.red); Spacer() }
+                // <<< ÄNDRING START: Ändra "Töm tallriken" till genväg "Töm & Lägg till" >>>
+                Button(action: {
+                    // Navigera direkt till "Töm och lägg till"-vyn
+                    navigationPath.append(Route.foodListView(isEmptyAndAdd: true))
+                }) {
+                    // Uppdaterad text och ikon, blå färg
+                    HStack { Spacer(); Label("Töm & Lägg till", systemImage: "trash.circle").foregroundColor(.blue); Spacer() }
                 }
-                .alert("Bekräfta Töm Tallriken", isPresented: $showEmptyConfirmation) {
-                    Button("Ja", role: .destructive) { plate.emptyPlate() }
-                    Button("Avbryt", role: .cancel) { }
-                } message: { Text("Är du säker på att du vill tömma tallriken?") }
+                // Ta bort den gamla alert-modifieraren för tömning
+                // .alert("Bekräfta Töm Tallriken", isPresented: $showEmptyConfirmation) { ... }
+                // <<< ÄNDRING SLUT >>>
+
 
                 if enableCarbLogging {
                     Button(action: { logToHealth() }) {
@@ -98,27 +105,23 @@ struct PlateView: View {
                     }
                     .disabled(isLogging || plate.items.allSatisfy { $0.hasBeenLogged })
                 }
-                // <<< ÄNDRING START >>>
-                // Ta bort villkoret !plate.items.isEmpty
+                // Logga insulin (oförändrat)
                 if enableInsulinLogging {
                      Button(action: { navigationPath.append(Route.insulinLoggingView) }) {
                          HStack { Spacer(); Text("Logga insulin").foregroundColor(.blue); Spacer() }
                      }
                  }
-                 // <<< ÄNDRING SLUT >>>
             } else {
                 // Knappar när tallriken ÄR tom
                 Button { navigationPath.append(Route.foodListView(isEmptyAndAdd: false)) } label: {
                      HStack { Spacer(); Label("Lägg till", systemImage: "plus").foregroundColor(.blue); Spacer() }
                  }
-                // <<< ÄNDRING START >>>
-                // Lägg till "Logga insulin"-knappen även här, om aktiverad
+                // Logga insulin (oförändrat)
                 if enableInsulinLogging {
                      Button(action: { navigationPath.append(Route.insulinLoggingView) }) {
                          HStack { Spacer(); Text("Logga insulin").foregroundColor(.blue); Spacer() }
                      }
                 }
-                // <<< ÄNDRING SLUT >>>
                 Text("Tallriken är tom.")
                     .foregroundColor(.gray)
                     .padding(.top)
@@ -130,7 +133,7 @@ struct PlateView: View {
         }
     }
 
-    // MARK: - Helper Methods
+    // MARK: - Helper Methods (Oförändrade)
 
     private func deleteItem(item: FoodItem) {
         if let index = plate.items.firstIndex(where: { $0.id == item.id }) {
