@@ -23,7 +23,7 @@ struct ContentView: View {
     @StateObject var foodData = FoodData()
     @State private var navigationPath = NavigationPath()
 
-    @AppStorage("enableInsulinLogging") private var enableInsulinLogging = true
+    @AppStorage("enableInsulinLogging") private var enableInsulinLogging = false // Startvärde från SettingsView
 
     // Beräkning av totalCarbs
     var totalCarbs: Double {
@@ -72,7 +72,9 @@ struct ContentView: View {
             } // Slut List
             .onAppear { // onAppear
                  plate.loadFromUserDefaults()
-                 requestAuthIfEnabled()
+                 // ***** ÄNDRING: Ta bort automatisk auktoriseringsförfrågan härifrån *****
+                 // requestAuthIfEnabled() // Borttagen
+                 // ***** SLUT ÄNDRING *****
             }
             .navigationDestination(for: Route.self) { route in // NavigationDestination
                 // Switch-satsen för att skapa destinationerna
@@ -113,7 +115,7 @@ struct ContentView: View {
                     // Här skickas plate redan med till CalculatorView
                     CalculatorView(plate: plate, navigationPath: $navigationPath, mode: .plateCalculation, outputString: .constant(""), shouldEmptyPlate: shouldEmptyPlate)
                 case .settings:
-                    SettingsView()
+                    SettingsView() // SettingsView får själv läsa AppStorage
                 }
             }
             .onOpenURL { url in // onOpenURL (Oförändrad)
@@ -137,28 +139,11 @@ struct ContentView: View {
         }
     }
 
-    // requestAuthIfEnabled (Oförändrad)
-    private func requestAuthIfEnabled() {
-        let enableCarbLogging = UserDefaults.standard.bool(forKey: "enableCarbLogging")
-        let carbLoggingSettingExists = UserDefaults.standard.object(forKey: "enableCarbLogging") != nil
-        let shouldRequestCarb = carbLoggingSettingExists ? enableCarbLogging : true
-
-        let enableInsulinLogging = UserDefaults.standard.bool(forKey: "enableInsulinLogging")
-        let insulinLoggingSettingExists = UserDefaults.standard.object(forKey: "enableInsulinLogging") != nil
-        let shouldRequestInsulin = insulinLoggingSettingExists ? enableInsulinLogging : true
-
-        if shouldRequestCarb || shouldRequestInsulin {
-             HealthKitManager.shared.requestAuthorization { success, error in
-                 if !success {
-                     print("HealthKit authorization was not granted on app start.")
-                 }
-                 // Lägg eventuellt till felhantering här
-                 if let error = error {
-                      print("HealthKit auth error on start: \(error.localizedDescription)")
-                 }
-             }
-         }
-     }
+    // ***** ÄNDRING: Hela requestAuthIfEnabled() kan tas bort härifrån *****
+    // private func requestAuthIfEnabled() {
+    //     ... (kod borttagen) ...
+    // }
+    // ***** SLUT ÄNDRING *****
 }
 
 // <<< NYTT: Lägg till en PreviewProvider om du vill kunna förhandsgranska >>>

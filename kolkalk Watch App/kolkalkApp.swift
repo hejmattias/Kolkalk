@@ -12,17 +12,20 @@ struct MyApp: App {
 
     // Initialize HealthKitManager (behåll)
     init() {
-        HealthKitManager.shared.requestAuthorization { success, error in
-            // ... befintlig kod ...
-            // Ingen ändring här behövs
-             if let error = error {
-                  print("HealthKitManager auth error: \(error.localizedDescription)")
-             } else if success {
-                  print("HealthKitManager auth success.")
-             } else {
-                  print("HealthKitManager auth denied.")
-             }
-        }
+        // ***** ÄNDRING: Ta bort automatisk auktoriseringsförfrågan härifrån *****
+        // HealthKitManager.shared.requestAuthorization { success, error in
+        //     // ... befintlig kod ...
+        //     // Ingen ändring här behövs
+        //      if let error = error {
+        //           print("HealthKitManager auth error: \(error.localizedDescription)")
+        //      } else if success {
+        //           print("HealthKitManager auth success.")
+        //      } else {
+        //           print("HealthKitManager auth denied.")
+        //      }
+        // }
+        // ***** SLUT ÄNDRING *****
+        print("HealthKitManager initialized (initial auth request removed).")
     }
 
     var body: some Scene {
