@@ -3,21 +3,25 @@ import Foundation
 import SwiftUI
 
 struct CreateFoodFromPlateView: View {
-    @ObservedObject var plate: Plate // Behövs för CalculatorView init
+    @ObservedObject var plate: Plate // Behövs för CalculatorView init och för att tömma
     @ObservedObject var foodData: FoodData
     @Binding var navigationPath: NavigationPath
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) var dismiss // Används inte direkt, men kan vara bra att ha
 
     @State private var foodName: String = ""
     @State private var totalWeightString: String = ""
     @State private var containerWeightString: String = ""
     @State private var calculatedCarbsPer100g: Double?
 
-    // <<< ÄNDRING: Byt State-variabler för sheet-presentation >>>
     @State private var showingTotalWeightCalculator = false
     @State private var showingContainerWeightCalculator = false
-    // <<< --- >>>
-    @State private var showingChooseContainer = false // Behåll denna
+    @State private var showingChooseContainer = false
+
+    // --- ÄNDRING START: State för att hantera bekräftelsedialogen ---
+    @State private var showConfirmationAlert = false
+    @State private var newlyCreatedFoodItem: FoodItem? = nil // För att spara det nya objektet temporärt
+    @State private var alertMessage = "" // För meddelandet i alerten
+    // --- ÄNDRING SLUT ---
 
     var totalWeight: Double { Double(totalWeightString.replacingOccurrences(of: ",", with: ".")) ?? 0 }
     var containerWeight: Double { Double(containerWeightString.replacingOccurrences(of: ",", with: ".")) ?? 0 }
@@ -32,7 +36,6 @@ struct CreateFoodFromPlateView: View {
                          Text("Total vikt (g): \(totalWeightString.isEmpty ? "Ange" : totalWeightString)")
                              .foregroundColor(totalWeightString.isEmpty ? .gray : .primary)
                          Spacer()
-                         // <<< ÄNDRING: Ändra knapptext och action >>>
                          Button("Ange/Ändra") { showingTotalWeightCalculator = true }
                     }
 
@@ -40,7 +43,6 @@ struct CreateFoodFromPlateView: View {
                          Text("Kärlets vikt (g): \(containerWeightString.isEmpty ? "Ange" : containerWeightString)")
                              .foregroundColor(containerWeightString.isEmpty ? .gray : .primary)
                          Spacer()
-                         // <<< ÄNDRING: Ändra knapptext och action >>>
                          Button("Ange/Ändra") { showingContainerWeightCalculator = true }
                     }
 
@@ -59,13 +61,12 @@ struct CreateFoodFromPlateView: View {
                 }
 
                 Button("Beräkna och spara") {
-                    calculateAndSave()
+                    calculateAndPrepareToSave() // <<< ÄNDRAT FUNKTIONSANROP
                 }
-                .disabled(foodName.isEmpty || totalWeightString.isEmpty)
+                .disabled(foodName.isEmpty || totalWeightString.isEmpty || plate.items.isEmpty) // <<< Lägg till kontroll om tallriken är tom
             }
         }
         .navigationTitle("Skapa livsmedel")
-        // <<< ÄNDRING START: Använd CalculatorView i numericInput-läge >>>
         .sheet(isPresented: $showingTotalWeightCalculator) {
             CalculatorView(
                 plate: plate,
@@ -86,22 +87,37 @@ struct CreateFoodFromPlateView: View {
                 inputTitle: "Ange kärlets vikt"
             )
         }
-        // <<< ÄNDRING SLUT >>>
-        .sheet(isPresented: $showingChooseContainer) { // ChooseContainer är oförändrad
+        .sheet(isPresented: $showingChooseContainer) {
             ChooseContainerView(selectedWeight: $containerWeightString)
         }
+        // --- ÄNDRING START: Lägg till .alert modifier för bekräftelse ---
+        .alert("Livsmedel Sparat", isPresented: $showConfirmationAlert, presenting: newlyCreatedFoodItem) { foodItem in
+            // Knappar i alerten
+            Button("Töm tallriken") {
+                plate.emptyPlate() // Töm tallriken
+                navigateBack()     // Navigera sedan tillbaka
+            }
+            Button("Behåll tallriken", role: .cancel) { // Använd .cancel för den mindre destruktiva åtgärden
+                navigateBack()     // Navigera tillbaka utan att tömma
+            }
+        } message: { foodItem in
+            // Meddelandet i alerten
+            Text("Livsmedlet \"\(foodItem.name)\" med \(foodItem.carbsPer100g ?? 0, specifier: "%.1f") gk/100g är sparat. Vill du tömma tallriken nu?")
+        }
+        // --- ÄNDRING SLUT ---
         .onAppear {
-            // Nollställ vid start eller ladda sparade värden?
-            // Låt det vara som det är nu.
+            // Återställ eventuellt beräknat värde om vyn visas igen
+            calculatedCarbsPer100g = nil
         }
     }
 
-    // calculateAndSave (logik oförändrad)
-    func calculateAndSave() {
+    // --- ÄNDRING START: Uppdelad funktion för att hantera logiken innan alerten visas ---
+    func calculateAndPrepareToSave() {
         let netWeight = totalWeight - containerWeight
         guard netWeight > 0 else {
             print("Net weight must be positive")
-            // Visa felmeddelande?
+            // Visa felmeddelande för användaren här istället? T.ex. en alert.
+            // För enkelhetens skull loggar vi bara nu.
             return
         }
 
@@ -112,19 +128,36 @@ struct CreateFoodFromPlateView: View {
              return
         }
 
+        // Behåll beräkningen
         let carbsPer100g = (totalCarbsOnPlate / netWeight) * 100
-        calculatedCarbsPer100g = carbsPer100g // Uppdatera state för visning
+        calculatedCarbsPer100g = carbsPer100g // Uppdatera state för visning (kan tas bort om det inte behövs i UI)
 
+        // Skapa det nya livsmedlet
         let newFoodItem = FoodItem(
-            name: foodName,
+            name: foodName.trimmingCharacters(in: .whitespacesAndNewlines), // Trimma namnet
             carbsPer100g: carbsPer100g,
-            grams: 0 // Gram sätts inte här
+            grams: 0 // Gram sätts inte här, det är ett livsmedel i listan
+            // Inga andra värden som gramsPerDl eller styckPerGram sätts från tallriken
         )
+
+        // Lägg till i FoodData
         foodData.addFoodItem(newFoodItem)
+        print("Nytt livsmedel sparat lokalt: \(newFoodItem.name)") // För felsökning
 
-        plate.emptyPlate() // Töm tallriken efteråt
+        // Spara det nyskapade objektet för att använda i alerten
+        self.newlyCreatedFoodItem = newFoodItem
 
-        // Återgå till rotvyn
-         navigationPath = NavigationPath()
+        // Sätt flaggan för att visa alerten
+        self.showConfirmationAlert = true
+
+        // Ta bort tömning och navigering härifrån! Det sköts av alertens knappar.
+        // plate.emptyPlate() // <<< TAS BORT HÄRIFRÅN
+        // navigateBack()     // <<< TAS BORT HÄRIFRÅN
     }
+
+    // Hjälpfunktion för att navigera tillbaka till rotvyn
+    func navigateBack() {
+        navigationPath = NavigationPath() // Nollställ stacken
+    }
+    // --- ÄNDRING SLUT ---
 }
