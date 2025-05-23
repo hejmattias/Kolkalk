@@ -20,59 +20,105 @@ class CloudKitFoodDataStore {
         subscribeToChanges()
     }
 
-    // MARK: - Fetch & Subscription (Oförändrade)
+    // MARK: - Fetch & Subscription
 
+    // *** ÄNDRAD: Använder nu CKQueryOperation för mer robust hämtning ***
     func fetchFoodItems(completion: @escaping ([FoodItem]?, Error?) -> Void) {
-        print("CloudKitStore: fetchFoodItems called.")
+        print("CloudKitStore: fetchFoodItems called (using CKQueryOperation).")
         let query = CKQuery(recordType: foodRecordType, predicate: NSPredicate(value: true))
         query.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
 
-        print("CloudKitStore: Starting database.fetch operation...")
-        database.fetch(withQuery: query, inZoneWith: nil, desiredKeys: nil, resultsLimit: CKQueryOperation.maximumResults) { result in
-            print("CloudKitStore: database.fetch completion handler started.")
-            switch result {
-            case .success(let matchResults):
-                let recordCount = matchResults.matchResults.count
-                print("CloudKitStore: database.fetch SUCCESS. Received \(recordCount) records.")
+        var accumulatedFoodItems: [FoodItem] = []
+        var firstOperationError: Error? = nil // För att spara det första felet som uppstår
 
-                let foodItems = matchResults.matchResults.compactMap { recordResult -> FoodItem? in
-                    switch recordResult.1 {
-                    case .success(let record):
-                        return FoodItem(record: record) // Använd init?(record:)
-                    case .failure(let error):
-                        print("CloudKitStore: Error fetching individual record result: \(error)")
-                        return nil
+        // Rekursiv funktion för att hantera cursors (för att hämta data i omgångar)
+        func performQuery(cursor: CKQueryOperation.Cursor?) {
+            let queryOperation: CKQueryOperation
+            if let cursor = cursor {
+                queryOperation = CKQueryOperation(cursor: cursor)
+                print("CloudKitStore: Performing query with cursor.")
+            } else {
+                queryOperation = CKQueryOperation(query: query)
+                print("CloudKitStore: Performing initial query.")
+            }
+
+            // Sätt en rimlig gräns för resultat per omgång.
+            // CloudKit hanterar den faktiska maxgränsen, men detta kan hjälpa till med minneshantering.
+            queryOperation.resultsLimit = 200 // Standardrekommendation är ofta 100-200
+
+            // Denna block körs för varje CKRecord som matchar frågan.
+            queryOperation.recordMatchedBlock = { recordID, recordResult in
+                switch recordResult {
+                case .success(let record):
+                    if let foodItem = FoodItem(record: record) {
+                        accumulatedFoodItems.append(foodItem)
+                    } else {
+                        print("CloudKitStore: Error parsing FoodItem from record \(recordID.recordName) in recordMatchedBlock.")
+                        // Du kan välja att samla dessa fel om det är viktigt
+                    }
+                case .failure(let error):
+                    print("CloudKitStore: Error fetching individual record \(recordID.recordName) in recordMatchedBlock: \(error.localizedDescription)")
+                    // Spara det första felet som uppstod under hämtningen av enskilda poster
+                    if firstOperationError == nil {
+                        firstOperationError = error
                     }
                 }
-                print("CloudKitStore: Successfully parsed \(foodItems.count) FoodItems.")
-                completion(foodItems, nil)
-
-            case .failure(let error):
-                print("CloudKitStore: database.fetch FAILED with error: \(error)")
-                completion(nil, error)
             }
+
+            // Denna block körs när en query-omgång är klar.
+            queryOperation.queryResultBlock = { result in
+                switch result {
+                case .success(let nextCursor):
+                    if let nextCursor = nextCursor {
+                        // Det finns fler resultat, fortsätt hämta nästa omgång
+                        print("CloudKitStore: CKQueryOperation got cursor, fetching next batch...")
+                        performQuery(cursor: nextCursor)
+                    } else {
+                        // Inga fler resultat, hela operationen är klar
+                        print("CloudKitStore: CKQueryOperation finished. Total items fetched: \(accumulatedFoodItems.count).")
+                        // Om ett fel uppstod under hämtning av enskilda poster, men operationen i övrigt lyckades,
+                        // skicka med de ackumulerade objekten och det första felet.
+                        if firstOperationError != nil {
+                             print("CloudKitStore: CKQueryOperation completed but encountered record-level errors. First error: \(firstOperationError!.localizedDescription)")
+                             completion(accumulatedFoodItems, firstOperationError)
+                        } else {
+                             completion(accumulatedFoodItems, nil)
+                        }
+                    }
+                case .failure(let error):
+                    // Hela query-operationen misslyckades
+                    print("CloudKitStore: CKQueryOperation FAILED with error: \(error.localizedDescription)")
+                    completion(nil, error) // Skicka tillbaka felet
+                }
+            }
+            
+            queryOperation.qualityOfService = .userInitiated // Lämplig QoS för användarinitierad datahämtning
+            
+            print("CloudKitStore: Adding CKQueryOperation to database...")
+            database.add(queryOperation) // Starta operationen
         }
+
+        // Starta den första query-omgången
+        performQuery(cursor: nil)
     }
+    // *** SLUT ÄNDRING för fetchFoodItems ***
+
 
     func subscribeToChanges() {
         let subscriptionID = "fooditem-changes-subscription"
-        // Kontrollera om prenumerationen redan finns först för att undvika fel
         database.fetch(withSubscriptionID: subscriptionID) { [weak self] existingSubscription, error in
             guard let self = self else { return }
 
             if existingSubscription != nil {
                 print("CloudKitStore: Subscription '\(subscriptionID)' already exists.")
-                return // Finns redan, gör inget mer
+                return
             }
 
-            // Om prenumerationen inte finns (eller om det blev ett fel annat än 'unknown item')
             if let ckError = error as? CKError, ckError.code != .unknownItem {
                  print("CloudKitStore Error: Failed to check for existing subscription '\(subscriptionID)': \(error!.localizedDescription)")
-                 // Fortsätt inte om vi inte kunde verifiera
                  return
              }
 
-            // Skapa prenumerationen eftersom den inte fanns
             print("CloudKitStore: Subscription '\(subscriptionID)' not found, creating...")
             let predicate = NSPredicate(value: true)
             let subscription = CKQuerySubscription(
@@ -82,14 +128,13 @@ class CloudKitFoodDataStore {
                 options: [.firesOnRecordCreation, .firesOnRecordUpdate, .firesOnRecordDeletion]
             )
             let notificationInfo = CKSubscription.NotificationInfo()
-            notificationInfo.shouldSendContentAvailable = true // För tysta bakgrundsuppdateringar
+            notificationInfo.shouldSendContentAvailable = true
             subscription.notificationInfo = notificationInfo
 
             self.database.save(subscription) { savedSubscription, saveError in
                 if let saveError = saveError {
                      if let ckError = saveError as? CKError, ckError.code == .serverRejectedRequest {
                          print("CloudKitStore: Subscription save failed - already exists or server rejected.")
-                         // Kan hända om två enheter försöker skapa samtidigt
                      } else {
                          print("CloudKitStore Error: Failed to save subscription '\(subscriptionID)': \(saveError.localizedDescription)")
                      }
@@ -107,91 +152,78 @@ class CloudKitFoodDataStore {
       }
 
 
-    // MARK: - Modification Operations (ÄNDRADE)
-
-    // *** ÄNDRAD: Använder nu CKModifyRecordsOperation ***
     func saveFoodItem(_ foodItem: FoodItem, completion: @escaping (Error?) -> Void) {
-         let record = foodItem.toCKRecord() // Konvertera till CKRecord
+         let record = foodItem.toCKRecord()
          print("CloudKitStore: Preparing CKModifyRecordsOperation to save/update record \(record.recordID.recordName)...")
 
-         // Skapa operationen med posten som ska sparas/uppdateras
          let operation = CKModifyRecordsOperation(recordsToSave: [record], recordIDsToDelete: nil)
+         
+         // ANMÄRKNING: savePolicy .changedKeys fungerar för att uppdatera en befintlig post.
+         // Om posten inte finns (nytt foodItem), kommer detta att resultera i ett .unknownItem-fel per post.
+         // För en "lägg till eller uppdatera"-logik är .allKeys ofta enklare, men kan skriva över ändringar.
+         // Om du vill ha strikt "lägg till om ny, uppdatera om existerar", kan det kräva en check först
+         // eller att hantera .unknownItem-felet specifikt. Förutsatt att ditt `FoodData` hanterar
+         // om ett item är nytt eller existerande, kan .allKeys vara lämpligt här.
+         // Vi behåller .changedKeys enligt din ursprungliga kod, men notera denna begränsning för nya items.
+         // Om nya items *alltid* ska skapas, bör savePolicy vara .allKeys och du bör vara medveten om
+         // att det skriver över hela posten om ID:t redan existerar.
+         // Alternativt, använd .ifServerRecordUnchanged om du har en serverChangeTag,
+         // eller .allKeys om du är säker på att du vill skapa eller helt ersätta.
+         // Förutsatt att din logik på appnivå skiljer på "add" och "update", kan du ha två olika
+         // metoder här eller en parameter för savePolicy.
+         // Eftersom problemet verkar ligga i fetch, låter vi save vara tills vidare.
+         operation.savePolicy = .changedKeys // Behåller enligt din kod.
 
-         // Sätt savePolicy. .changedKeys är ofta ett bra val för uppdateringar.
-         // Den försöker uppdatera posten om den finns, och skriver bara över de fält
-         // som finns i 'record'-objektet. Misslyckas om posten inte finns alls.
-         // Om du vill vara ännu säkrare mot att skriva över samtidiga ändringar,
-         // överväg .ifServerRecordUnchanged, men det kräver att 'record' är
-         // nyligen hämtad från servern (vilket toCKRecord() inte gör).
-         operation.savePolicy = .changedKeys
-
-         // Hantera resultatet av hela operationen
          operation.modifyRecordsResultBlock = { result in
-             // Gå till huvudtråden för att anropa completion
              DispatchQueue.main.async {
                  switch result {
                  case .success():
                      print("CloudKitStore: CKModifyRecordsOperation finished successfully for \(record.recordID.recordName).")
-                     completion(nil) // Ingen fel
+                     completion(nil)
                  case .failure(let error):
-                     print("CloudKitStore Error: CKModifyRecordsOperation failed for \(record.recordID.recordName): \(error)")
-                      // Kontrollera specifikt för "Server Record Changed" igen här om det behövs
+                     print("CloudKitStore Error: CKModifyRecordsOperation failed for \(record.recordID.recordName): \(error.localizedDescription)")
                       if let ckError = error as? CKError, ckError.code == .serverRecordChanged {
-                          print("CloudKitStore Error: Conflict detected (Server Record Changed) even with CKModifyRecordsOperation. Consider fetching before update or conflict resolution logic.")
-                          // Här skulle man kunna implementera mer avancerad konflikthantering
-                          // t.ex. hämta båda versionerna och låta användaren välja, eller merge:a.
+                          print("CloudKitStore Error: Conflict detected (Server Record Changed) for \(record.recordID.recordName).")
+                      } else if let ckError = error as? CKError, ckError.code == .unknownItem && operation.savePolicy == .changedKeys {
+                          print("CloudKitStore Info: Record \(record.recordID.recordName) not found for update (using .changedKeys). If this was an 'add' operation, .changedKeys might not be appropriate.")
+                          // Här skulle man kunna försöka igen med .allKeys om det var ett "add"-försök.
                       }
-                     completion(error) // Skicka tillbaka felet
+                     completion(error)
                  }
              }
          }
-
-         // Sätt Quality of Service (valfritt men bra)
-         operation.qualityOfService = .userInitiated // Eftersom det ofta är en direkt användaråtgärd
-
+         operation.qualityOfService = .userInitiated
          print("CloudKitStore: Adding CKModifyRecordsOperation to database for \(record.recordID.recordName)...")
-         database.add(operation) // Lägg till operationen i databasens kö
+         database.add(operation)
     }
 
-     // *** ÄNDRAD: Använder nu CKModifyRecordsOperation ***
      func deleteFoodItem(withId id: UUID, completion: @escaping (Error?) -> Void) {
           let recordID = CKRecord.ID(recordName: id.uuidString)
           print("CloudKitStore: Preparing CKModifyRecordsOperation to delete record \(recordID.recordName)...")
 
-          // Skapa operationen med ID:t som ska raderas
           let operation = CKModifyRecordsOperation(recordsToSave: nil, recordIDsToDelete: [recordID])
-
-         // (savePolicy är inte relevant för radering)
-
-          // Hantera resultatet av hela operationen
           operation.modifyRecordsResultBlock = { result in
-              // Gå till huvudtråden för att anropa completion
               DispatchQueue.main.async {
                   switch result {
                   case .success():
                       print("CloudKitStore: CKModifyRecordsOperation finished successfully for deletion of \(recordID.recordName).")
-                      completion(nil) // Inget fel
+                      completion(nil)
                   case .failure(let error):
-                      // Kolla om felet är "record not found" - det är ok vid radering
                       if let ckError = error as? CKError, ckError.code == .unknownItem {
                           print("CloudKitStore: Record \(recordID.recordName) already deleted or never existed (Delete operation).")
-                          completion(nil) // Inte ett "fel" i detta sammanhang
+                          completion(nil)
                       } else {
-                          print("CloudKitStore Error: CKModifyRecordsOperation failed for deletion of \(recordID.recordName): \(error)")
-                          completion(error) // Skicka tillbaka andra fel
+                          print("CloudKitStore Error: CKModifyRecordsOperation failed for deletion of \(recordID.recordName): \(error.localizedDescription)")
+                          completion(error)
                       }
                   }
               }
           }
-
-          // Sätt Quality of Service
           operation.qualityOfService = .userInitiated
-
           print("CloudKitStore: Adding CKModifyRecordsOperation to database for deletion of \(recordID.recordName)...")
-          database.add(operation) // Lägg till operationen i databasens kö
+          database.add(operation)
      }
 
-    // Radera alla (kan också använda CKModifyRecordsOperation, men var redan så)
     func deleteAllFoodItems(recordIDsToDelete: [CKRecord.ID], completion: @escaping (Error?) -> Void) {
         guard !recordIDsToDelete.isEmpty else {
             completion(nil)
@@ -199,8 +231,7 @@ class CloudKitFoodDataStore {
         }
         print("CloudKitStore: Preparing CKModifyRecordsOperation to delete \(recordIDsToDelete.count) records...")
         let operation = CKModifyRecordsOperation(recordsToSave: nil, recordIDsToDelete: recordIDsToDelete)
-        operation.savePolicy = .allKeys // Irrelevant för delete, men måste sättas
-
+        
         operation.modifyRecordsResultBlock = { result in
             DispatchQueue.main.async {
                 switch result {
@@ -208,7 +239,7 @@ class CloudKitFoodDataStore {
                     print("CloudKitStore: CKModifyRecordsOperation finished successfully for deletion of all items.")
                     completion(nil)
                 case .failure(let error):
-                    print("CloudKitStore Error: CKModifyRecordsOperation failed for deletion of all items: \(error)")
+                    print("CloudKitStore Error: CKModifyRecordsOperation failed for deletion of all items: \(error.localizedDescription)")
                     completion(error)
                 }
             }
@@ -219,13 +250,10 @@ class CloudKitFoodDataStore {
     }
 }
 
-
 // MARK: - Extensions för konvertering (Oförändrade)
 extension FoodItem {
-    // Konvertera från CKRecord till FoodItem
     init?(record: CKRecord) {
         let uuidString = record.recordID.recordName
-        // Säkerställ att alla *nödvändiga* fält finns
         guard let name = record["name"] as? String,
               let carbsPer100g = record["carbsPer100g"] as? Double,
               let id = UUID(uuidString: uuidString) else {
@@ -235,37 +263,24 @@ extension FoodItem {
          self.id = id
          self.name = name
          self.carbsPer100g = carbsPer100g
-
-         // Sätt standardvärden eller hämta valfria fält
-         self.grams = 0 // Gram sparas inte i CloudKit-listan
+         self.grams = 0
          self.gramsPerDl = record["gramsPerDl"] as? Double
          self.styckPerGram = record["styckPerGram"] as? Double
-         self.inputUnit = nil // Sparas inte i CloudKit-listan
-         self.isDefault = false // Sparas inte i CloudKit-listan
-         self.hasBeenLogged = false // Sparas inte i CloudKit-listan
-         // Hämta favoritstatus (sparas som Int64 i exemplet)
+         self.inputUnit = nil
+         self.isDefault = false
+         self.hasBeenLogged = false
          self.isFavorite = (record["isFavorite"] as? Int64 ?? 0) == 1
-         self.isCalculatorItem = false // Sparas inte i CloudKit-listan
+         self.isCalculatorItem = false
     }
 
-    // Konvertera från FoodItem till CKRecord
      func toCKRecord() -> CKRecord {
          let recordID = CKRecord.ID(recordName: self.id.uuidString)
-         // Skapa en ny record eller hämta en befintlig om du har changeTag?
-         // För denna funktion skapar vi alltid en ny för enkelhetens skull.
          let record = CKRecord(recordType: CloudKitFoodDataStore.shared.foodRecordType, recordID: recordID)
-
-         // Sätt värdena som ska sparas till CloudKit
-         record["name"] = self.name as CKRecordValue? // Obligatorisk
-         record["carbsPer100g"] = self.carbsPer100g as CKRecordValue? // Obligatorisk
-         // Sätt valfria värden endast om de inte är nil
+         record["name"] = self.name as CKRecordValue?
+         record["carbsPer100g"] = self.carbsPer100g as CKRecordValue?
          record["gramsPerDl"] = self.gramsPerDl as CKRecordValue?
          record["styckPerGram"] = self.styckPerGram as CKRecordValue?
-         // Konvertera Bool till Int64 (0 eller 1) för CloudKit-kompatibilitet
          record["isFavorite"] = (self.isFavorite ? 1 : 0) as CKRecordValue
-
-         // Fält som inte sparas i CloudKit (grams, inputUnit, etc.) inkluderas inte.
-
          return record
       }
 }

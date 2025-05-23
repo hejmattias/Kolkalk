@@ -8,11 +8,10 @@ import CloudKit
 class FoodData: ObservableObject {
     @Published var foodList: [FoodItem] = []
     @Published var isLoading: Bool = true
-    @Published var lastSyncTime: Date? = nil // Tid för senaste lyckade synk (hämtning eller push)
-    @Published var lastSyncError: Error? = nil // Senaste felet vid synk
+    @Published var lastSyncTime: Date? = nil
+    @Published var lastSyncError: Error? = nil
     private var cancellables = Set<AnyCancellable>()
 
-    // localCacheURL och init (oförändrade)
     private var localCacheURL: URL? {
         guard let appSupportDirectory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
             print("FoodData Error [Watch]: Could not find Application Support directory.")
@@ -21,8 +20,6 @@ class FoodData: ObservableObject {
         let subDirectory = appSupportDirectory.appendingPathComponent("DataCache")
         do {
             try FileManager.default.createDirectory(at: subDirectory, withIntermediateDirectories: true, attributes: nil)
-            // Använd samma namn som iOS om du vill att de ska dela cache via iCloud Drive?
-            // Eller ett unikt namn för klockan. Vi antar unikt nu.
             return subDirectory.appendingPathComponent("foodListCache_watch.json")
         } catch {
             print("FoodData Error [Watch]: Could not create cache subdirectory: \(error)")
@@ -48,7 +45,6 @@ class FoodData: ObservableObject {
          loadFoodListFromCloudKit()
      }
 
-    // loadFoodListLocally och saveFoodListLocally (oförändrade)
     private func loadFoodListLocally() -> Bool {
         guard let url = localCacheURL else { return false }
         print("FoodData [Watch]: Attempting to load cache from: \(url.path)")
@@ -62,7 +58,6 @@ class FoodData: ObservableObject {
             let decoder = JSONDecoder()
             let cachedList = try decoder.decode([FoodItem].self, from: data)
             let sortedList = cachedList.sorted { $0.name.lowercased() < $1.name.lowercased() }
-            // Måste köras på main thread eftersom det uppdaterar @Published
             DispatchQueue.main.async {
                 self.foodList = sortedList
                 print("FoodData [Watch]: Successfully loaded and decoded \(self.foodList.count) items from cache.")
@@ -77,11 +72,12 @@ class FoodData: ObservableObject {
 
     private func saveFoodListLocally() {
         guard let url = localCacheURL else { return }
-        let listToSave = self.foodList
+        let listToSave = self.foodList // Spara den aktuella listan
         print("FoodData [Watch]: Attempting to save \(listToSave.count) items to cache: \(url.path)")
-        DispatchQueue.global(qos: .background).async { // Spara i bakgrunden
+        DispatchQueue.global(qos: .background).async {
             do {
                 let encoder = JSONEncoder()
+                encoder.outputFormatting = .prettyPrinted // Gör JSON-filen mer läsbar vid felsökning
                 let data = try encoder.encode(listToSave)
                 try data.write(to: url, options: [.atomic])
                 print("FoodData [Watch]: Successfully saved cache.")
@@ -91,35 +87,33 @@ class FoodData: ObservableObject {
         }
     }
 
-
-    // loadFoodListFromCloudKit (sätter lastSyncTime vid lyckad HÄMTNING)
     func loadFoodListFromCloudKit() {
         DispatchQueue.main.async {
-            // Undvik att sätta isLoading om vi redan laddar
              if !self.isLoading {
-                 print("FoodData [Watch]: Setting isLoading = true.")
+                 print("FoodData [Watch]: Setting isLoading = true for CloudKit fetch.")
                  self.isLoading = true
              }
-            // Nollställ fel inför ny hämtning
             self.lastSyncError = nil
         }
         print("FoodData [Watch]: loadFoodListFromCloudKit called.")
 
+        // Använder den uppdaterade fetchFoodItems från CloudKitFoodDataStore
         CloudKitFoodDataStore.shared.fetchFoodItems { [weak self] (items, error) in
             guard let self = self else { return }
             print("FoodData [Watch]: CloudKit fetch completion handler started.")
 
             DispatchQueue.main.async {
-                print("FoodData [Watch]: Setting isLoading = false.")
-                self.isLoading = false // Sluta ladda (alltid)
+                print("FoodData [Watch]: Setting isLoading = false post CloudKit fetch.")
+                self.isLoading = false
 
                 if let error = error {
-                    print("FoodData [Watch]: Error fetching from CloudKit: \(error)")
-                    self.lastSyncError = error // Spara felet
+                    print("FoodData [Watch]: Error fetching from CloudKit: \(error.localizedDescription)")
+                    self.lastSyncError = error
+                    // Behåll den gamla listan vid fel, eller töm? Beror på önskat beteende.
+                    // För nu behåller vi den gamla listan.
                     return
                 }
 
-                // *** Sätter tiden vid lyckad HÄMTNING ***
                  self.lastSyncError = nil
                  self.lastSyncTime = Date()
 
@@ -127,105 +121,149 @@ class FoodData: ObservableObject {
                 print("FoodData [Watch]: CloudKit fetch successful. Received \(receivedItems.count) items.")
                 let sortedReceivedItems = receivedItems.sorted { $0.name.lowercased() < $1.name.lowercased() }
 
+                // Jämför om listorna faktiskt skiljer sig åt för att undvika onödiga UI-uppdateringar och cachning.
                 if self.foodList != sortedReceivedItems {
                     print("FoodData [Watch]: CloudKit data differs from local. Updating UI and saving cache.")
                     self.foodList = sortedReceivedItems
-                    self.saveFoodListLocally()
+                    self.saveFoodListLocally() // Spara den nya, kompletta listan
                 } else {
-                   print("FoodData [Watch]: CloudKit data is the same as local. No update needed.")
+                   print("FoodData [Watch]: CloudKit data is the same as local. No UI update or cache save needed.")
                 }
             }
         }
     }
 
-    // --- CRUD Operations (Med uppdaterad lastSyncTime) ---
-
     func addFoodItem(_ foodItem: FoodItem) {
-         // Optimistisk UI-uppdatering (oförändrad)
          DispatchQueue.main.async {
              if !self.foodList.contains(where: { $0.id == foodItem.id }) {
                  self.foodList.append(foodItem)
                  self.sortFoodList()
                  self.saveFoodListLocally()
-                 print("FoodData [Watch]: Added item locally & saved cache. ID: \(foodItem.id)")
-             } else { return }
+                 print("FoodData [Watch]: Optimistically added item \(foodItem.id) locally & saved cache.")
+             } else {
+                 print("FoodData [Watch]: Add operation aborted. Item with ID \(foodItem.id) already exists locally.")
+                 return
+             }
          }
 
-         // Skicka till CloudKit
          CloudKitFoodDataStore.shared.saveFoodItem(foodItem) { [weak self] error in
-             // *** ÄNDRING: Uppdatera lastSyncTime vid lyckad save ***
-             DispatchQueue.main.async { // Säkerställ main thread
+             DispatchQueue.main.async {
                  guard let self = self else { return }
                  if let error = error {
-                     print("FoodData Error [Watch]: Failed to save added item \(foodItem.id) to CloudKit: \(error)")
-                     self.lastSyncError = error // Spara felet
+                     print("FoodData Error [Watch]: Failed to save added item \(foodItem.id) to CloudKit: \(error.localizedDescription)")
+                     self.lastSyncError = error
+                     // Överväg att ta bort det optimistiskt tillagda objektet om CloudKit-sparandet misslyckades,
+                     // och återställa saveFoodListLocally().
+                     // self.foodList.removeAll { $0.id == foodItem.id }
+                     // self.sortFoodList()
+                     // self.saveFoodListLocally()
                  } else {
                      print("FoodData [Watch]: Successfully saved added item \(foodItem.id) to CloudKit.")
-                     self.lastSyncTime = Date() // Sätt tiden
-                     self.lastSyncError = nil // Nollställ felet
+                     self.lastSyncTime = Date()
+                     self.lastSyncError = nil
+                     
+                     // *** FÖRFINAT SÄKERHETSNÄT för addFoodItem ***
+                     let itemID = foodItem.id
+                     if let index = self.foodList.firstIndex(where: { $0.id == itemID }) {
+                         // Objektet finns, säkerställ att det är den version vi menade att spara.
+                         if self.foodList[index] != foodItem {
+                             print("FoodData [Watch]: Updating existing local item \(itemID) to match successfully saved version post-CloudKit add.")
+                             self.foodList[index] = foodItem
+                             self.sortFoodList()
+                             self.saveFoodListLocally()
+                         } else {
+                             // print("FoodData [Watch]: Local item \(itemID) already matches successfully saved version after add.")
+                         }
+                     } else {
+                         // Objektet finns inte lokalt, lägg tillbaka det.
+                         // Detta täcker fallet där det optimistiskt lades till och sedan togs bort av en snabb, ofullständig synk.
+                         print("FoodData [Watch]: Re-adding item \(itemID) to local list post-CloudKit add, as it was missing.")
+                         self.foodList.append(foodItem)
+                         self.sortFoodList()
+                         self.saveFoodListLocally()
+                     }
+                     // *** SLUT FÖRFINAT SÄKERHETSNÄT ***
                  }
              }
-             // *** SLUT ÄNDRING ***
          }
      }
 
      func updateFoodItem(_ foodItem: FoodItem) {
-          // Optimistisk UI-uppdatering (oförändrad)
           DispatchQueue.main.async {
               if let index = self.foodList.firstIndex(where: { $0.id == foodItem.id }) {
                   self.foodList[index] = foodItem
                   self.sortFoodList()
                   self.saveFoodListLocally()
-                  print("FoodData [Watch]: Updated item locally & saved cache. ID: \(foodItem.id)")
-              } else { return }
+                  print("FoodData [Watch]: Optimistically updated item \(foodItem.id) locally & saved cache.")
+              } else {
+                  print("FoodData [Watch]: Item to update \(foodItem.id) not found locally for optimistic update. Will attempt CloudKit save.")
+              }
           }
 
-          // Skicka till CloudKit
           CloudKitFoodDataStore.shared.saveFoodItem(foodItem) { [weak self] error in
-              // *** ÄNDRING: Uppdatera lastSyncTime vid lyckad save ***
-              DispatchQueue.main.async { // Säkerställ main thread
+              DispatchQueue.main.async {
                  guard let self = self else { return }
                  if let error = error {
-                     print("FoodData Error [Watch]: Failed to save updated item \(foodItem.id) to CloudKit: \(error)")
-                     self.lastSyncError = error // Spara felet
+                     print("FoodData Error [Watch]: Failed to save updated item \(foodItem.id) to CloudKit: \(error.localizedDescription)")
+                     self.lastSyncError = error
                  } else {
                      print("FoodData [Watch]: Successfully saved updated item \(foodItem.id) to CloudKit.")
-                     self.lastSyncTime = Date() // Sätt tiden
-                     self.lastSyncError = nil // Nollställ felet
+                     self.lastSyncTime = Date()
+                     self.lastSyncError = nil
+                     
+                     // *** FÖRFINAT SÄKERHETSNÄT för updateFoodItem ***
+                     let itemID = foodItem.id
+                     if let index = self.foodList.firstIndex(where: { $0.id == itemID }) {
+                         // Objektet finns, säkerställ att det är den version vi menade att spara.
+                         if self.foodList[index] != foodItem {
+                             print("FoodData [Watch]: Updating local item \(itemID) to match successfully saved version post-CloudKit update.")
+                             self.foodList[index] = foodItem
+                             self.sortFoodList()
+                             self.saveFoodListLocally()
+                         } else {
+                             // print("FoodData [Watch]: Local item \(itemID) already matches successfully saved version after update.")
+                         }
+                     } else {
+                         // Objektet finns inte lokalt (kanske raderat av en synk), men vi lyckades uppdatera det i CloudKit.
+                         // Lägg tillbaka det med den uppdaterade informationen.
+                         print("FoodData [Watch]: Re-adding updated item \(itemID) to local list post-CloudKit update, as it was missing.")
+                         self.foodList.append(foodItem)
+                         self.sortFoodList()
+                         self.saveFoodListLocally()
+                     }
+                     // *** SLUT FÖRFINAT SÄKERHETSNÄT ***
                  }
              }
-             // *** SLUT ÄNDRING ***
           }
       }
 
       func deleteFoodItem(withId id: UUID) {
-           // Optimistisk UI-uppdatering (oförändrad)
            DispatchQueue.main.async {
                let originalCount = self.foodList.count
                self.foodList.removeAll { $0.id == id }
                if self.foodList.count < originalCount {
                    self.saveFoodListLocally()
-                   print("FoodData [Watch]: Deleted item locally & saved cache. ID: \(id)")
-               } else { return }
+                   print("FoodData [Watch]: Deleted item \(id) locally & saved cache.")
+               } else {
+                   print("FoodData [Watch]: Delete aborted for item \(id), not found locally.")
+                   return
+               }
            }
 
-           // Skicka till CloudKit
            CloudKitFoodDataStore.shared.deleteFoodItem(withId: id) { [weak self] error in
-               // *** ÄNDRING: Uppdatera lastSyncTime vid lyckad delete ***
-               DispatchQueue.main.async { // Säkerställ main thread
+               DispatchQueue.main.async {
                  guard let self = self else { return }
                  if let error = error {
-                     print("FoodData Error [Watch]: Failed to delete item \(id) from CloudKit: \(error)")
-                     self.lastSyncError = error // Spara felet
-                     // Återställ genom att ladda om vid fel?
+                     print("FoodData Error [Watch]: Failed to delete item \(id) from CloudKit: \(error.localizedDescription)")
+                     self.lastSyncError = error
+                     // Ladda om listan från CloudKit för att återställa till serverns tillstånd vid fel.
                      self.loadFoodListFromCloudKit()
                  } else {
                      print("FoodData [Watch]: Successfully deleted item \(id) from CloudKit.")
-                     self.lastSyncTime = Date() // Sätt tiden
-                     self.lastSyncError = nil // Nollställ felet
+                     self.lastSyncTime = Date()
+                     self.lastSyncError = nil
                  }
              }
-             // *** SLUT ÄNDRING ***
            }
       }
 
@@ -237,37 +275,29 @@ class FoodData: ObservableObject {
           }
           let recordIDsToDelete = itemsToDelete.map { CKRecord.ID(recordName: $0.id.uuidString) }
 
-          // Optimistisk UI-uppdatering (oförändrad)
            DispatchQueue.main.async {
                self.foodList.removeAll()
                self.saveFoodListLocally()
                print("FoodData [Watch]: Deleted all items locally & saved cache.")
            }
 
-           // Använd CloudKitDataStore för att radera
-           // (Förutsätter att deleteAllFoodItems i CloudKitStore tar emot IDs och completion)
           CloudKitFoodDataStore.shared.deleteAllFoodItems(recordIDsToDelete: recordIDsToDelete) { [weak self] error in
-                // *** ÄNDRING: Uppdatera lastSyncTime vid lyckad deleteAll ***
-                DispatchQueue.main.async { // Säkerställ main thread
+                DispatchQueue.main.async {
                     guard let self = self else { return }
                     if let error = error {
-                        print("FoodData Error [Watch]: Failed to delete all items from CloudKit: \(error)")
-                        self.lastSyncError = error // Spara felet
-                        // Ladda om vid fel
+                        print("FoodData Error [Watch]: Failed to delete all items from CloudKit: \(error.localizedDescription)")
+                        self.lastSyncError = error
                         self.loadFoodListFromCloudKit()
                     } else {
                         print("FoodData [Watch]: Successfully deleted all items from CloudKit via deleteAllFoodItems.")
-                        self.lastSyncTime = Date() // Sätt tiden
-                        self.lastSyncError = nil // Nollställ felet
+                        self.lastSyncTime = Date()
+                        self.lastSyncError = nil
                     }
                 }
-                // *** SLUT ÄNDRING ***
             }
       }
 
-    // sortFoodList (oförändrad)
     private func sortFoodList() {
-        // Kan köras på main thread eftersom den muterar @Published property
         DispatchQueue.main.async {
             self.foodList.sort { $0.name.lowercased() < $1.name.lowercased() }
         }
