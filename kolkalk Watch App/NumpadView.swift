@@ -187,15 +187,20 @@ struct NumpadView: View {
                     unit = "g"
                 }
             }
-            // Nollställningslogik (oförändrad)
-            let initialNumericValue = Double(valueString.replacingOccurrences(of: ",", with: "."))
-            if let val = initialNumericValue, val == 0.0 {
+            // --- ÄNDRING: Nollställningslogik och formatering av inputString ---
+            if valueString.isEmpty {
                 inputString = "0"
-            } else if initialNumericValue != nil && !valueString.isEmpty {
-                inputString = valueString
             } else {
-                inputString = "0"
+                // Konvertera till Double för att korrekt hantera "0,0", "0,00" etc. som "0"
+                let numericTest = Double(valueString.replacingOccurrences(of: ",", with: "."))
+                if let num = numericTest, num == 0.0 {
+                    inputString = "0"
+                } else {
+                    // Använd formatForInitialDisplay för att ta bort onödiga .00
+                    inputString = valueString.formatForInitialDisplay()
+                }
             }
+            // --- SLUT ÄNDRING ---
         }
     }
 
@@ -257,9 +262,11 @@ struct NumpadView: View {
                 onConfirmFoodItem?(0.0, unit)
             }
         } else {
-             let cleanedInput = finalInput.last == "," ? String(finalInput.dropLast()) : finalInput
-             if cleanedInput.isEmpty || cleanedInput == "-" { valueString = "0" }
-             else { valueString = cleanedInput }
+             var cleanedInput = finalInput.last == "," ? String(finalInput.dropLast()) : finalInput
+             if cleanedInput.isEmpty || cleanedInput == "-" { cleanedInput = "0" }
+             // --- ÄNDRING: Använd formatForInitialDisplay även här för slutvärdet ---
+             valueString = cleanedInput.formatForInitialDisplay()
+             // --- SLUT ÄNDRING ---
         }
 
         // Stäng sheeten FÖRST

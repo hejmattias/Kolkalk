@@ -43,11 +43,21 @@ struct CalculatorView: View {
         var effectiveInitialCalculation = initialCalculation.isEmpty ? "0" : initialCalculation
         var startCalculationFlag = false // Temporär flagga för state-initiering
 
+
+        // --- ÄNDRING: Formatera effectiveInitialCalculation ---
+        // Formatera endast om det är ett rent numeriskt värde, inte en expression
+        let potentialNumber = Double(effectiveInitialCalculation.replacingOccurrences(of: ",", with: "."))
+        if potentialNumber != nil {
+            effectiveInitialCalculation = effectiveInitialCalculation.formatForInitialDisplay()
+        }
+        // --- SLUT ÄNDRING ---
+
+
         // Nollställning och flagga för calculationStarted gäller bara numericInput
         if mode == .numericInput {
-            let initialValue = Double(effectiveInitialCalculation.replacingOccurrences(of: ",", with: "."))
-            if initialValue == 0.0 {
-                effectiveInitialCalculation = "0"
+            let initialValueAfterFormat = Double(effectiveInitialCalculation.replacingOccurrences(of: ",", with: "."))
+            if initialValueAfterFormat == 0.0 { // Jämför efter eventuell formatering
+                // effectiveInitialCalculation är redan "0" om det var "0,00" etc.
             }
             // Sätt flaggan om initialvärdet inte är "0" i numericInput-läge
             if effectiveInitialCalculation != "0" {
@@ -200,7 +210,10 @@ struct CalculatorView: View {
             if valueToSend == nil {
                 valueToSend = calculateResultFromString(calculation, finalAttempt: true)
             }
-            outputString = formatResult(valueToSend ?? 0.0)
+            // --- ÄNDRING: Använd formatForInitialDisplay på outputString ---
+            let resultFormattedString = formatResult(valueToSend ?? 0.0) // Detta är redan bra för formatResult
+            outputString = resultFormattedString.formatForInitialDisplay() // Applicera vår nya formatering
+            // --- SLUT ÄNDRING ---
             dismiss()
         }
     }
@@ -210,9 +223,10 @@ struct CalculatorView: View {
 
     func appendToCalculation(_ value: String) {
         // Sätt calculationStarted *endast* om vi är i numericInput-läge
-        if mode == .numericInput && !calculationStarted && calculation == "0" {
+        if mode == .numericInput && !calculationStarted && calculation == "0" && value != "," {
             calculationStarted = true
         }
+
 
         let lastChar = calculation.last
 
@@ -220,6 +234,16 @@ struct CalculatorView: View {
             calculation = value
             return
         }
+        // Om calculation är "0" och användaren trycker ",", ska det bli "0,"
+        if calculation == "0" && value == "," {
+            calculation = "0,"
+            // calculationStarted bör sättas här också för numericInput
+            if mode == .numericInput && !calculationStarted {
+                calculationStarted = true
+            }
+            return
+        }
+
 
         // (Resten av logiken är oförändrad)
         if operators.contains(value) && (calculation.isEmpty || (lastChar != nil && operators.contains(String(lastChar!)))) {
@@ -239,7 +263,7 @@ struct CalculatorView: View {
                  if char == "," { segmentHasComma = true; break }
              }
              if segmentHasComma { return }
-             if let last = lastChar, operators.contains(String(last)) {
+             if calculation.isEmpty || (lastChar != nil && operators.contains(String(lastChar!))) {
                  calculation += "0"
              }
         }
@@ -249,7 +273,8 @@ struct CalculatorView: View {
 
     func appendComma() {
         // Sätt calculationStarted *endast* om vi är i numericInput-läge
-        if mode == .numericInput && !calculationStarted {
+        // och calculation är "0", för att förhindra att det rensas om man börjar med ","
+        if mode == .numericInput && !calculationStarted { // Tog bort && calculation == "0"
             calculationStarted = true
         }
         appendToCalculation(",")
@@ -265,7 +290,7 @@ struct CalculatorView: View {
             calculation.removeLast()
             if calculation.isEmpty {
                  calculation = "0"
-                 // calculationStarted återställs i onChange om mode är numericInput
+                 // calculationStarted återställs i onChange om mode är numericInput och newValue blir "0"
             }
         }
     }
@@ -286,7 +311,12 @@ struct CalculatorView: View {
             let value = try expression.expressionValue(with: nil, context: nil) as? NSNumber
             return value?.doubleValue
         } catch {
-             print("Calculator Error: NSExpression evaluation failed for '\(expressionString)': \(error)")
+             // print("Calculator Error: NSExpression evaluation failed for '\(expressionString)': \(error)")
+             // Försök tolka som ett enkelt tal om expressionen misslyckas (t.ex. "12,5" utan operatorer)
+            if let simpleDouble = Double(expressionString) {
+                return simpleDouble
+            }
+             print("Calculator Error: NSExpression evaluation failed for '\(expressionString)' and not a simple double: \(error)")
              return nil
         }
     }
@@ -297,14 +327,18 @@ struct CalculatorView: View {
         if shouldEmptyPlate { plate.emptyPlate() }
         let nameForPlate = calculation.trimmingCharacters(in: .whitespacesAndNewlines.union(CharacterSet(charactersIn: "+-*/.,×÷")))
         if var item = itemToEdit {
-            item.name = nameForPlate.isEmpty ? String(format: "%.1f", value) : nameForPlate
+            // --- ÄNDRING: Använd formatForInitialDisplay för namnet om det är ett resultat ---
+            item.name = value.isFinite ? String(value).formatForInitialDisplay() : (nameForPlate.isEmpty ? "Beräkning" : nameForPlate)
+            // --- SLUT ÄNDRING ---
             item.grams = value
             item.carbsPer100g = 100
             item.isCalculatorItem = true
             plate.updateItem(item)
         } else {
             let foodItem = FoodItem(
-                name: nameForPlate.isEmpty ? String(format: "%.1f", value) : nameForPlate,
+                // --- ÄNDRING: Använd formatForInitialDisplay för namnet om det är ett resultat ---
+                name: value.isFinite ? String(value).formatForInitialDisplay() : (nameForPlate.isEmpty ? "Beräkning" : nameForPlate),
+                // --- SLUT ÄNDRING ---
                 carbsPer100g: 100,
                 grams: value,
                 inputUnit: "g",
@@ -321,9 +355,9 @@ struct CalculatorView: View {
              let formatter = NumberFormatter()
              formatter.numberStyle = .decimal
              formatter.minimumFractionDigits = 0
-             formatter.maximumFractionDigits = 4
+             formatter.maximumFractionDigits = 4 // Behåll precision för beräkningar
              formatter.decimalSeparator = ","
-             formatter.groupingSeparator = ""
+             formatter.groupingSeparator = "" // Inga tusentalsavgränsare
              return formatter.string(from: NSNumber(value: value)) ?? ""
          } else {
              return ""
