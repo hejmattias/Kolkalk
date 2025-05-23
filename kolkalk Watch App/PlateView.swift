@@ -139,9 +139,15 @@ struct PlateView: View {
     }
 
     private func itemDetailString(for item: FoodItem) -> String {
-        if item.isCalculatorItem { return item.name }
+        if item.isCalculatorItem { return item.name } //
 
-        let gramsString = "\(String(format: "%.1f", item.grams))g"
+        // ANPASSA FORMATERINGEN FÖR GRAM-STRÄNGEN
+        let numberFormatter = NumberFormatter()
+        numberFormatter.minimumFractionDigits = 0
+        numberFormatter.maximumFractionDigits = 2 // Behåll upp till 2 decimaler om de finns
+        let gramsString = (numberFormatter.string(from: NSNumber(value: item.grams)) ?? "\(item.grams)") + "g"
+
+
         guard let inputUnit = item.inputUnit else { return gramsString }
 
         let inputValue: Double
@@ -165,7 +171,9 @@ struct PlateView: View {
             return gramsString
         }
 
-        let formattedInputValue = String(format: "%.2f", inputValue)
+        // ANPASSA FORMATERINGEN FÖR INPUTVALUE
+        let formattedInputValue = numberFormatter.string(from: NSNumber(value: inputValue)) ?? "\(inputValue)"
+
 
         if unitString == "g" {
              return "\(formattedInputValue)\(unitString)"
@@ -185,9 +193,9 @@ struct PlateView: View {
         let totalCarbsToLog = itemsToLog.reduce(0) { $0 + $1.totalCarbs }
         let foodDetails = itemsToLog.map { item in
             if item.isCalculatorItem {
-                 return "\(item.name)=\(String(format: "%.1f", item.totalCarbs))gk"
+                 return "\(item.name)=\(String(format: "%.1f", item.totalCarbs))gk" //
             } else {
-                 return "\(item.name): \(item.formattedDetail())"
+                 return "\(item.name): \(item.formattedDetail())" //
             }
         }.joined(separator: "; ")
         let metadata = [ HKMetadataKeyFoodType: foodDetails ]
