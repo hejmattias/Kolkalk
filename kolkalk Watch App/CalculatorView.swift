@@ -14,12 +14,11 @@ struct CalculatorView: View {
 
     @State private var calculation: String
     @State private var result: Double?
-    // --- Gäller endast numericInput ---
     @State private var calculationStarted: Bool = false
 
     var itemToEdit: FoodItem?
     var shouldEmptyPlate: Bool = false
-    var mode: CalculatorMode // Viktig för att styra beteendet
+    var mode: CalculatorMode
     @Binding var outputString: String
     var inputTitle: String?
     @Environment(\.dismiss) var dismiss
@@ -28,7 +27,7 @@ struct CalculatorView: View {
 
     init(plate: Plate,
          navigationPath: Binding<NavigationPath>,
-         mode: CalculatorMode, // Läget bestämmer beteendet
+         mode: CalculatorMode,
          outputString: Binding<String> = .constant(""),
          initialCalculation: String = "",
          itemToEdit: FoodItem? = nil,
@@ -37,29 +36,31 @@ struct CalculatorView: View {
 
         self._plate = ObservedObject(initialValue: plate)
         self._navigationPath = navigationPath
-        self.mode = mode // Spara läget
+        self.mode = mode
         self._outputString = outputString
 
-        var effectiveInitialCalculation = initialCalculation.isEmpty ? "0" : initialCalculation
-        var startCalculationFlag = false // Temporär flagga för state-initiering
+        // Gamla beteendet: använd itemToEdit.name som kalkylsträng om det finns, annars initialCalculation eller "0"
+        var effectiveInitialCalculation: String
+        if let item = itemToEdit, item.isCalculatorItem {
+            effectiveInitialCalculation = item.name
+        } else if !initialCalculation.isEmpty {
+            effectiveInitialCalculation = initialCalculation
+        } else if let item = itemToEdit {
+            effectiveInitialCalculation = item.name
+        } else {
+            effectiveInitialCalculation = "0"
+        }
 
+        var startCalculationFlag = false
 
-        // --- ÄNDRING: Formatera effectiveInitialCalculation ---
-        // Formatera endast om det är ett rent numeriskt värde, inte en expression
         let potentialNumber = Double(effectiveInitialCalculation.replacingOccurrences(of: ",", with: "."))
         if potentialNumber != nil {
             effectiveInitialCalculation = effectiveInitialCalculation.formatForInitialDisplay()
         }
-        // --- SLUT ÄNDRING ---
 
-
-        // Nollställning och flagga för calculationStarted gäller bara numericInput
         if mode == .numericInput {
             let initialValueAfterFormat = Double(effectiveInitialCalculation.replacingOccurrences(of: ",", with: "."))
-            if initialValueAfterFormat == 0.0 { // Jämför efter eventuell formatering
-                // effectiveInitialCalculation är redan "0" om det var "0,00" etc.
-            }
-            // Sätt flaggan om initialvärdet inte är "0" i numericInput-läge
+            if initialValueAfterFormat == 0.0 { }
             if effectiveInitialCalculation != "0" {
                  startCalculationFlag = true
             }
@@ -71,13 +72,11 @@ struct CalculatorView: View {
         self.inputTitle = inputTitle
 
         _result = State(initialValue: calculateResultFromString(effectiveInitialCalculation))
-        // Initiera calculationStarted baserat på flaggan (gäller bara numericInput)
         _calculationStarted = State(initialValue: startCalculationFlag)
     }
 
     var body: some View {
-        GeometryReader { geometry -> AnyView in // Använd AnyView för att returnera från geometry
-            // Layoutberäkningar (oförändrade)
+        GeometryReader { geometry -> AnyView in
              let screenWidth = geometry.size.width
              let screenHeight = geometry.size.height
              let spacing: CGFloat = 1
@@ -92,10 +91,8 @@ struct CalculatorView: View {
              let inputFontSize = screenHeight * 0.1
              let buttonFontSize = buttonHeight * 0.4
 
-             // Returnera AnyView som innehåller VStack
              return AnyView (
                  VStack(spacing: 1) {
-                     // Inmatningsfält (oförändrat)
                      Text(calculation.isEmpty ? " " : calculation)
                          .font(.system(size: inputFontSize))
                          .frame(height: screenHeight * 0.1, alignment: .trailing)
@@ -104,31 +101,25 @@ struct CalculatorView: View {
                          .foregroundColor(.white)
                          .background(Color.black)
                          .cornerRadius(5)
-
-                     // Knappsats (oförändrad layout, anropar funktioner som sätter calculationStarted *om* mode är numericInput)
                      VStack(spacing: spacing) {
-                         // Rad 1
                          HStack(spacing: spacing) {
                              CalculatorButton(label: "7", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize) { appendToCalculation("7") }
                              CalculatorButton(label: "8", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize) { appendToCalculation("8") }
                              CalculatorButton(label: "9", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize) { appendToCalculation("9") }
                              CalculatorButtonWithLongPress(label: "+\n-", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: .orange) { appendToCalculation("+") } longPressAction: { appendToCalculation("-") }
                          }
-                         // Rad 2
                          HStack(spacing: spacing) {
                              CalculatorButton(label: "4", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize) { appendToCalculation("4") }
                              CalculatorButton(label: "5", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize) { appendToCalculation("5") }
                              CalculatorButton(label: "6", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize) { appendToCalculation("6") }
                              CalculatorButton(label: "×", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: .orange) { appendToCalculation("×") }
                          }
-                         // Rad 3
                          HStack(spacing: spacing) {
                              CalculatorButton(label: "1", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize) { appendToCalculation("1") }
                              CalculatorButton(label: "2", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize) { appendToCalculation("2") }
                              CalculatorButton(label: "3", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize) { appendToCalculation("3") }
                              CalculatorButton(label: "÷", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, backgroundColor: .orange) { appendToCalculation("÷") }
                          }
-                         // Rad 4
                          HStack(spacing: spacing) {
                              CalculatorButton(label: ",", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize) { appendComma() }
                              CalculatorButton(label: "0", width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize) { appendToCalculation("0") }
@@ -139,20 +130,18 @@ struct CalculatorView: View {
                          }
                     }
                  }
-                 .navigationTitle(navigationTitleText()) // Använder uppdaterad funktion
+                 .navigationTitle(navigationTitleText())
                  .navigationBarTitleDisplayMode(.inline)
                  .onChange(of: calculation) { oldValue, newValue in
                      result = calculateResultFromString(newValue)
-                     // Återställ 'calculationStarted' om input blir "0" igen, *endast* i numericInput-läge
                      if mode == .numericInput && newValue == "0" {
                          calculationStarted = false
                      }
                  }
-            ) // Slut på AnyView
-        } // Slut på GeometryReader
+            )
+        }
     }
 
-    // --- ANPASSAD FUNKTION FÖR TITEL START ---
     func navigationTitleText() -> String {
         let currentResult = result
         let resultString = formatResult(currentResult)
@@ -160,92 +149,72 @@ struct CalculatorView: View {
 
         switch mode {
         case .plateCalculation:
-            // Plate mode: Alltid grundtitel + resultat (om giltigt och inte 0)
             let baseTitle = shouldEmptyPlate ? "🗑️➕" : "➕"
             if !resultString.isEmpty, calculation != "0" {
-                return "\(baseTitle) \(resultPrefix)\(resultString)" // Ex: "+ = 123,4"
+                return "\(baseTitle) \(resultPrefix)\(resultString)"
             } else {
-                return baseTitle // Ex: "+"
+                return baseTitle
             }
 
         case .numericInput:
-            // Numeric Input mode: Titel ändras baserat på calculationStarted
             let baseTitle = inputTitle ?? "Ange värde"
-
-            // Om inget giltigt resultat ELLER calculation är "0", visa alltid grundtiteln
             guard !resultString.isEmpty, calculation != "0" else {
-                return baseTitle // Ex: "Ange värde"
+                return baseTitle
             }
-
-            // Om det finns ett giltigt resultat:
             if calculationStarted {
-                // Om inmatning påbörjad, visa bara resultatet
-                return resultPrefix + resultString // Ex: "= 123,4"
+                return resultPrefix + resultString
             } else {
-                // Om inmatning *inte* påbörjad (visar initialvärde), visa grundtitel + resultat
-                return "\(baseTitle) \(resultPrefix)\(resultString)" // Ex: "Ange värde = 123,4"
+                return "\(baseTitle) \(resultPrefix)\(resultString)"
             }
         }
     }
-    // --- ANPASSAD FUNKTION FÖR TITEL SLUT ---
 
-
-    // --- OK-KNAPP FUNKTION (Oförändrad) ---
     func handleOkButton() {
-        let finalResult = result
-        switch mode {
-        case .plateCalculation:
-            if let value = finalResult {
+    let finalResult = result
+    switch mode {
+    case .plateCalculation:
+        if let value = finalResult {
+            addResultToPlate(value: value)
+        } else {
+            let calculatedOnOK = calculateResultFromString(calculation, finalAttempt: true)
+            if let value = calculatedOnOK {
                 addResultToPlate(value: value)
             } else {
-                 let calculatedOnOK = calculateResultFromString(calculation, finalAttempt: true)
-                 if let value = calculatedOnOK {
-                     addResultToPlate(value: value)
-                 } else {
-                     print("Plate Calculation OK Error: Could not evaluate final calculation: \(calculation)")
-                 }
+                print("Plate Calculation OK Error: Could not evaluate final calculation: \(calculation)")
             }
-        case .numericInput:
-            var valueToSend: Double? = finalResult
-            if valueToSend == nil {
-                valueToSend = calculateResultFromString(calculation, finalAttempt: true)
-            }
-            // --- ÄNDRING: Använd formatForInitialDisplay på outputString ---
-            let resultFormattedString = formatResult(valueToSend ?? 0.0) // Detta är redan bra för formatResult
-            outputString = resultFormattedString.formatForInitialDisplay() // Applicera vår nya formatering
-            // --- SLUT ÄNDRING ---
-            dismiss()
         }
+        // Lägg till följande rad:
+        dismiss() // <-- detta stänger CalculatorView om den är en sheet
+    case .numericInput:
+        var valueToSend: Double? = finalResult
+        if valueToSend == nil {
+            valueToSend = calculateResultFromString(calculation, finalAttempt: true)
+        }
+        let resultFormattedString = formatResult(valueToSend ?? 0.0)
+        outputString = resultFormattedString.formatForInitialDisplay()
+        dismiss()
     }
-
+}
 
     // MARK: - Calculator Functions
 
     func appendToCalculation(_ value: String) {
-        // Sätt calculationStarted *endast* om vi är i numericInput-läge
         if mode == .numericInput && !calculationStarted && calculation == "0" && value != "," {
             calculationStarted = true
         }
-
-
         let lastChar = calculation.last
 
         if calculation == "0" && !operators.contains(value) && value != "," {
             calculation = value
             return
         }
-        // Om calculation är "0" och användaren trycker ",", ska det bli "0,"
         if calculation == "0" && value == "," {
             calculation = "0,"
-            // calculationStarted bör sättas här också för numericInput
             if mode == .numericInput && !calculationStarted {
                 calculationStarted = true
             }
             return
         }
-
-
-        // (Resten av logiken är oförändrad)
         if operators.contains(value) && (calculation.isEmpty || (lastChar != nil && operators.contains(String(lastChar!)))) {
             if !calculation.isEmpty && lastChar != nil && operators.contains(String(lastChar!)) {
                  calculation.removeLast()
@@ -270,32 +239,25 @@ struct CalculatorView: View {
         calculation += value
     }
 
-
     func appendComma() {
-        // Sätt calculationStarted *endast* om vi är i numericInput-läge
-        // och calculation är "0", för att förhindra att det rensas om man börjar med ","
-        if mode == .numericInput && !calculationStarted { // Tog bort && calculation == "0"
+        if mode == .numericInput && !calculationStarted {
             calculationStarted = true
         }
         appendToCalculation(",")
     }
 
     func backspace() {
-        // Sätt calculationStarted *endast* om vi är i numericInput-läge
          if mode == .numericInput && !calculationStarted && calculation != "0" {
              calculationStarted = true
          }
-
         if !calculation.isEmpty {
             calculation.removeLast()
             if calculation.isEmpty {
                  calculation = "0"
-                 // calculationStarted återställs i onChange om mode är numericInput och newValue blir "0"
             }
         }
     }
 
-    // Beräkningsfunktion (Oförändrad)
     func calculateResultFromString(_ calcString: String, finalAttempt: Bool = false) -> Double? {
         guard !calcString.isEmpty else { return nil }
         var expressionString = calcString.replacingOccurrences(of: "×", with: "*").replacingOccurrences(of: "÷", with: "/").replacingOccurrences(of: ",", with: ".")
@@ -311,8 +273,6 @@ struct CalculatorView: View {
             let value = try expression.expressionValue(with: nil, context: nil) as? NSNumber
             return value?.doubleValue
         } catch {
-             // print("Calculator Error: NSExpression evaluation failed for '\(expressionString)': \(error)")
-             // Försök tolka som ett enkelt tal om expressionen misslyckas (t.ex. "12,5" utan operatorer)
             if let simpleDouble = Double(expressionString) {
                 return simpleDouble
             }
@@ -321,24 +281,21 @@ struct CalculatorView: View {
         }
     }
 
-    // addResultToPlate (Oförändrad)
+    // Återgå till att lagra kalkylsträngen i .name-fältet
     func addResultToPlate(value: Double) {
         guard mode == .plateCalculation else { return }
         if shouldEmptyPlate { plate.emptyPlate() }
-        let nameForPlate = calculation.trimmingCharacters(in: .whitespacesAndNewlines.union(CharacterSet(charactersIn: "+-*/.,×÷")))
+        let calculationTrimmed = calculation.trimmingCharacters(in: .whitespacesAndNewlines)
         if var item = itemToEdit {
-            // --- ÄNDRING: Använd formatForInitialDisplay för namnet om det är ett resultat ---
-            item.name = value.isFinite ? String(value).formatForInitialDisplay() : (nameForPlate.isEmpty ? "Beräkning" : nameForPlate)
-            // --- SLUT ÄNDRING ---
+            item.name = calculationTrimmed // <-- Spara kalkylsträng som namn!
             item.grams = value
             item.carbsPer100g = 100
             item.isCalculatorItem = true
+            item.inputUnit = "g"
             plate.updateItem(item)
         } else {
             let foodItem = FoodItem(
-                // --- ÄNDRING: Använd formatForInitialDisplay för namnet om det är ett resultat ---
-                name: value.isFinite ? String(value).formatForInitialDisplay() : (nameForPlate.isEmpty ? "Beräkning" : nameForPlate),
-                // --- SLUT ÄNDRING ---
+                name: calculationTrimmed, // <-- Spara kalkylsträng som namn!
                 carbsPer100g: 100,
                 grams: value,
                 inputUnit: "g",
@@ -349,15 +306,14 @@ struct CalculatorView: View {
         navigationPath = NavigationPath([Route.plateView])
     }
 
-    // formatResult (Oförändrad)
     func formatResult(_ value: Double?) -> String {
          if let value = value {
              let formatter = NumberFormatter()
              formatter.numberStyle = .decimal
              formatter.minimumFractionDigits = 0
-             formatter.maximumFractionDigits = 4 // Behåll precision för beräkningar
+             formatter.maximumFractionDigits = 4
              formatter.decimalSeparator = ","
-             formatter.groupingSeparator = "" // Inga tusentalsavgränsare
+             formatter.groupingSeparator = ""
              return formatter.string(from: NSNumber(value: value)) ?? ""
          } else {
              return ""
@@ -365,7 +321,6 @@ struct CalculatorView: View {
      }
 }
 
-// CalculatorButtonWithLongPress (Oförändrad)
 struct CalculatorButtonWithLongPress: View {
     let label: String; let width: CGFloat; let height: CGFloat; let fontSize: CGFloat; var backgroundColor: Color = Color.gray; let shortPressAction: () -> Void; let longPressAction: () -> Void
     @State private var isLongPressActive = false
@@ -376,7 +331,6 @@ struct CalculatorButtonWithLongPress: View {
     }
 }
 
-// CalculatorButton (Oförändrad)
 struct CalculatorButton: View {
     let label: String; let width: CGFloat; let height: CGFloat; let fontSize: CGFloat; var backgroundColor: Color = Color(white: 0.3); let action: () -> Void
     var body: some View {
