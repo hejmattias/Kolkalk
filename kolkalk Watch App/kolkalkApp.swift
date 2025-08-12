@@ -43,16 +43,15 @@ struct MyApp: App {
 
      // *** NYTT: Funktion för att begära notisbehörighet för klockan ***
      func requestWatchNotificationAuthorization() {
-          UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-               if granted {
-                    print("WatchApp: Notification authorization granted.")
-                    // Registrera för notiser på huvudtråden
-                    DispatchQueue.main.async {
-                         WKExtension.shared().registerForRemoteNotifications()
-                    }
-               } else if let error = error {
-                    print("WatchApp: Notification authorization failed: \(error.localizedDescription)")
-               }
-          }
-     }
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+            if granted {
+                print("WatchApp: Notification authorization granted.")
+                DispatchQueue.main.async {
+                    WKExtension.shared().registerForRemoteNotifications()
+                }
+            } else if let error = error {
+                print("WatchApp: Notification authorization failed: \(error.localizedDescription)")
+            }
+        }
+    }
 }
