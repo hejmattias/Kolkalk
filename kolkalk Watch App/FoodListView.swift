@@ -1,5 +1,3 @@
-// Kolkalk.zip/kolkalk Watch App/FoodListView.swift
-
 import SwiftUI
 
 struct FoodListView: View {
@@ -40,53 +38,56 @@ struct FoodListView: View {
         ScrollViewReader { scrollProxy in
             ZStack {
                 List {
-                    // Sökfält och Kalkylatorknapp (högst upp)
+                    // Sökfält (göms med scroll)
                     TextField("Sök", text: $searchText)
                         .id("searchField")
 
+                    // --- Här har vi tagit bort "Color.clear"-raden! ---
+
+                    // Kalkylator-knapp i stil med livsmedelsraderna
                     Button(action: {
                         navigationPath.append(Route.calculator(shouldEmptyPlate: isEmptyAndAdd))
                     }) {
                         HStack {
+                            Text("Kalkylator")
+                                .foregroundColor(.white)
                             Spacer()
-                            Label("Kalkylator", systemImage: "plus.forwardslash.minus")
-                                .foregroundColor(.blue)
-                            Spacer()
+                            Image(systemName: "plus.forwardslash.minus")
+                                .foregroundColor(.white)
                         }
+                        .padding(.vertical, 4)
+                        .contentShape(Rectangle())
                     }
                     .id("calculatorButton")
 
-                    // Lista med livsmedel
+                    // Livsmedel-listan
                     if !filteredFoodList.isEmpty {
-                        Section {
-                            ForEach(filteredFoodList.indices, id: \.self) { index in
-                                let food = filteredFoodList[index]
-                                HStack {
-                                    Text(food.name)
-                                    Spacer()
-                                    Text("\(food.carbsPer100g ?? 0, specifier: "%.1f") gk/100g")
-                                        .font(.caption)
-                                        .foregroundColor(.gray)
-                                    if food.isFavorite {
-                                        Image(systemName: "heart.fill")
-                                            .foregroundColor(.pink)
-                                    }
+                        ForEach(filteredFoodList.indices, id: \.self) { index in
+                            let food = filteredFoodList[index]
+                            HStack {
+                                Text(food.name)
+                                    .foregroundColor(.white)
+                                Spacer()
+                                Text("\(food.carbsPer100g ?? 0, specifier: "%.1f") gk/100g")
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                                if food.isFavorite {
+                                    Image(systemName: "heart.fill")
+                                        .foregroundColor(.pink)
                                 }
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    navigationPath.append(Route.foodDetailView(food, shouldEmptyPlate: isEmptyAndAdd))
-                                }
-                                .swipeActions(edge: .trailing) {
-                                    Button(role: .destructive) { deleteFood(food) } label: { Label("Ta bort", systemImage: "trash") }
-                                }
-                                .swipeActions(edge: .leading) {
-                                    Button { navigationPath.append(Route.editFoodItem(food)) } label: { Label("Redigera", systemImage: "pencil") }
-                                        .tint(.blue)
-                                }
-                                .id(index == 0 ? "firstFoodItem" : nil)
                             }
-                        } header: {
-                            Text("Livsmedel").id("foodListHeader")
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                navigationPath.append(Route.foodDetailView(food, shouldEmptyPlate: isEmptyAndAdd))
+                            }
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) { deleteFood(food) } label: { Label("Ta bort", systemImage: "trash") }
+                            }
+                            .swipeActions(edge: .leading) {
+                                Button { navigationPath.append(Route.editFoodItem(food)) } label: { Label("Redigera", systemImage: "pencil") }
+                                    .tint(.blue)
+                            }
+                            .id(index == 0 ? "firstFoodItem" : nil)
                         }
                     } else {
                         Text(searchText.isEmpty ? "Listan är tom. Lägg till via '+'." : "Inga träffar på \"\(searchText)\".")
@@ -108,34 +109,32 @@ struct FoodListView: View {
 
                     // Radera alla livsmedel-knapp (om listan inte är tom)
                     if !foodData.foodList.isEmpty {
-                         Button(action: { showDeleteConfirmation = true }) {
-                             HStack {
-                                 Spacer()
-                                 Text("Radera alla livsmedel")
-                                     .foregroundColor(.red)
-                                 Spacer()
-                             }
-                         }
-                         .confirmationDialog(
-                             "Radera alla livsmedel?",
-                             isPresented: $showDeleteConfirmation,
-                             titleVisibility: .visible
-                         ) {
-                             Button("Radera alla", role: .destructive) { deleteAllFoodItems() }
-                             Button("Avbryt", role: .cancel) {}
-                         } message: {
-                             Text("Är du säker? Detta tar bort alla livsmedel från listan på alla dina enheter och kan inte ångras.")
-                         }
+                        Button(action: { showDeleteConfirmation = true }) {
+                            HStack {
+                                Spacer()
+                                Text("Radera alla livsmedel")
+                                    .foregroundColor(.red)
+                                Spacer()
+                            }
+                        }
+                        .confirmationDialog(
+                            "Radera alla livsmedel?",
+                            isPresented: $showDeleteConfirmation,
+                            titleVisibility: .visible
+                        ) {
+                            Button("Radera alla", role: .destructive) { deleteAllFoodItems() }
+                            Button("Avbryt", role: .cancel) {}
+                        } message: {
+                            Text("Är du säker? Detta tar bort alla livsmedel från listan på alla dina enheter och kan inte ångras.")
+                        }
                     }
 
-                    // *** NY PLATS FÖR FAVORIT-TOGGLE ***
                     Toggle(isOn: favoritesBinding) {
                         Text("Visa endast favoriter")
                     }
                     .id("favoritesToggle")
-                    // *** SLUT NY PLATS ***
 
-                    // Statussektion (kvar längst ner)
+                    // Statussektion (längst ner)
                     Section {
                         HStack {
                             if foodData.isLoading {
@@ -158,23 +157,16 @@ struct FoodListView: View {
                         }
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    } header: {
-                        // Ingen text i header
                     }
                     .listRowBackground(Color.clear)
-                    // *** SLUT STATUSSEKTION ***
-
-                } // End List
+                }
                 .navigationTitle(isEmptyAndAdd ? "-+ Livsmedel" : "Livsmedel")
                 .onAppear {
+                    // Scrolla till "calculatorButton" för att säkert dölja sökrutan helt
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        if !filteredFoodList.isEmpty {
-                            withAnimation {
-                                scrollProxy.scrollTo("firstFoodItem", anchor: .top)
-                                print("WatchOS Scrolled to firstFoodItem")
-                            }
-                        } else {
-                            print("WatchOS Food list is empty, cannot scroll.")
+                        withAnimation {
+                            scrollProxy.scrollTo("calculatorButton", anchor: .top)
+                            print("WatchOS Scrolled to calculatorButton")
                         }
                     }
                 }
@@ -185,19 +177,17 @@ struct FoodListView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Color.black.opacity(0.5))
                 }
-
-            } // End ZStack
-        } // End ScrollViewReader
+            }
+        }
     }
 
-    // Funktioner (deleteFood, deleteAllFoodItems) - Oförändrade
     private func deleteFood(_ food: FoodItem) {
         foodData.deleteFoodItem(withId: food.id)
     }
 
     private func deleteAllFoodItems() {
         foodData.deleteAllFoodItems()
-        searchText = "" // Rensa sökning
+        searchText = ""
         showDeleteConfirmation = false
     }
 }
