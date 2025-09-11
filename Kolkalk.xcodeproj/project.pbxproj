@@ -37,7 +37,6 @@
 		B97FFDFD2D88650500DD4DB6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B97FFDE12D88650500DD4DB6 /* Preview Assets.xcassets */; };
 		B97FFDFE2D88650500DD4DB6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B97FFDE82D88650500DD4DB6 /* Assets.xcassets */; };
 		B97FFDFF2D88650500DD4DB6 /* code_copier_encoding_fix.py in Resources */ = {isa = PBXBuildFile; fileRef = B97FFDE92D88650500DD4DB6 /* code_copier_encoding_fix.py */; };
-		B97FFE012D88650500DD4DB6 /* Kolkalk.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B97FFDEF2D88650500DD4DB6 /* Kolkalk.entitlements */; };
 		B97FFE022D88650500DD4DB6 /* FoodItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE42D88650500DD4DB6 /* FoodItem.swift */; };
 		B97FFE032D88650500DD4DB6 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE52D88650500DD4DB6 /* HealthKitManager.swift */; };
 		B97FFE042D88650500DD4DB6 /* Container.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE32D88650500DD4DB6 /* Container.swift */; };
@@ -78,7 +77,6 @@
 		B97FFE5D2D88650500DD4DB6 /* kolkalk_Watch_AppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE5A2D88650500DD4DB6 /* kolkalk_Watch_AppUITestsLaunchTests.swift */; };
 		B97FFE602D88650500DD4DB6 /* KolkalkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE5E2D88650500DD4DB6 /* KolkalkTests.swift */; };
 		B98B3D8E2CAC176700EE7D92 /* kolkalk Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B98B3D6B2CAC176600EE7D92 /* kolkalk Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		B9B134612D9D1C7D00C88E0E /* komplikationExtension.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B97C74BD2CB7F2DB0073AC17 /* komplikationExtension.entitlements */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -673,7 +671,6 @@
 			files = (
 				B97FFE0F2D88650500DD4DB6 /*  komplikation.entitlements in Resources */,
 				B97FFE102D88650500DD4DB6 /* Assets.xcassets in Resources */,
-				B9B134612D9D1C7D00C88E0E /* komplikationExtension.entitlements in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -684,7 +681,6 @@
 				B97FFDFD2D88650500DD4DB6 /* Preview Assets.xcassets in Resources */,
 				B97FFDFE2D88650500DD4DB6 /* Assets.xcassets in Resources */,
 				B97FFDFF2D88650500DD4DB6 /* code_copier_encoding_fix.py in Resources */,
-				B97FFE012D88650500DD4DB6 /* Kolkalk.entitlements in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -876,7 +872,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = komplikationExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = komplikation/komplikation.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ZD2P3P8L7B;
@@ -907,7 +903,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = komplikationExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = komplikation/komplikation.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ZD2P3P8L7B;
