@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B90AE4572E7433ED00905097 /* komplikationExtension.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B97C74BD2CB7F2DB0073AC17 /* komplikationExtension.entitlements */; };
 		B91B19252D9C5E55003337D4 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B19242D9C5E55003337D4 /* SettingsView.swift */; };
 		B91B192C2D9C68F8003337D4 /* CloudKitFoodDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B192B2D9C68F8003337D4 /* CloudKitFoodDataStore.swift */; };
 		B91B192D2D9C68F8003337D4 /* CloudKitFoodDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B192B2D9C68F8003337D4 /* CloudKitFoodDataStore.swift */; };
@@ -342,6 +343,7 @@
 				B97FFE0B2D88650500DD4DB6 /* Info.plist */,
 				B97FFE0C2D88650500DD4DB6 /* komplikation.entitlements */,
 				B97FFE0D2D88650500DD4DB6 /* komplikation.swift */,
+				B97C74BD2CB7F2DB0073AC17 /* komplikationExtension.entitlements */,
 			);
 			path = komplikation;
 			sourceTree = "<group>";
@@ -434,7 +436,6 @@
 				B97FFE0E2D88650500DD4DB6 /* komplikation */,
 				B97E03FD2CAC84D100450835 /* Frameworks */,
 				B98B3D3A2CAC170200EE7D92 /* Products */,
-				B97C74BD2CB7F2DB0073AC17 /* komplikationExtension.entitlements */,
 			);
 			sourceTree = "<group>";
 		};
@@ -665,6 +666,7 @@
 			files = (
 				B97FFE0F2D88650500DD4DB6 /*  komplikation.entitlements in Resources */,
 				B97FFE102D88650500DD4DB6 /* Assets.xcassets in Resources */,
+				B90AE4572E7433ED00905097 /* komplikationExtension.entitlements in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
