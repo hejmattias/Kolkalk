@@ -345,9 +345,9 @@
 		B97FFE322D88650500DD4DB6 /* kolkalk Watch App */ = {
 			isa = PBXGroup;
 			children = (
+				B97FFE282D88650500DD4DB6 /* kolkalk Watch App.entitlements */,
 				B94532F62D9F0C9000DAE564 /* CreateNewFoodItemView.swift */,
 				B91B19372D9C6B17003337D4 /* ExtensionDelegate.swift */,
-				B91B192A2D9C686C003337D4 /* kolkalk-Watch-App-Info.plist */,
 				B91B19242D9C5E55003337D4 /* SettingsView.swift */,
 				B97FFE152D88650500DD4DB6 /* Preview Content */,
 				B97FFE162D88650500DD4DB6 /* Assets.xcassets */,
@@ -362,7 +362,6 @@
 				B97FFE212D88650500DD4DB6 /* FoodListView.swift */,
 				B97FFE222D88650500DD4DB6 /* ImportInstructionsView.swift */,
 				B97FFE262D88650500DD4DB6 /* InsulinLoggingView.swift */,
-				B97FFE282D88650500DD4DB6 /* kolkalk Watch App.entitlements */,
 				B97FFE292D88650500DD4DB6 /* kolkalkApp.swift */,
 				B97FFE2A2D88650500DD4DB6 /* NumpadView.swift */,
 				B97FFE2B2D88650500DD4DB6 /* Plateklassen.swift */,
@@ -420,6 +419,7 @@
 				B97FFE0E2D88650500DD4DB6 /* komplikation */,
 				B97E03FD2CAC84D100450835 /* Frameworks */,
 				B98B3D3A2CAC170200EE7D92 /* Products */,
+				B91B192A2D9C686C003337D4 /* kolkalk-Watch-App-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
