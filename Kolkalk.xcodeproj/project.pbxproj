@@ -187,7 +187,7 @@
 		B97FFE202D88650500DD4DB6 /* FoodDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodDetailView.swift; sourceTree = "<group>"; };
 		B97FFE212D88650500DD4DB6 /* FoodListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodListView.swift; sourceTree = "<group>"; };
 		B97FFE222D88650500DD4DB6 /* ImportInstructionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportInstructionsView.swift; sourceTree = "<group>"; };
-		B97FFE232D88650500DD4DB6 /* info.plist */ = {isa = PBXFileReference; explicitFileType = text; path = info.plist; sourceTree = "<group>"; };
+		B97FFE232D88650500DD4DB6 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = text; path = Info.plist; sourceTree = "<group>"; };
 		B97FFE262D88650500DD4DB6 /* InsulinLoggingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsulinLoggingView.swift; sourceTree = "<group>"; };
 		B97FFE282D88650500DD4DB6 /* kolkalk Watch App.entitlements */ = {isa = PBXFileReference; explicitFileType = text; path = "kolkalk Watch App.entitlements"; sourceTree = "<group>"; };
 		B97FFE292D88650500DD4DB6 /* kolkalkApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = kolkalkApp.swift; sourceTree = "<group>"; };
@@ -362,7 +362,7 @@
 				B97FFE202D88650500DD4DB6 /* FoodDetailView.swift */,
 				B97FFE212D88650500DD4DB6 /* FoodListView.swift */,
 				B97FFE222D88650500DD4DB6 /* ImportInstructionsView.swift */,
-				B97FFE232D88650500DD4DB6 /* info.plist */,
+				B97FFE232D88650500DD4DB6 /* Info.plist */,
 				B97FFE262D88650500DD4DB6 /* InsulinLoggingView.swift */,
 				B97FFE282D88650500DD4DB6 /* kolkalk Watch App.entitlements */,
 				B97FFE292D88650500DD4DB6 /* kolkalkApp.swift */,
