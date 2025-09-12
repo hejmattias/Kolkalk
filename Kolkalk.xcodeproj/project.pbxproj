@@ -43,7 +43,6 @@
 		B97FFE052D88650500DD4DB6 /* FoodItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE42D88650500DD4DB6 /* FoodItem.swift */; };
 		B97FFE062D88650500DD4DB6 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE52D88650500DD4DB6 /* HealthKitManager.swift */; };
 		B97FFE072D88650500DD4DB6 /* Container.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE32D88650500DD4DB6 /* Container.swift */; };
-		B97FFE0F2D88650500DD4DB6 /*  komplikation.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B97FFE082D88650500DD4DB6 /*  komplikation.entitlements */; };
 		B97FFE102D88650500DD4DB6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B97FFE0A2D88650500DD4DB6 /* Assets.xcassets */; };
 		B97FFE122D88650500DD4DB6 /* AppIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE092D88650500DD4DB6 /* AppIntent.swift */; };
 		B97FFE132D88650500DD4DB6 /* komplikation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE0D2D88650500DD4DB6 /* komplikation.swift */; };
@@ -180,7 +179,6 @@
 		B97FFDEF2D88650500DD4DB6 /* Kolkalk.entitlements */ = {isa = PBXFileReference; explicitFileType = text; path = Kolkalk.entitlements; sourceTree = "<group>"; };
 		B97FFDF02D88650500DD4DB6 /* KolkalkApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KolkalkApp.swift; sourceTree = "<group>"; };
 		B97FFDF12D88650500DD4DB6 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
-		B97FFE082D88650500DD4DB6 /*  komplikation.entitlements */ = {isa = PBXFileReference; explicitFileType = text; path = " komplikation.entitlements"; sourceTree = "<group>"; };
 		B97FFE092D88650500DD4DB6 /* AppIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntent.swift; sourceTree = "<group>"; };
 		B97FFE0A2D88650500DD4DB6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B97FFE0B2D88650500DD4DB6 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = text; path = Info.plist; sourceTree = "<group>"; };
@@ -337,7 +335,6 @@
 		B97FFE0E2D88650500DD4DB6 /* komplikation */ = {
 			isa = PBXGroup;
 			children = (
-				B97FFE082D88650500DD4DB6 /*  komplikation.entitlements */,
 				B97FFE092D88650500DD4DB6 /* AppIntent.swift */,
 				B97FFE0A2D88650500DD4DB6 /* Assets.xcassets */,
 				B97FFE0B2D88650500DD4DB6 /* Info.plist */,
@@ -664,7 +661,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B97FFE0F2D88650500DD4DB6 /*  komplikation.entitlements in Resources */,
 				B97FFE102D88650500DD4DB6 /* Assets.xcassets in Resources */,
 				B90AE4572E7433ED00905097 /* komplikationExtension.entitlements in Resources */,
 			);
