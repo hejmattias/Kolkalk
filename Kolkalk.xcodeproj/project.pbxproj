@@ -1221,7 +1221,7 @@
 				DEVELOPMENT_TEAM = ZD2P3P8L7B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "kolkalk-Watch-App/Info.plist";
+				INFOPLIST_FILE = "kolkalk Watch App/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = kolkalk;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
@@ -1257,7 +1257,7 @@
 				DEVELOPMENT_TEAM = ZD2P3P8L7B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "kolkalk-Watch-App/Info.plist";
+				INFOPLIST_FILE = "kolkalk Watch App/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = kolkalk;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
