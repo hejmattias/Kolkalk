@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B90AE4572E7433ED00905097 /* komplikationExtension.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B97C74BD2CB7F2DB0073AC17 /* komplikationExtension.entitlements */; };
+		B90AE45A2E74580C00905097 /* kolkalk Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B98B3D6B2CAC176600EE7D92 /* kolkalk Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B91B19252D9C5E55003337D4 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B19242D9C5E55003337D4 /* SettingsView.swift */; };
 		B91B192C2D9C68F8003337D4 /* CloudKitFoodDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B192B2D9C68F8003337D4 /* CloudKitFoodDataStore.swift */; };
 		B91B192D2D9C68F8003337D4 /* CloudKitFoodDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B192B2D9C68F8003337D4 /* CloudKitFoodDataStore.swift */; };
@@ -74,7 +75,6 @@
 		B97FFE5C2D88650500DD4DB6 /* kolkalk_Watch_AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE592D88650500DD4DB6 /* kolkalk_Watch_AppUITests.swift */; };
 		B97FFE5D2D88650500DD4DB6 /* kolkalk_Watch_AppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE5A2D88650500DD4DB6 /* kolkalk_Watch_AppUITestsLaunchTests.swift */; };
 		B97FFE602D88650500DD4DB6 /* KolkalkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE5E2D88650500DD4DB6 /* KolkalkTests.swift */; };
-		B98B3D8E2CAC176700EE7D92 /* kolkalk Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B98B3D6B2CAC176600EE7D92 /* kolkalk Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -113,13 +113,6 @@
 			remoteGlobalIDString = B98B3D6A2CAC176600EE7D92;
 			remoteInfo = "kolkalk Watch App";
 		};
-		B98B3D8C2CAC176700EE7D92 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B98B3D312CAC170200EE7D92 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = B98B3D6A2CAC176600EE7D92;
-			remoteInfo = "kolkalk Watch App";
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -140,7 +133,7 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
-				B98B3D8E2CAC176700EE7D92 /* kolkalk Watch App.app in Embed Watch Content */,
+				B90AE45A2E74580C00905097 /* kolkalk Watch App.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -484,7 +477,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				B98B3D8D2CAC176700EE7D92 /* PBXTargetDependency */,
 			);
 			name = Kolkalk;
 			packageProductDependencies = (
@@ -849,11 +841,6 @@
 			target = B98B3D6A2CAC176600EE7D92 /* kolkalk Watch App */;
 			targetProxy = B98B3D852CAC176700EE7D92 /* PBXContainerItemProxy */;
 		};
-		B98B3D8D2CAC176700EE7D92 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = B98B3D6A2CAC176600EE7D92 /* kolkalk Watch App */;
-			targetProxy = B98B3D8C2CAC176700EE7D92 /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -1053,6 +1040,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Kolkalk/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver läsa data från Apple Hälsa för att visa kolhydrater och insulin.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater och insulin.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Appen behöver åtkomst till ditt fotobibliotek för att välja bilder till kärl.";
@@ -1101,6 +1089,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Kolkalk/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver läsa data från Apple Hälsa för att visa kolhydrater och insulin.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater och insulin.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Appen behöver åtkomst till ditt fotobibliotek för att välja bilder till kärl.";
