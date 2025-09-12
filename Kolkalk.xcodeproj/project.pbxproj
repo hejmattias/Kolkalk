@@ -36,7 +36,6 @@
 		B97FFDFC2D88650500DD4DB6 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDF12D88650500DD4DB6 /* ViewModel.swift */; };
 		B97FFDFD2D88650500DD4DB6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B97FFDE12D88650500DD4DB6 /* Preview Assets.xcassets */; };
 		B97FFDFE2D88650500DD4DB6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B97FFDE82D88650500DD4DB6 /* Assets.xcassets */; };
-		B97FFDFF2D88650500DD4DB6 /* code_copier_encoding_fix.py in Resources */ = {isa = PBXBuildFile; fileRef = B97FFDE92D88650500DD4DB6 /* code_copier_encoding_fix.py */; };
 		B97FFE022D88650500DD4DB6 /* FoodItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE42D88650500DD4DB6 /* FoodItem.swift */; };
 		B97FFE032D88650500DD4DB6 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE52D88650500DD4DB6 /* HealthKitManager.swift */; };
 		B97FFE042D88650500DD4DB6 /* Container.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE32D88650500DD4DB6 /* Container.swift */; };
@@ -49,7 +48,6 @@
 		B97FFE132D88650500DD4DB6 /* komplikation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE0D2D88650500DD4DB6 /* komplikation.swift */; };
 		B97FFE332D88650500DD4DB6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B97FFE142D88650500DD4DB6 /* Preview Assets.xcassets */; };
 		B97FFE342D88650500DD4DB6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B97FFE162D88650500DD4DB6 /* Assets.xcassets */; };
-		B97FFE352D88650500DD4DB6 /* code_copier_encoding_fix.py in Resources */ = {isa = PBXBuildFile; fileRef = B97FFE192D88650500DD4DB6 /* code_copier_encoding_fix.py */; };
 		B97FFE382D88650500DD4DB6 /* CalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE172D88650500DD4DB6 /* CalculatorView.swift */; };
 		B97FFE392D88650500DD4DB6 /* ChooseContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE182D88650500DD4DB6 /* ChooseContainerView.swift */; };
 		B97FFE3A2D88650500DD4DB6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE1A2D88650500DD4DB6 /* ContentView.swift */; };
@@ -173,7 +171,6 @@
 		B97FFDE52D88650500DD4DB6 /* HealthKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
 		B97FFDE72D88650500DD4DB6 /* AddEditContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEditContainerView.swift; sourceTree = "<group>"; };
 		B97FFDE82D88650500DD4DB6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		B97FFDE92D88650500DD4DB6 /* code_copier_encoding_fix.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = code_copier_encoding_fix.py; sourceTree = "<group>"; };
 		B97FFDEA2D88650500DD4DB6 /* ContainerData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerData.swift; sourceTree = "<group>"; };
 		B97FFDEB2D88650500DD4DB6 /* ContainerListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerListView.swift; sourceTree = "<group>"; };
 		B97FFDEC2D88650500DD4DB6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -192,7 +189,6 @@
 		B97FFE162D88650500DD4DB6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B97FFE172D88650500DD4DB6 /* CalculatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatorView.swift; sourceTree = "<group>"; };
 		B97FFE182D88650500DD4DB6 /* ChooseContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseContainerView.swift; sourceTree = "<group>"; };
-		B97FFE192D88650500DD4DB6 /* code_copier_encoding_fix.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = code_copier_encoding_fix.py; sourceTree = "<group>"; };
 		B97FFE1A2D88650500DD4DB6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B97FFE1B2D88650500DD4DB6 /* CreateFoodFromPlateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateFoodFromPlateView.swift; sourceTree = "<group>"; };
 		B97FFE1D2D88650500DD4DB6 /* EditFoodItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditFoodItemView.swift; sourceTree = "<group>"; };
@@ -325,7 +321,6 @@
 				B97FFDE62D88650500DD4DB6 /* Shared */,
 				B97FFDE72D88650500DD4DB6 /* AddEditContainerView.swift */,
 				B97FFDE82D88650500DD4DB6 /* Assets.xcassets */,
-				B97FFDE92D88650500DD4DB6 /* code_copier_encoding_fix.py */,
 				B97FFDEA2D88650500DD4DB6 /* ContainerData.swift */,
 				B97FFDEB2D88650500DD4DB6 /* ContainerListView.swift */,
 				B97FFDEC2D88650500DD4DB6 /* ContentView.swift */,
@@ -370,7 +365,6 @@
 				B97FFE162D88650500DD4DB6 /* Assets.xcassets */,
 				B97FFE172D88650500DD4DB6 /* CalculatorView.swift */,
 				B97FFE182D88650500DD4DB6 /* ChooseContainerView.swift */,
-				B97FFE192D88650500DD4DB6 /* code_copier_encoding_fix.py */,
 				B97FFE1A2D88650500DD4DB6 /* ContentView.swift */,
 				B97FFE1B2D88650500DD4DB6 /* CreateFoodFromPlateView.swift */,
 				B97FFE1D2D88650500DD4DB6 /* EditFoodItemView.swift */,
@@ -485,8 +479,8 @@
 			buildConfigurationList = B98B3D5E2CAC170300EE7D92 /* Build configuration list for PBXNativeTarget "Kolkalk" */;
 			buildPhases = (
 				B98B3D352CAC170200EE7D92 /* Sources */,
-				B98B3D362CAC170200EE7D92 /* Frameworks */,
 				B98B3D372CAC170200EE7D92 /* Resources */,
+				B98B3D362CAC170200EE7D92 /* Frameworks */,
 				B98B3D922CAC176700EE7D92 /* Embed Watch Content */,
 			);
 			buildRules = (
@@ -680,7 +674,6 @@
 			files = (
 				B97FFDFD2D88650500DD4DB6 /* Preview Assets.xcassets in Resources */,
 				B97FFDFE2D88650500DD4DB6 /* Assets.xcassets in Resources */,
-				B97FFDFF2D88650500DD4DB6 /* code_copier_encoding_fix.py in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -704,7 +697,6 @@
 			files = (
 				B97FFE332D88650500DD4DB6 /* Preview Assets.xcassets in Resources */,
 				B97FFE342D88650500DD4DB6 /* Assets.xcassets in Resources */,
-				B97FFE352D88650500DD4DB6 /* code_copier_encoding_fix.py in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -872,7 +864,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = komplikation/komplikation.entitlements;
+				CODE_SIGN_ENTITLEMENTS = komplikation/komplikationExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ZD2P3P8L7B;
@@ -903,7 +895,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = komplikation/komplikation.entitlements;
+				CODE_SIGN_ENTITLEMENTS = komplikation/komplikationExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ZD2P3P8L7B;
@@ -1042,6 +1034,7 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
@@ -1079,18 +1072,18 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = MG.kolkylator;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SDKROOT = auto;
+				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				XROS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Debug;
 		};
@@ -1127,18 +1120,18 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = MG.kolkylator;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SDKROOT = auto;
+				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				XROS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Release;
 		};

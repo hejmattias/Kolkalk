@@ -4,23 +4,8 @@
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES"
-      buildArchitectures = "All">
+      buildImplicitDependencies = "YES">
       <BuildActionEntries>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B98B3D6A2CAC176600EE7D92"
-               BuildableName = "kolkalk Watch App.app"
-               BlueprintName = "kolkalk Watch App"
-               ReferencedContainer = "container:Kolkalk.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
          <BuildActionEntry
             buildForTesting = "YES"
             buildForRunning = "YES"
@@ -49,9 +34,9 @@
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B98B3D792CAC176700EE7D92"
-               BuildableName = "kolkalk Watch AppTests.xctest"
-               BlueprintName = "kolkalk Watch AppTests"
+               BlueprintIdentifier = "B98B3D492CAC170300EE7D92"
+               BuildableName = "KolkalkTests.xctest"
+               BlueprintName = "KolkalkTests"
                ReferencedContainer = "container:Kolkalk.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -60,9 +45,9 @@
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B98B3D832CAC176700EE7D92"
-               BuildableName = "kolkalk Watch AppUITests.xctest"
-               BlueprintName = "kolkalk Watch AppUITests"
+               BlueprintIdentifier = "B98B3D532CAC170300EE7D92"
+               BuildableName = "KolkalkUITests.xctest"
+               BlueprintName = "KolkalkUITests"
                ReferencedContainer = "container:Kolkalk.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -82,9 +67,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B98B3D6A2CAC176600EE7D92"
-            BuildableName = "kolkalk Watch App.app"
-            BlueprintName = "kolkalk Watch App"
+            BlueprintIdentifier = "B98B3D382CAC170200EE7D92"
+            BuildableName = "Kolkalk.app"
+            BlueprintName = "Kolkalk"
             ReferencedContainer = "container:Kolkalk.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -99,9 +84,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B98B3D6A2CAC176600EE7D92"
-            BuildableName = "kolkalk Watch App.app"
-            BlueprintName = "kolkalk Watch App"
+            BlueprintIdentifier = "B98B3D382CAC170200EE7D92"
+            BuildableName = "Kolkalk.app"
+            BlueprintName = "Kolkalk"
             ReferencedContainer = "container:Kolkalk.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

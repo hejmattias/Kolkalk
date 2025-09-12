@@ -4,10 +4,15 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>Kolkalk.xcscheme_^#shared#^_</key>
+		<key>Copy of Kolkalk.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
+		</dict>
+		<key>Kolkalk2.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>3</integer>
 		</dict>
 		<key>kolkalk Watch App.xcscheme_^#shared#^_</key>
 		<dict>
@@ -18,6 +23,44 @@
 		<dict>
 			<key>orderHint</key>
 			<integer>2</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>B97C749A2CB7D26E0073AC17</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>B98B3D382CAC170200EE7D92</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>B98B3D492CAC170300EE7D92</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>B98B3D532CAC170300EE7D92</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>B98B3D6A2CAC176600EE7D92</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>B98B3D792CAC176700EE7D92</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>B98B3D832CAC176700EE7D92</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>
