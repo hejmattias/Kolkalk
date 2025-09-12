@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B90AE4572E7433ED00905097 /* komplikationExtension.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B97C74BD2CB7F2DB0073AC17 /* komplikationExtension.entitlements */; };
 		B90AE45A2E74580C00905097 /* kolkalk Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B98B3D6B2CAC176600EE7D92 /* kolkalk Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B91B19252D9C5E55003337D4 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B19242D9C5E55003337D4 /* SettingsView.swift */; };
 		B91B192C2D9C68F8003337D4 /* CloudKitFoodDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B192B2D9C68F8003337D4 /* CloudKitFoodDataStore.swift */; };
@@ -60,7 +59,6 @@
 		B97FFE412D88650500DD4DB6 /* FoodListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE212D88650500DD4DB6 /* FoodListView.swift */; };
 		B97FFE422D88650500DD4DB6 /* ImportInstructionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE222D88650500DD4DB6 /* ImportInstructionsView.swift */; };
 		B97FFE452D88650500DD4DB6 /* InsulinLoggingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE262D88650500DD4DB6 /* InsulinLoggingView.swift */; };
-		B97FFE462D88650500DD4DB6 /* kolhydratApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE272D88650500DD4DB6 /* kolhydratApp.swift */; };
 		B97FFE472D88650500DD4DB6 /* kolkalkApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE292D88650500DD4DB6 /* kolkalkApp.swift */; };
 		B97FFE482D88650500DD4DB6 /* NumpadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE2A2D88650500DD4DB6 /* NumpadView.swift */; };
 		B97FFE492D88650500DD4DB6 /* Plateklassen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFE2B2D88650500DD4DB6 /* Plateklassen.swift */; };
@@ -191,7 +189,6 @@
 		B97FFE222D88650500DD4DB6 /* ImportInstructionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportInstructionsView.swift; sourceTree = "<group>"; };
 		B97FFE232D88650500DD4DB6 /* info.plist */ = {isa = PBXFileReference; explicitFileType = text; path = info.plist; sourceTree = "<group>"; };
 		B97FFE262D88650500DD4DB6 /* InsulinLoggingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsulinLoggingView.swift; sourceTree = "<group>"; };
-		B97FFE272D88650500DD4DB6 /* kolhydratApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = kolhydratApp.swift; sourceTree = "<group>"; };
 		B97FFE282D88650500DD4DB6 /* kolkalk Watch App.entitlements */ = {isa = PBXFileReference; explicitFileType = text; path = "kolkalk Watch App.entitlements"; sourceTree = "<group>"; };
 		B97FFE292D88650500DD4DB6 /* kolkalkApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = kolkalkApp.swift; sourceTree = "<group>"; };
 		B97FFE2A2D88650500DD4DB6 /* NumpadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumpadView.swift; sourceTree = "<group>"; };
@@ -367,7 +364,6 @@
 				B97FFE222D88650500DD4DB6 /* ImportInstructionsView.swift */,
 				B97FFE232D88650500DD4DB6 /* info.plist */,
 				B97FFE262D88650500DD4DB6 /* InsulinLoggingView.swift */,
-				B97FFE272D88650500DD4DB6 /* kolhydratApp.swift */,
 				B97FFE282D88650500DD4DB6 /* kolkalk Watch App.entitlements */,
 				B97FFE292D88650500DD4DB6 /* kolkalkApp.swift */,
 				B97FFE2A2D88650500DD4DB6 /* NumpadView.swift */,
@@ -654,7 +650,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B97FFE102D88650500DD4DB6 /* Assets.xcassets in Resources */,
-				B90AE4572E7433ED00905097 /* komplikationExtension.entitlements in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -780,7 +775,6 @@
 				B97FFE412D88650500DD4DB6 /* FoodListView.swift in Sources */,
 				B97FFE422D88650500DD4DB6 /* ImportInstructionsView.swift in Sources */,
 				B97FFE452D88650500DD4DB6 /* InsulinLoggingView.swift in Sources */,
-				B97FFE462D88650500DD4DB6 /* kolhydratApp.swift in Sources */,
 				B97FFE472D88650500DD4DB6 /* kolkalkApp.swift in Sources */,
 				B960858A2D9D36FE00294BC9 /* CloudKitContainerDataStore.swift in Sources */,
 				B97FFE482D88650500DD4DB6 /* NumpadView.swift in Sources */,
