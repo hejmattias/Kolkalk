@@ -142,7 +142,7 @@
 		B91B19242D9C5E55003337D4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		B91B19262D9C6468003337D4 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.2.sdk/System/Library/Frameworks/CloudKit.framework; sourceTree = DEVELOPER_DIR; };
 		B91B19282D9C6475003337D4 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.2.sdk/System/Library/Frameworks/CloudKit.framework; sourceTree = DEVELOPER_DIR; };
-		B91B192A2D9C686C003337D4 /* kolkalk-Watch-App-Info.plist */ = {isa = PBXFileReference; explicitFileType = text; path = "kolkalk-Watch-App-Info.plist"; sourceTree = SOURCE_ROOT; };
+		B91B192A2D9C686C003337D4 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = text; name = Info.plist; path = "kolkalk Watch App/Info.plist"; sourceTree = SOURCE_ROOT; };
 		B91B192B2D9C68F8003337D4 /* CloudKitFoodDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitFoodDataStore.swift; sourceTree = "<group>"; };
 		B91B192F2D9C69D7003337D4 /* FoodData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodData.swift; sourceTree = "<group>"; };
 		B91B19312D9C69F4003337D4 /* IOSFoodListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSFoodListView.swift; sourceTree = "<group>"; };
@@ -369,6 +369,7 @@
 				B97FFE2D2D88650500DD4DB6 /* SharedViews.swift */,
 				B97FFE302D88650500DD4DB6 /* WatchContainerData.swift */,
 				B97FFE312D88650500DD4DB6 /* WatchViewModel.swift */,
+				B91B192A2D9C686C003337D4 /* Info.plist */,
 			);
 			path = "kolkalk Watch App";
 			sourceTree = "<group>";
@@ -419,7 +420,6 @@
 				B97FFE0E2D88650500DD4DB6 /* komplikation */,
 				B97E03FD2CAC84D100450835 /* Frameworks */,
 				B98B3D3A2CAC170200EE7D92 /* Products */,
-				B91B192A2D9C686C003337D4 /* kolkalk-Watch-App-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1221,7 +1221,7 @@
 				DEVELOPMENT_TEAM = ZD2P3P8L7B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "kolkalk-Watch-App-Info.plist";
+				INFOPLIST_FILE = "kolkalk-Watch-App/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = kolkalk;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
@@ -1257,7 +1257,7 @@
 				DEVELOPMENT_TEAM = ZD2P3P8L7B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "kolkalk-Watch-App-Info.plist";
+				INFOPLIST_FILE = "kolkalk-Watch-App/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = kolkalk;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
