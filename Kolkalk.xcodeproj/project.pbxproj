@@ -111,6 +111,13 @@
 			remoteGlobalIDString = B98B3D6A2CAC176600EE7D92;
 			remoteInfo = "kolkalk Watch App";
 		};
+		B9D999602E75FF0B00AAC5B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B98B3D312CAC170200EE7D92 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B98B3D6A2CAC176600EE7D92;
+			remoteInfo = "kolkalk Watch App";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -471,6 +478,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				B9D999612E75FF0B00AAC5B4 /* PBXTargetDependency */,
 			);
 			name = Kolkalk;
 			packageProductDependencies = (
@@ -832,6 +840,11 @@
 			isa = PBXTargetDependency;
 			target = B98B3D6A2CAC176600EE7D92 /* kolkalk Watch App */;
 			targetProxy = B98B3D852CAC176700EE7D92 /* PBXContainerItemProxy */;
+		};
+		B9D999612E75FF0B00AAC5B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B98B3D6A2CAC176600EE7D92 /* kolkalk Watch App */;
+			targetProxy = B9D999602E75FF0B00AAC5B4 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

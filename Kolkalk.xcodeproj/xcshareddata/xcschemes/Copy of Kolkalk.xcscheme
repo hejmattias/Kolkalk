@@ -20,6 +20,20 @@
                ReferencedContainer = "container:Kolkalk.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "B98B3D6A2CAC176600EE7D92"
+               BuildableName = "kolkalk Watch App.app"
+               BlueprintName = "kolkalk Watch App"
+               ReferencedContainer = "container:Kolkalk.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
