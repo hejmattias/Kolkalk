@@ -19,17 +19,6 @@
     <key>CFBundleVersion</key>
     <string>1</string>
 
-    <!-- WatchKit Extension Delegate -->
-    <key>WKExtensionDelegateClassName</key>
-    <string>MG.Kolkalk.watchkitapp.ExtensionDelegate</string>
-
-    <!-- Background Modes -->
-    <key>UIBackgroundModes</key>
-    <array>
-        <string>remote-notification</string>
-        <string>fetch</string>
-        <string>watch-connectivity</string>
-    </array>
 
     <!-- Custom URL Scheme -->
     <key>CFBundleURLTypes</key>
@@ -44,11 +33,7 @@
         </dict>
     </array>
 
-    <!-- Required Device Capabilities -->
-    <key>UIRequiredDeviceCapabilities</key>
-    <array>
-        <string>watch-companion</string>
-    </array>
+
 <key>NSHealthShareUsageDescription</key>
 <string>Appen behöver läsa data från Apple Hälsa för att visa kolhydrater och insulin.</string>
 
