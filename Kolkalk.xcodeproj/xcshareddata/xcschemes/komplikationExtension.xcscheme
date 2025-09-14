@@ -16,7 +16,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "B97C749A2CB7D26E0073AC17"
-               BuildableName = "komplikationExtension.appex"
+               BuildableName = "komplikation.appex"
                BlueprintName = "komplikationExtension"
                ReferencedContainer = "container:Kolkalk.xcodeproj">
             </BuildableReference>
@@ -109,7 +109,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B97C749A2CB7D26E0073AC17"
-            BuildableName = "komplikationExtension.appex"
+            BuildableName = "komplikation.appex"
             BlueprintName = "komplikationExtension"
             ReferencedContainer = "container:Kolkalk.xcodeproj">
          </BuildableReference>

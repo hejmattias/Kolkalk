@@ -23,7 +23,7 @@
 		B960858C2D9D36FE00294BC9 /* CloudKitContainerDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B96085892D9D36FE00294BC9 /* CloudKitContainerDataStore.swift */; };
 		B97C749D2CB7D26E0073AC17 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B97C749C2CB7D26E0073AC17 /* WidgetKit.framework */; };
 		B97C749F2CB7D26E0073AC17 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B97C749E2CB7D26E0073AC17 /* SwiftUI.framework */; };
-		B97C74AA2CB7D26F0073AC17 /* komplikationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B97C749B2CB7D26E0073AC17 /* komplikationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B97C74AA2CB7D26F0073AC17 /* komplikation.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B97C749B2CB7D26E0073AC17 /* komplikation.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B97E03FF2CAC84D100450835 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B97E03FE2CAC84D100450835 /* WatchConnectivity.framework */; };
 		B97FFDF32D88650500DD4DB6 /* Container.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE32D88650500DD4DB6 /* Container.swift */; };
 		B97FFDF42D88650500DD4DB6 /* FoodItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97FFDE42D88650500DD4DB6 /* FoodItem.swift */; };
@@ -127,7 +127,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				B97C74AA2CB7D26F0073AC17 /* komplikationExtension.appex in Embed Foundation Extensions */,
+				B97C74AA2CB7D26F0073AC17 /* komplikation.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -158,7 +158,7 @@
 		B91B19372D9C6B17003337D4 /* ExtensionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionDelegate.swift; sourceTree = "<group>"; };
 		B94532F62D9F0C9000DAE564 /* CreateNewFoodItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewFoodItemView.swift; sourceTree = "<group>"; };
 		B96085892D9D36FE00294BC9 /* CloudKitContainerDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitContainerDataStore.swift; sourceTree = "<group>"; };
-		B97C749B2CB7D26E0073AC17 /* komplikationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = komplikationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		B97C749B2CB7D26E0073AC17 /* komplikation.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = komplikation.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B97C749C2CB7D26E0073AC17 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		B97C749E2CB7D26E0073AC17 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		B97C74BD2CB7F2DB0073AC17 /* komplikationExtension.entitlements */ = {isa = PBXFileReference; explicitFileType = text; path = komplikationExtension.entitlements; sourceTree = "<group>"; };
@@ -439,7 +439,7 @@
 				B98B3D6B2CAC176600EE7D92 /* kolkalk Watch App.app */,
 				B98B3D7A2CAC176700EE7D92 /* kolkalk Watch AppTests.xctest */,
 				B98B3D842CAC176700EE7D92 /* kolkalk Watch AppUITests.xctest */,
-				B97C749B2CB7D26E0073AC17 /* komplikationExtension.appex */,
+				B97C749B2CB7D26E0073AC17 /* komplikation.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -463,7 +463,7 @@
 			packageProductDependencies = (
 			);
 			productName = komplikationExtension;
-			productReference = B97C749B2CB7D26E0073AC17 /* komplikationExtension.appex */;
+			productReference = B97C749B2CB7D26E0073AC17 /* komplikation.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		B98B3D382CAC170200EE7D92 /* Kolkalk */ = {
@@ -870,7 +870,7 @@
 				);
 				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = MG.kolkylator.watchkitapp.komplikation;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = komplikation;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -901,7 +901,7 @@
 				);
 				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = MG.kolkylator.watchkitapp.komplikation;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = komplikation;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
