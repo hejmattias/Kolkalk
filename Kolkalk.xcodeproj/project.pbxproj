@@ -901,7 +901,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = MG.kolkylator.watchkitapp.komplikation;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hejmattias.klockylator.watchkitapp.komplikation;
 				PRODUCT_NAME = komplikation;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
@@ -1054,16 +1054,20 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Kolkalk/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Kolkalk;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver läsa data från Apple Hälsa för att visa kolhydrater och insulin.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater och insulin.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Appen behöver åtkomst till ditt fotobibliotek för att välja bilder till kärl.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -1105,16 +1109,20 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Kolkalk/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Kolkalk;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver läsa data från Apple Hälsa för att visa kolhydrater och insulin.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater och insulin.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Appen behöver åtkomst till ditt fotobibliotek för att välja bilder till kärl.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -1124,7 +1132,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = MG.kolkylator;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hejmattias.klockylator;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -1243,8 +1251,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "kolkalk Watch App/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = kolkalk;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver läsa data från Apple Hälsa för att visa kolhydrater och insulin.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater och insulin.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = MG.kolkylator;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
@@ -1280,8 +1288,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "kolkalk Watch App/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = kolkalk;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver läsa data från Apple Hälsa för att visa kolhydrater och insulin.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater och insulin.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = MG.kolkylator;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
@@ -1290,7 +1298,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = MG.kolkylator.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hejmattias.klockylator.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;

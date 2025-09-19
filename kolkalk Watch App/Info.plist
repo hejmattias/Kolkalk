@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!-- Info.plist for kolkalk Watch App -->
 <plist version="1.0">
 <dict>
-    <!-- App Information -->
+    <key>WKCompanionAppBundleIdentifier</key>
+    <string>com.hejmattias.klockylator</string>
     <key>CFBundleDisplayName</key>
     <string>kolkalk</string>
     <key>CFBundleIdentifier</key>
-    <string>MG.kolkylator.watchkitapp</string>
+    <string>com.hejmattias.klockylator.watchapp</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
@@ -19,13 +19,11 @@
     <key>CFBundleVersion</key>
     <string>1</string>
 
-
-    <!-- Custom URL Scheme -->
     <key>CFBundleURLTypes</key>
     <array>
         <dict>
             <key>CFBundleURLName</key>
-            <string>MG.Kolkalkylator.watchkitapp</string> <!-- Replace with your actual Bundle Identifier -->
+            <string>com.hejmattias.klockylator.watchapp</string>
             <key>CFBundleURLSchemes</key>
             <array>
                 <string>kolkalk</string>
@@ -33,14 +31,11 @@
         </dict>
     </array>
 
+    <key>NSHealthShareUsageDescription</key>
+    <string>Appen behöver läsa data från Apple Hälsa för att visa kolhydrater och insulin.</string>
 
-<key>NSHealthShareUsageDescription</key>
-<string>Appen behöver läsa data från Apple Hälsa för att visa kolhydrater och insulin.</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>Appen behöver skriva data till Apple Hälsa för att logga kolhydrater och insulin.</string>
 
-<key>NSHealthUpdateUsageDescription</key>
-<string>Appen behöver skriva data till Apple Hälsa för att logga kolhydrater och insulin.</string>
-
-    <!-- Other configurations (if any) -->
-    <!-- ... -->
 </dict>
 </plist>
