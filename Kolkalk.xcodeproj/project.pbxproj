@@ -869,7 +869,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = MG.kolkylator.watchkitapp.komplikation;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hejmattias.klockylator.watchkitapp.komplikation;
 				PRODUCT_NAME = komplikation;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1077,7 +1077,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = MG.kolkylator;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hejmattias.klockylator;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -1254,14 +1254,14 @@
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver läsa data från Apple Hälsa för att visa kolhydrater och insulin.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater och insulin.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = MG.kolkylator;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.hejmattias.klockylator;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = MG.kolkylator.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hejmattias.klockylator.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1291,7 +1291,7 @@
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Appen behöver läsa data från Apple Hälsa för att visa kolhydrater och insulin.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Appen behöver skriva data till Apple Hälsa för att logga kolhydrater och insulin.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = MG.kolkylator;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.hejmattias.klockylator;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
