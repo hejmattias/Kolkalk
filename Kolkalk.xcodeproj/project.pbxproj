@@ -18,6 +18,7 @@
 		B91B19362D9C6AC5003337D4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B19352D9C6AC5003337D4 /* AppDelegate.swift */; };
 		B91B19382D9C6B17003337D4 /* ExtensionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B19372D9C6B17003337D4 /* ExtensionDelegate.swift */; };
 		B94532F72D9F0C9000DAE564 /* CreateNewFoodItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94532F62D9F0C9000DAE564 /* CreateNewFoodItemView.swift */; };
+		B95F12A42E832CED0000AA7E /* LivsmedelsverketAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95F129F2E832B2B0000AA7E /* LivsmedelsverketAPIClient.swift */; };
 		B960858A2D9D36FE00294BC9 /* CloudKitContainerDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B96085892D9D36FE00294BC9 /* CloudKitContainerDataStore.swift */; };
 		B960858B2D9D36FE00294BC9 /* CloudKitContainerDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B96085892D9D36FE00294BC9 /* CloudKitContainerDataStore.swift */; };
 		B960858C2D9D36FE00294BC9 /* CloudKitContainerDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B96085892D9D36FE00294BC9 /* CloudKitContainerDataStore.swift */; };
@@ -157,6 +158,7 @@
 		B91B19352D9C6AC5003337D4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B91B19372D9C6B17003337D4 /* ExtensionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionDelegate.swift; sourceTree = "<group>"; };
 		B94532F62D9F0C9000DAE564 /* CreateNewFoodItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewFoodItemView.swift; sourceTree = "<group>"; };
+		B95F129F2E832B2B0000AA7E /* LivsmedelsverketAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivsmedelsverketAPIClient.swift; sourceTree = "<group>"; };
 		B96085892D9D36FE00294BC9 /* CloudKitContainerDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitContainerDataStore.swift; sourceTree = "<group>"; };
 		B97C749B2CB7D26E0073AC17 /* komplikation.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = komplikation.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B97C749C2CB7D26E0073AC17 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -377,6 +379,7 @@
 				B97FFE302D88650500DD4DB6 /* WatchContainerData.swift */,
 				B97FFE312D88650500DD4DB6 /* WatchViewModel.swift */,
 				B91B192A2D9C686C003337D4 /* Info.plist */,
+				B95F129F2E832B2B0000AA7E /* LivsmedelsverketAPIClient.swift */,
 			);
 			path = "kolkalk Watch App";
 			sourceTree = "<group>";
@@ -776,6 +779,7 @@
 				B94532F72D9F0C9000DAE564 /* CreateNewFoodItemView.swift in Sources */,
 				B97FFE3D2D88650500DD4DB6 /* EditFoodItemView.swift in Sources */,
 				B97FFE3E2D88650500DD4DB6 /* EditFoodView.swift in Sources */,
+				B95F12A42E832CED0000AA7E /* LivsmedelsverketAPIClient.swift in Sources */,
 				B97FFE3F2D88650500DD4DB6 /* FoodData.swift in Sources */,
 				B97FFE402D88650500DD4DB6 /* FoodDetailView.swift in Sources */,
 				B97FFE412D88650500DD4DB6 /* FoodListView.swift in Sources */,

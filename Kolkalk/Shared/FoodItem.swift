@@ -15,6 +15,10 @@ struct FoodItem: Identifiable, Codable, Hashable, Equatable {
     var isFavorite: Bool = false // Ny egenskap för favoritmarkering
     var isCalculatorItem: Bool = false // Ny egenskap
 
+    // NYTT: Flagga från SLV (om livsmedlet är "beräknat" i deras databas)
+    // Denna används endast för visning/filtrering av externa träffar.
+    var isCalculatedFromSLV: Bool? = nil
+
     // MARK: - Anpassad initialiserare för Codable
 
     enum CodingKeys: String, CodingKey {
@@ -28,7 +32,8 @@ struct FoodItem: Identifiable, Codable, Hashable, Equatable {
         case isDefault
         case hasBeenLogged
         case isFavorite
-        case isCalculatorItem // Lägg till isCalculatorItem i CodingKeys
+        case isCalculatorItem
+        case isCalculatedFromSLV // NYCKEL FÖR NY FLAGGA
     }
 
     init(
@@ -41,8 +46,9 @@ struct FoodItem: Identifiable, Codable, Hashable, Equatable {
         inputUnit: String? = nil,
         isDefault: Bool? = nil,
         hasBeenLogged: Bool = false,
-        isFavorite: Bool = false, // Inkludera isFavorite i initialiseraren
-        isCalculatorItem: Bool = false // Inkludera isCalculatorItem i initialiseraren
+        isFavorite: Bool = false,
+        isCalculatorItem: Bool = false,
+        isCalculatedFromSLV: Bool? = nil // NY PARAMETER MED DEFAULT
     ) {
         self.id = id
         self.name = name
@@ -54,7 +60,8 @@ struct FoodItem: Identifiable, Codable, Hashable, Equatable {
         self.isDefault = isDefault
         self.hasBeenLogged = hasBeenLogged
         self.isFavorite = isFavorite
-        self.isCalculatorItem = isCalculatorItem // Tilldela isCalculatorItem
+        self.isCalculatorItem = isCalculatorItem
+        self.isCalculatedFromSLV = isCalculatedFromSLV
     }
 
     // Anpassad initialiserare för att hantera bakåtkompatibilitet
@@ -70,8 +77,9 @@ struct FoodItem: Identifiable, Codable, Hashable, Equatable {
         inputUnit = try container.decodeIfPresent(String.self, forKey: .inputUnit)
         isDefault = try container.decodeIfPresent(Bool.self, forKey: .isDefault)
         hasBeenLogged = try container.decodeIfPresent(Bool.self, forKey: .hasBeenLogged) ?? false
-        isFavorite = try container.decodeIfPresent(Bool.self, forKey: .isFavorite) ?? false // Dekodera isFavorite
-        isCalculatorItem = try container.decodeIfPresent(Bool.self, forKey: .isCalculatorItem) ?? false // Dekodera isCalculatorItem
+        isFavorite = try container.decodeIfPresent(Bool.self, forKey: .isFavorite) ?? false
+        isCalculatorItem = try container.decodeIfPresent(Bool.self, forKey: .isCalculatorItem) ?? false
+        isCalculatedFromSLV = try container.decodeIfPresent(Bool.self, forKey: .isCalculatedFromSLV) // default nil
     }
 
     // Funktion för att formatera detaljer (används i logToHealth)
@@ -126,6 +134,8 @@ struct FoodItem: Identifiable, Codable, Hashable, Equatable {
         try container.encodeIfPresent(isDefault, forKey: .isDefault)
         try container.encode(hasBeenLogged, forKey: .hasBeenLogged)
         try container.encode(isFavorite, forKey: .isFavorite)
-        try container.encode(isCalculatorItem, forKey: .isCalculatorItem) // Koda isCalculatorItem
+        try container.encode(isCalculatorItem, forKey: .isCalculatorItem)
+        try container.encodeIfPresent(isCalculatedFromSLV, forKey: .isCalculatedFromSLV)
     }
 }
+

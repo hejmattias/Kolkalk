@@ -10,6 +10,15 @@ struct FoodListView: View {
     @State private var showDeleteConfirmation = false
     @State private var showFavoritesOnly: Bool = UserDefaults.standard.bool(forKey: "showFavoritesOnly")
 
+    // Extern sökning
+    @State private var externalResults: [FoodItem] = []
+    @State private var isSearchingExternal: Bool = false
+    @State private var externalError: String? = nil
+    @State private var searchTask: Task<Void, Never>? = nil
+
+    // NYTT: Toggle för “Visa endast beräknat livsmedel”
+    @State private var showCalculatedOnly: Bool = false
+
     private var favoritesBinding: Binding<Bool> {
         Binding(
             get: { self.showFavoritesOnly },
@@ -34,6 +43,20 @@ struct FoodListView: View {
         return list
     }
 
+    // NYTT: Hjälp för att veta om vi kan visa togglen (endast om någon post har flagga)
+    private var canFilterCalculated: Bool {
+        externalResults.contains(where: { $0.isCalculatedFromSLV != nil })
+    }
+
+    // NYTT: Resultat som faktiskt visas (ev. filtrerade på “beräknat”)
+    private var displayedExternalResults: [FoodItem] {
+        if canFilterCalculated && showCalculatedOnly {
+            return externalResults.filter { $0.isCalculatedFromSLV == true }
+        } else {
+            return externalResults
+        }
+    }
+
     var body: some View {
         ScrollViewReader { scrollProxy in
             ZStack {
@@ -41,8 +64,9 @@ struct FoodListView: View {
                     // Sökfält (göms med scroll)
                     TextField("Sök", text: $searchText)
                         .id("searchField")
-
-                    // --- Här har vi tagit bort "Color.clear"-raden! ---
+                        .onChange(of: searchText) { _, newValue in
+                            triggerExternalSearch(for: newValue)
+                        }
 
                     // Kalkylator-knapp i stil med livsmedelsraderna
                     Button(action: {
@@ -60,7 +84,7 @@ struct FoodListView: View {
                     }
                     .id("calculatorButton")
 
-                    // Livsmedel-listan
+                    // Lokala livsmedel
                     if !filteredFoodList.isEmpty {
                         ForEach(filteredFoodList.indices, id: \.self) { index in
                             let food = filteredFoodList[index]
@@ -90,9 +114,66 @@ struct FoodListView: View {
                             .id(index == 0 ? "firstFoodItem" : nil)
                         }
                     } else {
-                        Text(searchText.isEmpty ? "Listan är tom. Lägg till via '+'." : "Inga träffar på \"\(searchText)\".")
+                        Text(searchText.isEmpty ? "Listan är tom. Lägg till via '+'." : "Inga lokala träffar på \"\(searchText)\".")
                             .foregroundColor(.gray)
                             .padding()
+                    }
+
+                    // Externa träffar (Livsmedelsverket)
+                    if !searchText.isEmpty {
+                        // NYTT: Visa antal träffar i rubriken
+                        Section(header: HStack {
+                            Text("Från Livsmedelsverket (\(displayedExternalResults.count))")
+                            if isSearchingExternal { Spacer(); ProgressView().scaleEffect(0.7) }
+                        }) {
+                            // NYTT: Visa toggle för “Visa endast beräknat livsmedel” om flaggan finns på någon post
+                            if canFilterCalculated {
+                                Toggle(isOn: $showCalculatedOnly.animation()) {
+                                    Text("Visa endast beräknat livsmedel")
+                                }
+                            }
+
+                            if let error = externalError {
+                                Text(error)
+                                    .foregroundColor(.red)
+                                    .font(.caption)
+                                    .lineLimit(6)
+                            } else if displayedExternalResults.isEmpty {
+                                Text(isSearchingExternal ? "Söker..." : "Inga externa träffar.")
+                                    .foregroundColor(.gray)
+                            } else {
+                                ForEach(displayedExternalResults.indices, id: \.self) { index in
+                                    let extFood = displayedExternalResults[index]
+                                    HStack {
+                                        Text(extFood.name)
+                                            .foregroundColor(.white)
+                                        Spacer()
+                                        Text("\(extFood.carbsPer100g ?? 0, specifier: "%.1f") gk/100g")
+                                            .font(.caption)
+                                            .foregroundColor(.gray)
+                                        Image(systemName: "network")
+                                            .foregroundColor(.blue)
+                                        // Valfri ikon om posten är beräknad
+                                        if extFood.isCalculatedFromSLV == true {
+                                            Image(systemName: "function")
+                                                .foregroundColor(.teal)
+                                        }
+                                    }
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        navigationPath.append(Route.foodDetailView(extFood, shouldEmptyPlate: isEmptyAndAdd))
+                                    }
+                                    .swipeActions(edge: .trailing) {
+                                        Button {
+                                            saveExternalFood(extFood)
+                                        } label: {
+                                            Label("Spara", systemImage: "square.and.arrow.down")
+                                        }
+                                        .tint(.green)
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     // Lägg till nytt livsmedel-knapp
@@ -162,7 +243,6 @@ struct FoodListView: View {
                 }
                 .navigationTitle(isEmptyAndAdd ? "-+ Livsmedel" : "Livsmedel")
                 .onAppear {
-                    // Scrolla till "calculatorButton" för att säkert dölja sökrutan helt
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         withAnimation {
                             scrollProxy.scrollTo("calculatorButton", anchor: .top)
@@ -171,7 +251,6 @@ struct FoodListView: View {
                     }
                 }
 
-                // Laddningsindikator över listan
                 if foodData.isLoading && foodData.foodList.isEmpty {
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -190,4 +269,67 @@ struct FoodListView: View {
         searchText = ""
         showDeleteConfirmation = false
     }
+
+    private func saveExternalFood(_ item: FoodItem) {
+        foodData.addFoodItem(item)
+        print("Saved external item to list: \(item.name)")
+    }
+
+    private func triggerExternalSearch(for text: String) {
+        searchTask?.cancel()
+        externalError = nil
+
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            externalResults = []
+            isSearchingExternal = false
+            return
+        }
+
+        isSearchingExternal = true
+
+        searchTask = Task { [currentQuery = trimmed] in
+            try? await Task.sleep(nanoseconds: 350_000_000)
+            guard !Task.isCancelled else { return }
+
+            do {
+                let api = LivsmedelsverketAPIClient()
+                let results = try await api.searchFoods(query: currentQuery, limit: 25)
+
+                // Filtrera bort dubbletter som redan finns lokalt (baserat på namn)
+                let localNames = Set(foodData.foodList.map { $0.name.lowercased() })
+                let filteredForDuplicates = results.filter { !localNames.contains($0.name.lowercased()) }
+
+                // Variant A: behåll alla som innehåller query (diakritik/skiftlägesokänsligt)
+                let normalizedQuery = normalize(currentQuery)
+                let lightlyFiltered = filteredForDuplicates.filter { item in
+                    normalize(item.name).contains(normalizedQuery)
+                }
+
+                if !Task.isCancelled {
+                    await MainActor.run {
+                        self.externalResults = lightlyFiltered
+                        self.isSearchingExternal = false
+                        self.externalError = nil
+                        // Nollställ togglen när nya resultat kommer
+                        self.showCalculatedOnly = false
+                    }
+                }
+            } catch {
+                if !Task.isCancelled {
+                    await MainActor.run {
+                        self.externalResults = []
+                        self.isSearchingExternal = false
+                        self.externalError = error.localizedDescription
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Normalisering (diakritik- och skiftlägesokänslig)
+    private func normalize(_ s: String) -> String {
+        s.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+    }
 }
+
